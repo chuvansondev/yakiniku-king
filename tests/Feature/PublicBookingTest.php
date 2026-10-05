@@ -9,8 +9,14 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 test('the home booking buttons open the public booking form', function () {
-    $this->get(route('home'))
-        ->assertSee('href="'.route('booking.create').'"', false);
+    $response = $this->get(route('home'));
+
+    $response->assertSee('href="'.route('booking.create').'"', false);
+
+    expect(substr_count(
+        $response->getContent(),
+        'class="d-block" href="'.route('menu.index').'"',
+    ))->toBe(6);
 });
 
 test('the booking form lists active restaurants', function () {
@@ -121,6 +127,13 @@ test('a visitor can submit a booking request', function () {
         ->assertSee('Ẩn thông tin')
         ->assertSee('Hủy đặt bàn')
         ->assertSee('Trở về trang chủ');
+
+    $this->get(route('home'));
+
+    $this->get(route('booking.create'))
+        ->assertDontSee('id="bookingConfirmationModal"', false)
+        ->assertDontSee('Nguyen Van A')
+        ->assertSee('value="2"', false);
 });
 
 test('a visitor can cancel the booking in their session', function () {

@@ -36,9 +36,15 @@ class BookingController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'name_en', 'description', 'description_en', 'image', 'price']);
 
-        $booking = Booking::query()
-            ->with('restaurant')
-            ->find(session('booking_id'));
+        $booking = null;
+
+        if (session()->has('booking_success')) {
+            $booking = Booking::query()
+                ->with('restaurant')
+                ->find(session('booking_id'));
+        } else {
+            session()->forget('booking_id');
+        }
 
         $tableCapacities = self::TABLE_CAPACITIES;
         $maximumFloorCapacity = array_sum(self::TABLE_CAPACITIES);

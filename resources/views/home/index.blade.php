@@ -131,10 +131,52 @@
 			}
 		}
 
+		@media (max-width: 767.98px) {
+			.home-hero {
+				min-height: 0;
+				display: block;
+				background: #171612;
+			}
+
+			.home-hero::after {
+				display: none;
+			}
+
+			.home-hero .carousel-inner {
+				position: relative;
+				height: auto;
+				aspect-ratio: 4 / 3;
+				background: #171612;
+			}
+
+			.home-hero .carousel-item {
+				position: absolute;
+				inset: 0;
+			}
+
+			.home-hero-media {
+				object-fit: contain;
+			}
+
+			.home-hero-content {
+				padding-block: 2rem 2.5rem;
+			}
+
+			.home-hero-indicators {
+				right: 1rem;
+				bottom: auto;
+				margin-bottom: .75rem;
+			}
+		}
+
 		@media (max-width: 575.98px) {
 			.home-hero-arrow {
 				width: 40px;
 				height: 40px;
+			}
+
+			.home-hero-content {
+				padding-inline: 1.25rem;
 			}
 		}
 
@@ -397,43 +439,44 @@
 					<p class="home-eyebrow mb-0">{{ __('Tuyển chọn tại Yakiniku King') }}</p>
 					<h2 class="home-section-title">{{ __('Thực đơn') }}</h2>
 				</div>
-				<a class="link-dark fw-semibold text-decoration-none" href="{{ route('menu.index') }}">{{ __('Xem toàn bộ thực đơn') }} <span aria-hidden="true">&rarr;</span></a>
+				<a class="link-dark fw-semibold text-decoration-none" href="{{ route('menu.index') }}">{{ __('Xem toàn bộ thực đơn') }} 
+					<span aria-hidden="true">&rarr;</span></a>
 			</div>
 
 			<div class="row g-3 g-lg-4">
 				<div class="col-12 col-md-6 col-lg-4">
 					<article class="home-menu-item">
-						<img src="{{ asset('yakiniku-king/snow-aging-wagyu-set.jpg') }}" alt="{{ __('Set Snow Aging Wagyu') }}" loading="lazy">
+						<a class="d-block" href="{{ route('menu.index') }}"><img src="{{ asset('yakiniku-king/snow-aging-wagyu-set.jpg') }}" alt="{{ __('Set Snow Aging Wagyu') }}" loading="lazy"></a>
 						<div class="home-menu-caption"><h3>{{ __('Set Snow Aging Wagyu') }}</h3></div>
 					</article>
 				</div>
 				<div class="col-12 col-md-6 col-lg-4">
 					<article class="home-menu-item">
-						<img src="{{ asset('yakiniku-king/snow-aging-wagyu.jpg') }}" alt="{{ __('Thịt bò Snow Aging Wagyu') }}" loading="lazy">
+						<a class="d-block" href="{{ route('menu.index') }}"><img src="{{ asset('yakiniku-king/snow-aging-wagyu.jpg') }}" alt="{{ __('Thịt bò Snow Aging Wagyu') }}" loading="lazy"></a>
 						<div class="home-menu-caption"><h3>{{ __('Snow Aging Wagyu') }}</h3></div>
 					</article>
 				</div>
 				<div class="col-12 col-md-6 col-lg-4">
 					<article class="home-menu-item">
-						<img src="{{ asset('yakiniku-king/aging-beef.jpg') }}" alt="{{ __('Thịt bò ủ lạnh') }}" loading="lazy">
+						<a class="d-block" href="{{ route('menu.index') }}"><img src="{{ asset('yakiniku-king/aging-beef.jpg') }}" alt="{{ __('Thịt bò ủ lạnh') }}" loading="lazy"></a>
 						<div class="home-menu-caption"><h3>{{ __('Thịt bò ủ lạnh') }}</h3></div>
 					</article>
 				</div>
 				<div class="col-12 col-md-6 col-lg-4">
 					<article class="home-menu-item">
-						<img src="{{ asset('yakiniku-king/salad.jpg') }}" alt="{{ __('Salad tươi') }}" loading="lazy">
+						<a class="d-block" href="{{ route('menu.index') }}"><img src="{{ asset('yakiniku-king/salad.jpg') }}" alt="{{ __('Salad tươi') }}" loading="lazy"></a>
 						<div class="home-menu-caption"><h3>{{ __('Salad tươi') }}</h3></div>
 					</article>
 				</div>
 				<div class="col-12 col-md-6 col-lg-4">
 					<article class="home-menu-item">
-						<img src="{{ asset('yakiniku-king/hot-dish.jpg') }}" alt="{{ __('Món nóng tại Yakiniku King') }}" loading="lazy">
+						<a class="d-block" href="{{ route('menu.index') }}"><img src="{{ asset('yakiniku-king/hot-dish.jpg') }}" alt="{{ __('Món nóng tại Yakiniku King') }}" loading="lazy"></a>
 						<div class="home-menu-caption"><h3>{{ __('Món nóng') }}</h3></div>
 					</article>
 				</div>
 				<div class="col-12 col-md-6 col-lg-4">
 					<article class="home-menu-item">
-						<img src="{{ asset('yakiniku-king/pasta-rice.jpg') }}" alt="{{ __('Món cơm và mì') }}" loading="lazy">
+						<a class="d-block" href="{{ route('menu.index') }}"><img src="{{ asset('yakiniku-king/pasta-rice.jpg') }}" alt="{{ __('Món cơm và mì') }}" loading="lazy"></a>
 						<div class="home-menu-caption"><h3>{{ __('Món cơm và mì') }}</h3></div>
 					</article>
 				</div>

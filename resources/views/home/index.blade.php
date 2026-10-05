@@ -315,7 +315,7 @@
 		<div class="carousel-inner">
 			@forelse ($banners as $banner)
 				<div class="carousel-item {{ $loop->first ? 'active' : '' }}">
-					@if ($banner->type === 'image' && $banner->image)
+					@if ($banner->type === \App\Enums\BannerType::Image->value && $banner->image)
 						<img class="home-hero-media" src="{{ asset('storage/' . $banner->image) }}" alt="{{ localized_text($banner, 'title') ?: 'Yakiniku King' }}">
 					@elseif ($banner->video_embed_url)
 						<iframe

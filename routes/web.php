@@ -19,13 +19,11 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LeadController as FrontendLeadController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\SecretController;
-use Illuminate\Http\Request;
+use App\Http\Requests\LocaleRequest;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/locale', function (Request $request) {
-    $validated = $request->validate([
-        'locale' => ['required', 'in:vi,en'],
-    ]);
+Route::post('/locale', function (LocaleRequest $request) {
+    $validated = $request->validated();
 
     $request->session()->put('locale', $validated['locale']);
 

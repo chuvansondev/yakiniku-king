@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\AdminResourceService;
+use App\Http\Requests\Admin\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -15,14 +18,11 @@ class AuthController extends Controller
         return view('admin.auth.login');
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request, AdminResourceService $resources)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        $credentials = $request->validated();
 
-        $user = User::where('email', $request->email)->first();
+        $user = $resources->firstWhere(User::class, 'email', $request->email);
 
         if ($user && $user->password === $request->password) {
             $user->password = Hash::make($request->password);
@@ -40,9 +40,9 @@ class AuthController extends Controller
             return redirect()->intended('/admin');
         }
 
-        return back()->withErrors([
+        throw ValidationException::withMessages([
             'email' => 'Email hoặc mật khẩu không chính xác.',
-        ])->onlyInput('email');
+        ]);
     }
 
     public function logout(Request $request)

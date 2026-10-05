@@ -89,8 +89,8 @@
 
                 <form class="d-flex align-items-center gap-1 ms-lg-3 pb-3 pb-lg-0" method="POST" action="{{ route('locale.update') }}" aria-label="{{ __('Chọn ngôn ngữ') }}">
                     @csrf
-                    <button class="btn btn-sm {{ app()->getLocale() === 'vi' ? 'btn-danger' : 'btn-outline-secondary' }}" type="submit" name="locale" value="vi" lang="vi" aria-pressed="{{ app()->getLocale() === 'vi' ? 'true' : 'false' }}">VI</button>
-                    <button class="btn btn-sm {{ app()->getLocale() === 'en' ? 'btn-danger' : 'btn-outline-secondary' }}" type="submit" name="locale" value="en" lang="en" aria-pressed="{{ app()->getLocale() === 'en' ? 'true' : 'false' }}">EN</button>
+                    <button class="btn btn-sm {{ app()->getLocale() === \App\Enums\AppLocale::Vietnamese->value ? 'btn-danger' : 'btn-outline-secondary' }}" type="submit" name="locale" value="{{ \App\Enums\AppLocale::Vietnamese->value }}" lang="{{ \App\Enums\AppLocale::Vietnamese->value }}" aria-pressed="{{ app()->getLocale() === \App\Enums\AppLocale::Vietnamese->value ? 'true' : 'false' }}">VI</button>
+                    <button class="btn btn-sm {{ app()->getLocale() === \App\Enums\AppLocale::English->value ? 'btn-danger' : 'btn-outline-secondary' }}" type="submit" name="locale" value="{{ \App\Enums\AppLocale::English->value }}" lang="{{ \App\Enums\AppLocale::English->value }}" aria-pressed="{{ app()->getLocale() === \App\Enums\AppLocale::English->value ? 'true' : 'false' }}">EN</button>
                 </form>
             </div>
 

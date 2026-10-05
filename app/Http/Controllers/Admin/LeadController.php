@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Lead;
-use Illuminate\Http\Request;
+use App\Services\AdminResourceService;
+use App\Http\Requests\Admin\LeadRequest as LeadFormRequest;
 
 class LeadController extends Controller
 {
-    public function index()
+    public function index(AdminResourceService $resources)
     {
-        $leads = Lead::orderByDesc('id')->get();
+        $leads = $resources->all(Lead::class, orderBy: [['id', 'desc']]);
 
         return view('admin.menu.leads.index', compact('leads'));
     }
@@ -20,21 +21,11 @@ class LeadController extends Controller
         return view('admin.menu.leads.create');
     }
 
-    public function store(Request $request)
+    public function store(LeadFormRequest $request, AdminResourceService $resources)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
+        $validated = $request->validated();
 
-            'phone' => 'nullable|string|max:30',
-
-            'email' => 'nullable|email|max:255',
-
-            'message' => 'nullable|string',
-
-            'status' => 'required|in:new,read,contacted',
-        ]);
-
-        Lead::create($validated);
+        $resources->create(Lead::class, $validated);
 
         return redirect()
             ->route('admin.menu.leads.index')
@@ -54,30 +45,20 @@ class LeadController extends Controller
         return view('admin.menu.leads.edit', compact('lead'));
     }
 
-    public function update(Request $request, Lead $lead)
+    public function update(LeadFormRequest $request, Lead $lead, AdminResourceService $resources)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
+        $validated = $request->validated();
 
-            'phone' => 'nullable|string|max:30',
-
-            'email' => 'nullable|email|max:255',
-
-            'message' => 'nullable|string',
-
-            'status' => 'required|in:new,read,contacted',
-        ]);
-
-        $lead->update($validated);
+        $resources->update($lead, $validated);
 
         return redirect()
             ->route('admin.menu.leads.index')
             ->with('success', 'Cập nhật lead thành công.');
     }
 
-    public function destroy(Lead $lead)
+    public function destroy(Lead $lead, AdminResourceService $resources)
     {
-        $lead->delete();
+        $resources->delete($lead);
 
         return redirect()
             ->route('admin.menu.leads.index')

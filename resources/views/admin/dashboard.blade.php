@@ -551,13 +551,13 @@
                                         <td>{{ $booking->booking_date?->format('d/m') }} · {{ $booking->booking_time }}</td>
                                         <td>{{ $booking->number_of_guests }} khách</td>
                                         <td>
-                                            @if ($booking->status === 'pending')
+                                            @if ($booking->status === \App\Enums\BookingStatus::Pending->value)
                                                 <span class="dashboard-status dashboard-status-pending">Chờ xác nhận</span>
-                                            @elseif ($booking->status === 'confirmed')
+                                            @elseif ($booking->status === \App\Enums\BookingStatus::Confirmed->value)
                                                 <span class="dashboard-status dashboard-status-confirmed">Đã xác nhận</span>
-                                            @elseif ($booking->status === 'cancelled')
+                                            @elseif ($booking->status === \App\Enums\BookingStatus::Cancelled->value)
                                                 <span class="dashboard-status dashboard-status-cancelled">Đã hủy</span>
-                                            @elseif ($booking->status === 'completed')
+                                            @elseif ($booking->status === \App\Enums\BookingStatus::Completed->value)
                                                 <span class="dashboard-status dashboard-status-completed">Hoàn thành</span>
                                             @endif
                                         </td>

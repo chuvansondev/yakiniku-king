@@ -535,11 +535,11 @@
                                 <div class="small text-secondary">{{ __('Mã đặt bàn') }}</div>
                                 <strong class="fs-5">{{ $booking->booking_code }}</strong>
                             </div>
-                            @if ($booking->status === 'confirmed')
+                            @if ($booking->status === \App\Enums\BookingStatus::Confirmed->value)
                                 <span class="badge rounded-pill text-bg-success px-3 py-2">{{ __('Đã xác nhận') }}</span>
-                            @elseif ($booking->status === 'pending')
+                            @elseif ($booking->status === \App\Enums\BookingStatus::Pending->value)
                                 <span class="badge rounded-pill text-bg-warning px-3 py-2">{{ __('Chưa xác nhận') }}</span>
-                            @elseif ($booking->status === 'cancelled')
+                            @elseif ($booking->status === \App\Enums\BookingStatus::Cancelled->value)
                                 <span class="badge rounded-pill text-bg-secondary px-3 py-2">{{ __('Đã hủy') }}</span>
                             @else
                                 <span class="badge rounded-pill text-bg-primary px-3 py-2">{{ __('Hoàn thành') }}</span>
@@ -602,7 +602,7 @@
 
                     <div class="modal-footer justify-content-between">
                         <a class="btn btn-outline-dark" href="{{ route('home') }}">{{ __('Trở về trang chủ') }}</a>
-                        @if (in_array($booking->status, ['pending', 'confirmed'], true))
+                        @if (in_array($booking->status, [\App\Enums\BookingStatus::Pending->value, \App\Enums\BookingStatus::Confirmed->value], true))
                             <form method="POST" action="{{ route('booking.cancel') }}" data-confirm="{{ __('Bạn chắc chắn muốn hủy đặt bàn này?') }}" onsubmit="return confirm(this.dataset.confirm)">
                                 @csrf
                                 <button class="btn btn-outline-danger" type="submit">{{ __('Hủy đặt bàn') }}</button>

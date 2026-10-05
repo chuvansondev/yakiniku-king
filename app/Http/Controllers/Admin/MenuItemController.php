@@ -5,27 +5,21 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\MenuCategory;
 use App\Models\MenuItem;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use App\Services\AdminResourceService;
+use App\Http\Requests\Admin\MenuItemRequest;
 
 class MenuItemController extends Controller
 {
-    public function index()
+    public function index(AdminResourceService $resources)
     {
-        $items = MenuItem::with('category')
-            ->orderBy('sort_order')
-            ->orderBy('id')
-            ->get();
+        $items = $resources->all(MenuItem::class, with: ['category'], orderBy: [['sort_order', 'asc'], ['id', 'asc']]);
 
         return view('admin.menu.items.index', compact('items'));
     }
 
-    public function create()
+    public function create(AdminResourceService $resources)
     {
-        $categories = MenuCategory::where('status', true)
-            ->orderBy('sort_order')
-            ->get();
+        $categories = $resources->all(MenuCategory::class, orderBy: [['sort_order', 'asc']], filters: ['status' => true]);
 
         return view(
             'admin.menu.items.create',
@@ -33,45 +27,30 @@ class MenuItemController extends Controller
         );
     }
 
-    public function store(Request $request)
+    public function store(MenuItemRequest $request, AdminResourceService $resources)
     {
-        $validated = $request->validate([
-            'category_id' => ['required', 'exists:menu_categories,id'],
-            'name' => ['required', 'string', 'max:255'],
-            'name_en' => ['nullable', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', 'unique:menu_items,slug'],
-            'description' => ['nullable', 'string'],
-            'description_en' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-            'remove_image' => ['nullable', 'boolean'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-            'is_must_try' => ['nullable', 'boolean'],
-            'status' => ['nullable', 'boolean'],
-        ]);
+        $validated = $request->validated();
 
         if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
+            $validated['slug'] = $resources->slug($validated['name']);
         }
 
-        $validated['image'] = $request->file('image')?->store('menu/items', 'public');
+        $validated['image'] = $resources->storeImage($request->file('image'), 'menu/items');
 
         $validated['sort_order'] = $validated['sort_order'] ?? 0;
         $validated['is_must_try'] = $request->boolean('is_must_try');
         $validated['status'] = $request->boolean('status');
 
-        MenuItem::create($validated);
+        $resources->create(MenuItem::class, $validated);
 
         return redirect()
             ->route('admin.menu.items.index')
             ->with('success', 'Thêm món ăn thành công.');
     }
 
-    public function edit(MenuItem $item)
+    public function edit(MenuItem $item, AdminResourceService $resources)
     {
-        $categories = MenuCategory::where('status', true)
-            ->orderBy('sort_order')
-            ->get();
+        $categories = $resources->all(MenuCategory::class, orderBy: [['sort_order', 'asc']], filters: ['status' => true]);
 
         return view(
             'admin.menu.items.edit',
@@ -79,45 +58,18 @@ class MenuItemController extends Controller
         );
     }
 
-    public function update(Request $request, MenuItem $item)
+    public function update(MenuItemRequest $request, MenuItem $item, AdminResourceService $resources)
     {
-        $validated = $request->validate([
-            'category_id' => ['required', 'exists:menu_categories,id'],
-            'name' => ['required', 'string', 'max:255'],
-            'name_en' => ['nullable', 'string', 'max:255'],
-            'slug' => [
-                'nullable',
-                'string',
-                'max:255',
-                'unique:menu_items,slug,'.$item->id,
-            ],
-            'description' => ['nullable', 'string'],
-            'description_en' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-            'is_must_try' => ['nullable', 'boolean'],
-            'status' => ['nullable', 'boolean'],
-        ]);
+        $validated = $request->validated();
 
         if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
+            $validated['slug'] = $resources->slug($validated['name']);
         }
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('menu/items', 'public');
-
-            if ($item->image) {
-                Storage::disk('public')->delete($item->image);
-            }
-
-            $validated['image'] = $imagePath;
+            $validated['image'] = $resources->replaceImage($request->file('image'), false, $item->image, 'menu/items');
         } elseif ($request->boolean('remove_image')) {
-            if ($item->image) {
-                Storage::disk('public')->delete($item->image);
-            }
-
-            $validated['image'] = null;
+            $validated['image'] = $resources->replaceImage(null, true, $item->image, 'menu/items');
         } else {
             unset($validated['image']);
         }
@@ -127,16 +79,16 @@ class MenuItemController extends Controller
         $validated['is_must_try'] = $request->boolean('is_must_try');
         $validated['status'] = $request->boolean('status');
 
-        $item->update($validated);
+        $resources->update($item, $validated);
 
         return redirect()
             ->route('admin.menu.items.index')
             ->with('success', 'Cập nhật món ăn thành công.');
     }
 
-    public function destroy(MenuItem $item)
+    public function destroy(MenuItem $item, AdminResourceService $resources)
     {
-        $item->delete();
+        $resources->delete($item);
 
         return redirect()
             ->route('admin.menu.items.index')

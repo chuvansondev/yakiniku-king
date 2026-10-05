@@ -148,34 +148,34 @@
         @php
             $currentStatus = old(
                 'status',
-                $booking->status ?? 'pending'
+                $booking->status ?? \App\Enums\BookingStatus::Pending->value
             );
         @endphp
 
         <option
             value="pending"
-            {{ $currentStatus === 'pending' ? 'selected' : '' }}
+            {{ $currentStatus === \App\Enums\BookingStatus::Pending->value ? 'selected' : '' }}
         >
             Chờ xác nhận
         </option>
 
         <option
             value="confirmed"
-            {{ $currentStatus === 'confirmed' ? 'selected' : '' }}
+            {{ $currentStatus === \App\Enums\BookingStatus::Confirmed->value ? 'selected' : '' }}
         >
             Đã xác nhận
         </option>
 
         <option
             value="cancelled"
-            {{ $currentStatus === 'cancelled' ? 'selected' : '' }}
+            {{ $currentStatus === \App\Enums\BookingStatus::Cancelled->value ? 'selected' : '' }}
         >
             Đã hủy
         </option>
 
         <option
             value="completed"
-            {{ $currentStatus === 'completed' ? 'selected' : '' }}
+            {{ $currentStatus === \App\Enums\BookingStatus::Completed->value ? 'selected' : '' }}
         >
             Đã hoàn thành
         </option>

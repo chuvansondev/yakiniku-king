@@ -52,7 +52,7 @@
     @php
         $currentStatus = old(
             'status',
-            $lead->status ?? 'new'
+            $lead->status ?? \App\Enums\LeadStatus::New->value
         );
     @endphp
 
@@ -64,21 +64,21 @@
 
         <option
             value="new"
-            {{ $currentStatus === 'new' ? 'selected' : '' }}
+            {{ $currentStatus === \App\Enums\LeadStatus::New->value ? 'selected' : '' }}
         >
             Mới
         </option>
 
         <option
             value="read"
-            {{ $currentStatus === 'read' ? 'selected' : '' }}
+            {{ $currentStatus === \App\Enums\LeadStatus::Read->value ? 'selected' : '' }}
         >
             Đã xem
         </option>
 
         <option
             value="contacted"
-            {{ $currentStatus === 'contacted' ? 'selected' : '' }}
+            {{ $currentStatus === \App\Enums\LeadStatus::Contacted->value ? 'selected' : '' }}
         >
             Đã liên hệ
         </option>

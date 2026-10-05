@@ -38,14 +38,14 @@
 
         <option
             value="image"
-            {{ old('type', $banner->type ?? 'image') === 'image' ? 'selected' : '' }}
+            {{ old('type', $banner->type ?? \App\Enums\BannerType::Image->value) === \App\Enums\BannerType::Image->value ? 'selected' : '' }}
         >
             Hình ảnh
         </option>
 
         <option
             value="video"
-            {{ old('type', $banner->type ?? '') === 'video' ? 'selected' : '' }}
+            {{ old('type', $banner->type ?? '') === \App\Enums\BannerType::Video->value ? 'selected' : '' }}
         >
             Video
         </option>
@@ -188,7 +188,7 @@
         const videoField = document.getElementById('video-field');
 
 
-        if (type === 'image') {
+        if (type === @json(\App\Enums\BannerType::Image->value)) {
 
             imageField.style.display = 'block';
 

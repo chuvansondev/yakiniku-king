@@ -2,26 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Lead;
+use App\Services\LeadService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use App\Http\Requests\LeadRequest;
 use Illuminate\Validation\Rule;
 
 class LeadController extends Controller
 {
-    public function store(Request $request): JsonResponse
+    public function store(LeadRequest $request, LeadService $leadService): JsonResponse
     {
-        $validated = $request->validate([
-            'salutation' => ['required', Rule::in(['Ông', 'Bà'])],
-            'name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:30'],
-            'email' => ['required', 'email', 'max:255'],
-        ]);
+        $validated = $request->validated();
 
-        $lead = Lead::create([
-            ...$validated,
-            'status' => 'new',
-        ]);
+        $lead = $leadService->register($validated);
 
         return response()->json([
             'message' => __('Đăng ký nhận ưu đãi thành công.'),

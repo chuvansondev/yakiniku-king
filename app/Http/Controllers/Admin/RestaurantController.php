@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use App\Services\AdminResourceService;
+use App\Http\Requests\Admin\RestaurantRequest;
 
 class RestaurantController extends Controller
 {
-    public function index()
+    public function index(AdminResourceService $resources)
     {
-        $restaurants = Restaurant::orderBy('name')->get();
+        $restaurants = $resources->all(Restaurant::class, orderBy: [['name', 'asc']]);
 
         return view('admin.menu.restaurants.index', compact('restaurants'));
     }
@@ -21,38 +21,15 @@ class RestaurantController extends Controller
         return view('admin.menu.restaurants.create');
     }
 
-    public function store(Request $request)
+    public function store(RestaurantRequest $request, AdminResourceService $resources)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'name_en' => 'nullable|string|max:255',
-            'address' => 'required|string',
-            'address_en' => 'nullable|string|max:255',
+        $validated = $request->validated();
 
-            'phone' => 'nullable|string|max:30',
-
-            'latitude' => 'nullable|numeric|between:-90,90',
-            'longitude' => 'nullable|numeric|between:-180,180',
-
-            'google_map_url' => 'nullable|url|max:255',
-
-            'opening_time' => 'nullable|date_format:H:i',
-            'closing_time' => 'nullable|date_format:H:i',
-
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-
-            'status' => 'nullable|boolean',
-        ]);
-
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request
-                ->file('image')
-                ->store('restaurants', 'public');
-        }
+        $validated['image'] = $resources->storeImage($request->file('image'), 'restaurants');
 
         $validated['status'] = $request->boolean('status');
 
-        Restaurant::create($validated);
+        $resources->create(Restaurant::class, $validated);
 
         return redirect()
             ->route('admin.menu.restaurants.index')
@@ -72,64 +49,28 @@ class RestaurantController extends Controller
         return view('admin.menu.restaurants.edit', compact('restaurant'));
     }
 
-    public function update(Request $request, Restaurant $restaurant)
+    public function update(RestaurantRequest $request, Restaurant $restaurant, AdminResourceService $resources)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'name_en' => 'nullable|string|max:255',
-            'address' => 'required|string',
-            'address_en' => 'nullable|string|max:255',
+        $validated = $request->validated();
 
-            'phone' => 'nullable|string|max:30',
-
-            'latitude' => 'nullable|numeric|between:-90,90',
-            'longitude' => 'nullable|numeric|between:-180,180',
-
-            'google_map_url' => 'nullable|url|max:255',
-
-            'opening_time' => 'nullable|date_format:H:i',
-            'closing_time' => 'nullable|date_format:H:i',
-
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'remove_image' => 'nullable|boolean',
-
-            'status' => 'nullable|boolean',
-        ]);
-
-        if ($request->hasFile('image')) {
-
-            if ($restaurant->image) {
-                Storage::disk('public')->delete($restaurant->image);
-            }
-
-            $validated['image'] = $request
-                ->file('image')
-                ->store('restaurants', 'public');
-        } elseif ($request->boolean('remove_image')) {
-            if ($restaurant->image) {
-                Storage::disk('public')->delete($restaurant->image);
-            }
-
-            $validated['image'] = null;
+        if ($request->hasFile('image') || $request->boolean('remove_image')) {
+            $validated['image'] = $resources->replaceImage($request->file('image'), $request->boolean('remove_image'), $restaurant->image, 'restaurants');
         }
 
         unset($validated['remove_image']);
         $validated['status'] = $request->boolean('status');
 
-        $restaurant->update($validated);
+        $resources->update($restaurant, $validated);
 
         return redirect()
             ->route('admin.menu.restaurants.index')
             ->with('success', 'Cập nhật nhà hàng thành công.');
     }
 
-    public function destroy(Restaurant $restaurant)
+    public function destroy(Restaurant $restaurant, AdminResourceService $resources)
     {
-        if ($restaurant->image) {
-            Storage::disk('public')->delete($restaurant->image);
-        }
-
-        $restaurant->delete();
+        $resources->deleteImage($restaurant->image);
+        $resources->delete($restaurant);
 
         return redirect()
             ->route('admin.menu.restaurants.index')

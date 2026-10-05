@@ -518,7 +518,7 @@
                                                             <p class="small text-muted mb-2">{{ localized_text($menuItem, 'description') }}</p>
                                                         @endif
                                                         <p class="small text-muted mb-0">
-                                                            {{ $menuItem->pivot->quantity }} {{ app()->getLocale() === 'en' && $menuItem->pivot->quantity !== 1 ? __('các phần') : __('phần') }} × {{ localized_price($menuItem->price) }}
+                                                            {{ $menuItem->pivot->quantity }} {{ app()->getLocale() === \App\Enums\AppLocale::English->value && $menuItem->pivot->quantity !== 1 ? __('các phần') : __('phần') }} × {{ localized_price($menuItem->price) }}
                                                         </p>
                                                     </div>
                                                     <strong class="text-nowrap">

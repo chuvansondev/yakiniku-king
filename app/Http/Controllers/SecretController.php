@@ -2,35 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Recipe;
-use App\Models\Tip;
+use App\Enums\ArticleType;
+use App\Services\SecretService;
 use Illuminate\View\View;
 
 class SecretController extends Controller
 {
-    public function recipes(): View
+    public function recipes(SecretService $secretService): View
     {
         return view('fontend.secret.index', [
             'pageTitle' => __('Công thức'),
             'pageDescription' => __('Khám phá những công thức ngon để thưởng thức cùng thịt nướng.'),
-            'articles' => $this->published(Recipe::query())->get(),
-            'articleType' => 'recipe',
+            'articles' => $secretService->recipes(),
+            'articleType' => ArticleType::Recipe,
         ]);
     }
 
-    public function tips(): View
+    public function tips(SecretService $secretService): View
     {
         return view('fontend.secret.index', [
             'pageTitle' => __('Bí kíp ăn ngon'),
             'pageDescription' => __('Bí quyết thưởng thức thịt nướng trọn vị hơn.'),
-            'articles' => $this->published(Tip::query())->get(),
-            'articleType' => 'tip',
+            'articles' => $secretService->tips(),
+            'articleType' => ArticleType::Tip,
         ]);
     }
 
-    public function recipe(Recipe $recipe): View
+    public function recipe(string $recipe, SecretService $secretService): View
     {
-        abort_if(! $this->isPublished($recipe), 404);
+        $recipe = $secretService->recipe($recipe);
 
         return view('fontend.secret.show', [
             'article' => $recipe,
@@ -38,9 +38,9 @@ class SecretController extends Controller
         ]);
     }
 
-    public function tip(Tip $tip): View
+    public function tip(string $tip, SecretService $secretService): View
     {
-        abort_if(! $this->isPublished($tip), 404);
+        $tip = $secretService->tip($tip);
 
         return view('fontend.secret.show', [
             'article' => $tip,
@@ -48,21 +48,4 @@ class SecretController extends Controller
         ]);
     }
 
-    private function published($query)
-    {
-        return $query
-            ->where('status', true)
-            ->where(function ($query): void {
-                $query->whereNull('published_at')
-                    ->orWhere('published_at', '<=', now());
-            })
-            ->latest('published_at')
-            ->latest('id');
-    }
-
-    private function isPublished(Recipe|Tip $article): bool
-    {
-        return $article->status
-            && (! $article->published_at || $article->published_at->isPast());
-    }
 }

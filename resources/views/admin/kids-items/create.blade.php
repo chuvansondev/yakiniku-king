@@ -36,7 +36,7 @@
             <label for="type">Loại nội dung</label>
             <select id="type" name="type" required style="display:block; width:100%; padding:10px;">
                 @foreach ($typeLabels as $value => $label)
-                    <option value="{{ $value }}" @selected(old('type', 'food') === $value)>{{ $label }}</option>
+                    <option value="{{ $value }}" @selected(old('type', \App\Enums\KidsItemType::Food->value) === $value)>{{ $label }}</option>
                 @endforeach
             </select>
         </div>

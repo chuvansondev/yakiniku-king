@@ -5,22 +5,18 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Combo;
 use App\Models\MenuItem;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use App\Services\AdminResourceService;
+use App\Http\Requests\Admin\ComboRequest;
+use App\Services\ComboService;
 
 class ComboController extends Controller
 {
     /**
      * Danh sách Combo
      */
-    public function index()
+    public function index(AdminResourceService $resources)
     {
-        $combos = Combo::with('menuItems')
-            ->orderBy('sort_order')
-            ->orderBy('id')
-            ->get();
+        $combos = $resources->all(Combo::class, with: ['menuItems'], orderBy: [['sort_order', 'asc'], ['id', 'asc']]);
 
         return view(
             'admin.menu.combos.index',
@@ -31,11 +27,9 @@ class ComboController extends Controller
     /**
      * Form thêm Combo
      */
-    public function create()
+    public function create(AdminResourceService $resources)
     {
-        $menuItems = MenuItem::where('status', true)
-            ->orderBy('name')
-            ->get();
+        $menuItems = $resources->all(MenuItem::class, orderBy: [['name', 'asc']], filters: ['status' => true]);
 
         return view(
             'admin.menu.combos.create',
@@ -46,133 +40,11 @@ class ComboController extends Controller
     /**
      * Lưu Combo
      */
-    public function store(Request $request)
+    public function store(ComboRequest $request, ComboService $comboService)
     {
-        $validated = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-            'name_en' => ['nullable', 'string', 'max:255'],
+        $validated = $request->validated();
 
-            'slug' => [
-                'nullable',
-                'string',
-                'max:255',
-                'unique:combos,slug',
-            ],
-
-            'description' => [
-                'nullable',
-                'string',
-            ],
-            'description_en' => ['nullable', 'string'],
-
-            'image' => [
-                'nullable',
-                'image',
-                'mimes:jpg,jpeg,png,webp',
-                'max:5120',
-            ],
-            'remove_image' => ['nullable', 'boolean'],
-
-            'price' => [
-                'required',
-                'numeric',
-                'min:0',
-            ],
-
-            'original_price' => [
-                'nullable',
-                'numeric',
-                'min:0',
-            ],
-
-            'start_date' => [
-                'nullable',
-                'date',
-            ],
-
-            'end_date' => [
-                'nullable',
-                'date',
-                'after_or_equal:start_date',
-            ],
-
-            'sort_order' => [
-                'nullable',
-                'integer',
-                'min:0',
-            ],
-
-            'status' => [
-                'nullable',
-                'boolean',
-            ],
-
-            'items' => [
-                'nullable',
-                'array',
-            ],
-
-            'items.*.menu_item_id' => [
-                'required',
-                'exists:menu_items,id',
-            ],
-
-            'items.*.quantity' => [
-                'required',
-                'integer',
-                'min:1',
-            ],
-        ]);
-
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug(
-                $validated['name']
-            );
-        }
-
-        $validated['sort_order'] =
-            $validated['sort_order'] ?? 0;
-
-        $validated['status'] =
-            $request->boolean('status');
-
-        $validated['image'] = $request->file('image')?->store('menu/combos', 'public');
-
-        DB::transaction(function () use (
-            $validated,
-            $request
-        ) {
-
-            $combo = Combo::create([
-                'name' => $validated['name'],
-                'name_en' => $validated['name_en'] ?? null,
-                'slug' => $validated['slug'],
-                'description' => $validated['description'] ?? null,
-                'description_en' => $validated['description_en'] ?? null,
-                'image' => $validated['image'] ?? null,
-                'price' => $validated['price'],
-                'original_price' => $validated['original_price'] ?? null,
-                'start_date' => $validated['start_date'] ?? null,
-                'end_date' => $validated['end_date'] ?? null,
-                'status' => $request->boolean('status'),
-                'sort_order' => $validated['sort_order'],
-            ]);
-
-            $items = [];
-
-            foreach ($request->input('items', []) as $item) {
-
-                $items[$item['menu_item_id']] = [
-                    'quantity' => $item['quantity'],
-                ];
-            }
-
-            $combo->menuItems()->sync($items);
-        });
+        $comboService->create($validated, $request->file('image'), $request->boolean('status'));
 
         return redirect()
             ->route('admin.menu.combos.index')
@@ -185,11 +57,9 @@ class ComboController extends Controller
     /**
      * Form sửa Combo
      */
-    public function edit(Combo $combo)
+    public function edit(Combo $combo, AdminResourceService $resources)
     {
-        $menuItems = MenuItem::where('status', true)
-            ->orderBy('name')
-            ->get();
+        $menuItems = $resources->all(MenuItem::class, orderBy: [['name', 'asc']], filters: ['status' => true]);
 
         $combo->load('menuItems');
 
@@ -206,132 +76,13 @@ class ComboController extends Controller
      * Cập nhật Combo
      */
     public function update(
-        Request $request,
-        Combo $combo
+        ComboRequest $request,
+        Combo $combo,
+        ComboService $comboService,
     ) {
-        $validated = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-            'name_en' => ['nullable', 'string', 'max:255'],
+        $validated = $request->validated();
 
-            'slug' => [
-                'nullable',
-                'string',
-                'max:255',
-                'unique:combos,slug,'.$combo->id,
-            ],
-
-            'description' => [
-                'nullable',
-                'string',
-            ],
-            'description_en' => ['nullable', 'string'],
-
-            'image' => [
-                'nullable',
-                'image',
-                'mimes:jpg,jpeg,png,webp',
-                'max:5120',
-            ],
-
-            'price' => [
-                'required',
-                'numeric',
-                'min:0',
-            ],
-
-            'original_price' => [
-                'nullable',
-                'numeric',
-                'min:0',
-            ],
-
-            'start_date' => [
-                'nullable',
-                'date',
-            ],
-
-            'end_date' => [
-                'nullable',
-                'date',
-                'after_or_equal:start_date',
-            ],
-
-            'sort_order' => [
-                'nullable',
-                'integer',
-                'min:0',
-            ],
-
-            'status' => [
-                'nullable',
-                'boolean',
-            ],
-
-            'items' => [
-                'nullable',
-                'array',
-            ],
-
-            'items.*.menu_item_id' => [
-                'required',
-                'exists:menu_items,id',
-            ],
-
-            'items.*.quantity' => [
-                'required',
-                'integer',
-                'min:1',
-            ],
-        ]);
-
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug(
-                $validated['name']
-            );
-        }
-
-        $imagePath = $combo->image;
-        $oldImagePath = $combo->image;
-
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('menu/combos', 'public');
-        } elseif ($request->boolean('remove_image')) {
-            $imagePath = null;
-        }
-
-        $combo->update([
-            'name' => $validated['name'],
-            'name_en' => $validated['name_en'] ?? null,
-            'slug' => $validated['slug'],
-            'description' => $validated['description'] ?? null,
-            'description_en' => $validated['description_en'] ?? null,
-            'image' => $imagePath,
-            'price' => $validated['price'],
-            'original_price' => $validated['original_price'] ?? null,
-            'start_date' => $validated['start_date'] ?? null,
-            'end_date' => $validated['end_date'] ?? null,
-            'status' => $request->boolean('status'),
-            'sort_order' => $validated['sort_order'] ?? 0,
-        ]);
-
-        $items = [];
-
-        foreach ($request->input('items', []) as $item) {
-
-            $items[$item['menu_item_id']] = [
-                'quantity' => $item['quantity'],
-            ];
-        }
-
-        $combo->menuItems()->sync($items);
-
-        if (($request->hasFile('image') || $request->boolean('remove_image')) && $oldImagePath) {
-            Storage::disk('public')->delete($oldImagePath);
-        }
+        $comboService->update($combo, $validated, $request->file('image'), $request->boolean('remove_image'), $request->boolean('status'));
 
         return redirect()
             ->route('admin.menu.combos.index')
@@ -344,9 +95,9 @@ class ComboController extends Controller
     /**
      * Xóa Combo
      */
-    public function destroy(Combo $combo)
+    public function destroy(Combo $combo, ComboService $comboService)
     {
-        $combo->delete();
+        $comboService->delete($combo);
 
         return redirect()
             ->route('admin.menu.combos.index')

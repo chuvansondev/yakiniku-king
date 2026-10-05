@@ -4,20 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\MenuCategory;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use App\Services\AdminResourceService;
+use App\Http\Requests\Admin\MenuCategoryRequest;
 
 class MenuCategoryController extends Controller
 {
     /**
      * Hiển thị danh sách category
      */
-    public function index()
+    public function index(AdminResourceService $resources)
     {
-        $categories = MenuCategory::orderBy('sort_order')
-            ->orderBy('id')
-            ->get();
+        $categories = $resources->all(MenuCategory::class, orderBy: [['sort_order', 'asc'], ['id', 'asc']]);
 
         return view('admin.menu.categories.index', compact('categories'));
     }
@@ -33,30 +30,20 @@ class MenuCategoryController extends Controller
     /**
      * Lưu category mới
      */
-    public function store(Request $request)
+    public function store(MenuCategoryRequest $request, AdminResourceService $resources)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'name_en' => ['nullable', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', 'unique:menu_categories,slug'],
-            'description' => ['nullable', 'string'],
-            'description_en' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-            'remove_image' => ['nullable', 'boolean'],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-            'status' => ['nullable', 'boolean'],
-        ]);
+        $validated = $request->validated();
 
         if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
+            $validated['slug'] = $resources->slug($validated['name']);
         }
 
-        $validated['image'] = $request->file('image')?->store('menu/categories', 'public');
+        $validated['image'] = $resources->storeImage($request->file('image'), 'menu/categories');
 
         $validated['sort_order'] = $validated['sort_order'] ?? 0;
         $validated['status'] = $request->boolean('status');
 
-        MenuCategory::create($validated);
+        $resources->create(MenuCategory::class, $validated);
 
         return redirect()
             ->route('admin.menu.categories.index')
@@ -77,42 +64,18 @@ class MenuCategoryController extends Controller
     /**
      * Cập nhật category
      */
-    public function update(Request $request, MenuCategory $category)
+    public function update(MenuCategoryRequest $request, MenuCategory $category, AdminResourceService $resources)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'name_en' => ['nullable', 'string', 'max:255'],
-            'slug' => [
-                'nullable',
-                'string',
-                'max:255',
-                'unique:menu_categories,slug,'.$category->id,
-            ],
-            'description' => ['nullable', 'string'],
-            'description_en' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-            'status' => ['nullable', 'boolean'],
-        ]);
+        $validated = $request->validated();
 
         if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
+            $validated['slug'] = $resources->slug($validated['name']);
         }
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('menu/categories', 'public');
-
-            if ($category->image) {
-                Storage::disk('public')->delete($category->image);
-            }
-
-            $validated['image'] = $imagePath;
+            $validated['image'] = $resources->replaceImage($request->file('image'), false, $category->image, 'menu/categories');
         } elseif ($request->boolean('remove_image')) {
-            if ($category->image) {
-                Storage::disk('public')->delete($category->image);
-            }
-
-            $validated['image'] = null;
+            $validated['image'] = $resources->replaceImage(null, true, $category->image, 'menu/categories');
         } else {
             unset($validated['image']);
         }
@@ -121,7 +84,7 @@ class MenuCategoryController extends Controller
         $validated['sort_order'] = $validated['sort_order'] ?? 0;
         $validated['status'] = $request->boolean('status');
 
-        $category->update($validated);
+        $resources->update($category, $validated);
 
         return redirect()
             ->route('admin.menu.categories.index')
@@ -131,9 +94,9 @@ class MenuCategoryController extends Controller
     /**
      * Xóa category
      */
-    public function destroy(MenuCategory $category)
+    public function destroy(MenuCategory $category, AdminResourceService $resources)
     {
-        $category->delete();
+        $resources->delete($category);
 
         return redirect()
             ->route('admin.menu.categories.index')

@@ -4,15 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tip;
-use Illuminate\Http\Request;
+use App\Services\AdminResourceService;
+use App\Http\Requests\Admin\TipRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class TipController extends Controller
 {
-    public function index()
+    public function index(AdminResourceService $resources)
     {
-        $tips = Tip::orderByDesc('id')->get();
+        $tips = $resources->all(Tip::class, orderBy: [['id', 'desc']]);
 
         return view(
             'admin.menu.tips.index',
@@ -25,52 +26,9 @@ class TipController extends Controller
         return view('admin.menu.tips.create');
     }
 
-    public function store(Request $request)
+    public function store(TipRequest $request)
     {
-        $validated = $request->validate([
-            'title' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-            'title_en' => ['nullable', 'string', 'max:255'],
-
-            'slug' => [
-                'nullable',
-                'string',
-                'max:255',
-                'unique:tips,slug',
-            ],
-
-            'short_description' => [
-                'nullable',
-                'string',
-            ],
-            'short_description_en' => ['nullable', 'string', 'max:255'],
-
-            'content' => [
-                'nullable',
-                'string',
-            ],
-            'content_en' => ['nullable', 'string'],
-
-            'image' => [
-                'nullable',
-                'image',
-                'mimes:jpg,jpeg,png,webp',
-                'max:5120',
-            ],
-
-            'published_at' => [
-                'nullable',
-                'date',
-            ],
-
-            'status' => [
-                'nullable',
-                'boolean',
-            ],
-        ]);
+        $validated = $request->validated();
 
         /*
         |--------------------------------------------------------------------------
@@ -134,54 +92,10 @@ class TipController extends Controller
     }
 
     public function update(
-        Request $request,
+        TipRequest $request,
         Tip $tip
     ) {
-        $validated = $request->validate([
-            'title' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-            'title_en' => ['nullable', 'string', 'max:255'],
-
-            'slug' => [
-                'nullable',
-                'string',
-                'max:255',
-                'unique:tips,slug,'.$tip->id,
-            ],
-
-            'short_description' => [
-                'nullable',
-                'string',
-            ],
-            'short_description_en' => ['nullable', 'string', 'max:255'],
-
-            'content' => [
-                'nullable',
-                'string',
-            ],
-            'content_en' => ['nullable', 'string'],
-
-            'image' => [
-                'nullable',
-                'image',
-                'mimes:jpg,jpeg,png,webp',
-                'max:5120',
-            ],
-            'remove_image' => ['nullable', 'boolean'],
-
-            'published_at' => [
-                'nullable',
-                'date',
-            ],
-
-            'status' => [
-                'nullable',
-                'boolean',
-            ],
-        ]);
+        $validated = $request->validated();
 
         if (empty($validated['slug'])) {
             $validated['slug'] = Str::slug(

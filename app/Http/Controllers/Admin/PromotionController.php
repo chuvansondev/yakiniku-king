@@ -4,15 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Promotion;
-use Illuminate\Http\Request;
+use App\Services\AdminResourceService;
+use App\Http\Requests\Admin\PromotionRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class PromotionController extends Controller
 {
-    public function index()
+    public function index(AdminResourceService $resources)
     {
-        $promotions = Promotion::orderByDesc('id')->get();
+        $promotions = $resources->all(Promotion::class, orderBy: [['id', 'desc']]);
 
         return view(
             'admin.menu.promotions.index',
@@ -25,58 +26,9 @@ class PromotionController extends Controller
         return view('admin.menu.promotions.create');
     }
 
-    public function store(Request $request)
+    public function store(PromotionRequest $request)
     {
-        $validated = $request->validate([
-            'title' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-            'title_en' => ['nullable', 'string', 'max:255'],
-
-            'slug' => [
-                'nullable',
-                'string',
-                'max:255',
-                'unique:promotions,slug',
-            ],
-
-            'short_description' => [
-                'nullable',
-                'string',
-            ],
-            'short_description_en' => ['nullable', 'string', 'max:255'],
-
-            'description' => [
-                'nullable',
-                'string',
-            ],
-            'description_en' => ['nullable', 'string'],
-
-            'image' => [
-                'nullable',
-                'image',
-                'mimes:jpg,jpeg,png,webp',
-                'max:5120',
-            ],
-
-            'start_date' => [
-                'nullable',
-                'date',
-            ],
-
-            'end_date' => [
-                'nullable',
-                'date',
-                'after_or_equal:start_date',
-            ],
-
-            'status' => [
-                'nullable',
-                'boolean',
-            ],
-        ]);
+        $validated = $request->validated();
 
         /*
         |--------------------------------------------------------------------------
@@ -142,60 +94,10 @@ class PromotionController extends Controller
     }
 
     public function update(
-        Request $request,
+        PromotionRequest $request,
         Promotion $promotion
     ) {
-        $validated = $request->validate([
-            'title' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-            'title_en' => ['nullable', 'string', 'max:255'],
-
-            'slug' => [
-                'nullable',
-                'string',
-                'max:255',
-                'unique:promotions,slug,'.$promotion->id,
-            ],
-
-            'short_description' => [
-                'nullable',
-                'string',
-            ],
-            'short_description_en' => ['nullable', 'string', 'max:255'],
-
-            'description' => [
-                'nullable',
-                'string',
-            ],
-            'description_en' => ['nullable', 'string'],
-
-            'image' => [
-                'nullable',
-                'image',
-                'mimes:jpg,jpeg,png,webp',
-                'max:5120',
-            ],
-            'remove_image' => ['nullable', 'boolean'],
-
-            'start_date' => [
-                'nullable',
-                'date',
-            ],
-
-            'end_date' => [
-                'nullable',
-                'date',
-                'after_or_equal:start_date',
-            ],
-
-            'status' => [
-                'nullable',
-                'boolean',
-            ],
-        ]);
+        $validated = $request->validated();
 
         if (empty($validated['slug'])) {
             $validated['slug'] = Str::slug(

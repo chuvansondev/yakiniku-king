@@ -4,16 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
-use Illuminate\Http\Request;
+use App\Services\AdminResourceService;
+use App\Http\Requests\Admin\BannerRequest;
 use Illuminate\Support\Facades\Storage;
 
 class BannerController extends Controller
 {
-    public function index()
+    public function index(AdminResourceService $resources)
     {
-        $banners = Banner::orderBy('sort_order')
-            ->orderBy('id')
-            ->get();
+        $banners = $resources->all(Banner::class, orderBy: [['sort_order', 'asc'], ['id', 'asc']]);
 
         return view('admin.menu.banners.index', compact('banners'));
     }
@@ -23,47 +22,9 @@ class BannerController extends Controller
         return view('admin.menu.banners.create');
     }
 
-    public function store(Request $request)
+    public function store(BannerRequest $request, AdminResourceService $resources)
     {
-        $validated = $request->validate([
-            'title' => ['nullable', 'string', 'max:255'],
-            'title_en' => ['nullable', 'string', 'max:255'],
-
-            'type' => [
-                'required',
-                'in:image,video',
-            ],
-
-            'image' => [
-                'nullable',
-                'image',
-                'mimes:jpg,jpeg,png,webp',
-                'max:5120',
-            ],
-
-            'video_url' => [
-                'nullable',
-                'url',
-                'max:255',
-            ],
-
-            'link' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
-
-            'sort_order' => [
-                'nullable',
-                'integer',
-                'min:0',
-            ],
-
-            'status' => [
-                'nullable',
-                'boolean',
-            ],
-        ]);
+        $validated = $request->validated();
 
         /*
         |--------------------------------------------------------------------------
@@ -71,21 +32,13 @@ class BannerController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $imagePath = null;
-
-        if ($request->hasFile('image')) {
-            $imagePath = $request
-                ->file('image')
-                ->store('banners', 'public');
-        }
-
-        Banner::create([
+        $resources->create(Banner::class, [
             'title' => $validated['title'] ?? null,
             'title_en' => $validated['title_en'] ?? null,
 
             'type' => $validated['type'],
 
-            'image' => $imagePath,
+            'image' => $resources->storeImage($request->file('image'), 'banners'),
 
             'video_url' => $validated['video_url'] ?? null,
 
@@ -106,48 +59,9 @@ class BannerController extends Controller
         return view('admin.menu.banners.edit', compact('banner'));
     }
 
-    public function update(Request $request, Banner $banner)
+    public function update(BannerRequest $request, Banner $banner, AdminResourceService $resources)
     {
-        $validated = $request->validate([
-            'title' => ['nullable', 'string', 'max:255'],
-            'title_en' => ['nullable', 'string', 'max:255'],
-
-            'type' => [
-                'required',
-                'in:image,video',
-            ],
-
-            'image' => [
-                'nullable',
-                'image',
-                'mimes:jpg,jpeg,png,webp',
-                'max:5120',
-            ],
-            'remove_image' => ['nullable', 'boolean'],
-
-            'video_url' => [
-                'nullable',
-                'url',
-                'max:255',
-            ],
-
-            'link' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
-
-            'sort_order' => [
-                'nullable',
-                'integer',
-                'min:0',
-            ],
-
-            'status' => [
-                'nullable',
-                'boolean',
-            ],
-        ]);
+        $validated = $request->validated();
 
         $imagePath = $banner->image;
 
@@ -174,7 +88,7 @@ class BannerController extends Controller
             $imagePath = null;
         }
 
-        $banner->update([
+        $resources->update($banner, [
             'title' => $validated['title'] ?? null,
             'title_en' => $validated['title_en'] ?? null,
 
@@ -196,13 +110,13 @@ class BannerController extends Controller
             ->with('success', 'Cập nhật Banner thành công.');
     }
 
-    public function destroy(Banner $banner)
+    public function destroy(Banner $banner, AdminResourceService $resources)
     {
         if ($banner->image) {
             Storage::disk('public')->delete($banner->image);
         }
 
-        $banner->delete();
+        $resources->delete($banner);
 
         return redirect()
             ->route('admin.menu.banners.index')

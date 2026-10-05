@@ -117,19 +117,19 @@
 
                     @switch($booking->status)
 
-                        @case('pending')
+                        @case(\App\Enums\BookingStatus::Pending->value)
                             Chờ xác nhận
                             @break
 
-                        @case('confirmed')
+                        @case(\App\Enums\BookingStatus::Confirmed->value)
                             Đã xác nhận
                             @break
 
-                        @case('cancelled')
+                        @case(\App\Enums\BookingStatus::Cancelled->value)
                             Đã hủy
                             @break
 
-                        @case('completed')
+                        @case(\App\Enums\BookingStatus::Completed->value)
                             Đã hoàn thành
                             @break
 

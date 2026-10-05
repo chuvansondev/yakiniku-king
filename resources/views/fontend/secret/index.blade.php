@@ -233,14 +233,14 @@
                     <div class="secret-page-panel">
                         <div class="secret-page-panel-inner">
                             <span class="secret-page-kicker">
-                                @if ($articleType === 'recipe')
+                                @if ($articleType === \App\Enums\ArticleType::Recipe)
                                     {{ __('Công thức') }}
                                 @else
                                     {{ __('Bí kíp') }}
                                 @endif
                             </span>
                             <p class="secret-page-text">
-                                @if ($articleType === 'recipe')
+                                @if ($articleType === \App\Enums\ArticleType::Recipe)
                                     {{ __('Tối ưu vị giác, phong cách nấu và hương vị hoàn hảo cho bữa ăn của bạn.') }}
                                 @else
                                     {{ __('Mẹo hay giúp thưởng thức thịt nướng ngon hơn, chuẩn vị và dễ làm.') }}
@@ -252,9 +252,9 @@
             </div>
         </section>
 
-        <div class="{{ $articleType === 'tip' ? 'secret-tips-list' : 'secret-recipes-list' }}">
+        <div class="{{ $articleType === \App\Enums\ArticleType::Tip ? 'secret-tips-list' : 'secret-recipes-list' }}">
             @forelse ($articles as $article)
-                @if ($articleType === 'tip')
+                @if ($articleType === \App\Enums\ArticleType::Tip)
                     <article class="row align-items-center g-4 g-lg-5 secret-tip-row">
                         <div class="col-md-6 {{ $loop->even ? 'order-md-2' : '' }}">
                             @if ($article->image)

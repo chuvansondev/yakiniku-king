@@ -2,38 +2,35 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\KidsFoodCategory;
+use App\Enums\KidsItemType;
 use App\Http\Controllers\Controller;
 use App\Models\KidsItem;
+use App\Services\AdminResourceService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use App\Http\Requests\Admin\KidsItemRequest;
 use Illuminate\View\View;
 
 class KidsItemController extends Controller
 {
     private const TYPE_LABELS = [
-        'food' => 'Đồ ăn',
-        'utensil' => 'Dụng cụ',
-        'supply' => 'Đồ dùng',
+        KidsItemType::Food->value => 'Đồ ăn',
+        KidsItemType::Utensil->value => 'Dụng cụ',
+        KidsItemType::Supply->value => 'Đồ dùng',
     ];
 
     private const FOOD_CATEGORY_LABELS = [
-        'meat' => 'Thịt',
-        'side_dish' => 'Món ăn kèm',
-        'vegetable' => 'Rau củ',
-        'soup' => 'Súp',
-        'rice_noodles' => 'Cơm và mì',
-        'dessert' => 'Tráng miệng',
+        KidsFoodCategory::Meat->value => 'Thịt',
+        KidsFoodCategory::SideDish->value => 'Món ăn kèm',
+        KidsFoodCategory::Vegetable->value => 'Rau củ',
+        KidsFoodCategory::Soup->value => 'Súp',
+        KidsFoodCategory::RiceNoodles->value => 'Cơm và mì',
+        KidsFoodCategory::Dessert->value => 'Tráng miệng',
     ];
 
-    public function index(): View
+    public function index(AdminResourceService $resources): View
     {
-        $items = KidsItem::query()
-            ->orderBy('type')
-            ->orderBy('sort_order')
-            ->orderBy('name')
-            ->get();
+        $items = $resources->all(KidsItem::class, orderBy: [['type', 'asc'], ['sort_order', 'asc'], ['name', 'asc']]);
 
         return view('admin.kids-items.index', [
             'items' => $items,
@@ -50,32 +47,19 @@ class KidsItemController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(KidsItemRequest $request, AdminResourceService $resources): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'name_en' => ['nullable', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', 'unique:kids_items,slug'],
-            'type' => ['required', 'in:food,utensil,supply'],
-            'food_category' => ['nullable', 'in:meat,side_dish,vegetable,soup,rice_noodles,dessert'],
-            'description' => ['nullable', 'string'],
-            'description_en' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-            'remove_image' => ['nullable', 'boolean'],
-            'price' => ['nullable', 'numeric', 'min:0'],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-            'status' => ['nullable', 'boolean'],
-        ]);
+        $validated = $request->validated();
 
-        $validated['slug'] = Str::slug(($validated['slug'] ?? null) ?: $validated['name']);
-        $validated['image'] = $request->file('image')?->store('kids/items', 'public');
-        $validated['food_category'] = $validated['type'] === 'food'
+        $validated['slug'] = $resources->slug(($validated['slug'] ?? null) ?: $validated['name']);
+        $validated['image'] = $resources->storeImage($request->file('image'), 'kids/items');
+        $validated['food_category'] = $validated['type'] === KidsItemType::Food->value
             ? ($validated['food_category'] ?? null)
             : null;
         $validated['sort_order'] = $validated['sort_order'] ?? 0;
         $validated['status'] = $request->boolean('status');
 
-        KidsItem::create($validated);
+        $resources->create(KidsItem::class, $validated);
 
         return redirect()
             ->route('admin.kids-items.index')
@@ -91,63 +75,38 @@ class KidsItemController extends Controller
         ]);
     }
 
-    public function update(Request $request, KidsItem $kidsItem): RedirectResponse
+    public function update(KidsItemRequest $request, KidsItem $kidsItem, AdminResourceService $resources): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'name_en' => ['nullable', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', 'unique:kids_items,slug,'.$kidsItem->id],
-            'type' => ['required', 'in:food,utensil,supply'],
-            'food_category' => ['nullable', 'in:meat,side_dish,vegetable,soup,rice_noodles,dessert'],
-            'description' => ['nullable', 'string'],
-            'description_en' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-            'price' => ['nullable', 'numeric', 'min:0'],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-            'status' => ['nullable', 'boolean'],
-        ]);
+        $validated = $request->validated();
 
-        $validated['slug'] = Str::slug(($validated['slug'] ?? null) ?: $validated['name']);
+        $validated['slug'] = $resources->slug(($validated['slug'] ?? null) ?: $validated['name']);
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('kids/items', 'public');
-
-            if ($kidsItem->image) {
-                Storage::disk('public')->delete($kidsItem->image);
-            }
-
-            $validated['image'] = $imagePath;
+            $validated['image'] = $resources->replaceImage($request->file('image'), false, $kidsItem->image, 'kids/items');
         } elseif ($request->boolean('remove_image')) {
-            if ($kidsItem->image) {
-                Storage::disk('public')->delete($kidsItem->image);
-            }
-
-            $validated['image'] = null;
+            $validated['image'] = $resources->replaceImage(null, true, $kidsItem->image, 'kids/items');
         } else {
             unset($validated['image']);
         }
 
         unset($validated['remove_image']);
-        $validated['food_category'] = $validated['type'] === 'food'
+        $validated['food_category'] = $validated['type'] === KidsItemType::Food->value
             ? ($validated['food_category'] ?? null)
             : null;
         $validated['sort_order'] = $validated['sort_order'] ?? 0;
         $validated['status'] = $request->boolean('status');
 
-        $kidsItem->update($validated);
+        $resources->update($kidsItem, $validated);
 
         return redirect()
             ->route('admin.kids-items.index')
             ->with('success', 'Cập nhật nội dung trẻ em thành công.');
     }
 
-    public function destroy(KidsItem $kidsItem): RedirectResponse
+    public function destroy(KidsItem $kidsItem, AdminResourceService $resources): RedirectResponse
     {
-        if ($kidsItem->image) {
-            Storage::disk('public')->delete($kidsItem->image);
-        }
-
-        $kidsItem->delete();
+        $resources->deleteImage($kidsItem->image);
+        $resources->delete($kidsItem);
 
         return redirect()
             ->route('admin.kids-items.index')

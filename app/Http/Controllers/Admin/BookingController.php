@@ -4,25 +4,23 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Services\AdminResourceService;
+use App\Services\BookingService;
 use App\Models\Restaurant;
-use Illuminate\Http\Request;
+use App\Http\Requests\Admin\BookingRequest as BookingFormRequest;
 
 class BookingController extends Controller
 {
-    public function index()
+    public function index(AdminResourceService $resources)
     {
-        $bookings = Booking::with('restaurant')
-            ->orderByDesc('id')
-            ->get();
+        $bookings = $resources->all(Booking::class, with: ['restaurant'], orderBy: [['id', 'desc']]);
 
         return view('admin.menu.bookings.index', compact('bookings'));
     }
 
-    public function create()
+    public function create(AdminResourceService $resources)
     {
-        $restaurants = Restaurant::where('status', true)
-            ->orderBy('name')
-            ->get();
+        $restaurants = $resources->all(Restaurant::class, orderBy: [['name', 'asc']], filters: ['status' => true]);
 
         return view(
             'admin.menu.bookings.create',
@@ -30,31 +28,11 @@ class BookingController extends Controller
         );
     }
 
-    public function store(Request $request)
+    public function store(BookingFormRequest $request, BookingService $bookingService)
     {
-        $validated = $request->validate([
-            'restaurant_id' => 'required|exists:restaurants,id',
+        $validated = $request->validated();
 
-            'customer_name' => 'required|string|max:255',
-
-            'phone' => 'required|string|max:30',
-
-            'email' => 'nullable|email|max:255',
-
-            'booking_date' => 'required|date',
-
-            'booking_time' => 'required|date_format:H:i',
-
-            'number_of_guests' => 'required|integer|min:1|max:100',
-
-            'note' => 'nullable|string',
-
-            'status' => 'required|in:pending,confirmed,cancelled,completed',
-        ]);
-
-        $validated['booking_code'] = $this->generateBookingCode();
-
-        Booking::create($validated);
+        $bookingService->createAdminBooking($validated);
 
         return redirect()
             ->route('admin.menu.bookings.index')
@@ -69,9 +47,9 @@ class BookingController extends Controller
         );
     }
 
-    public function edit(Booking $booking)
+    public function edit(Booking $booking, AdminResourceService $resources)
     {
-        $restaurants = Restaurant::orderBy('name')->get();
+        $restaurants = $resources->all(Restaurant::class, orderBy: [['name', 'asc']]);
 
         return view(
             'admin.menu.bookings.edit',
@@ -79,50 +57,24 @@ class BookingController extends Controller
         );
     }
 
-    public function update(Request $request, Booking $booking)
+    public function update(BookingFormRequest $request, Booking $booking, AdminResourceService $resources)
     {
-        $validated = $request->validate([
-            'restaurant_id' => 'required|exists:restaurants,id',
+        $validated = $request->validated();
 
-            'customer_name' => 'required|string|max:255',
-
-            'phone' => 'required|string|max:30',
-
-            'email' => 'nullable|email|max:255',
-
-            'booking_date' => 'required|date',
-
-            'booking_time' => 'required|date_format:H:i',
-
-            'number_of_guests' => 'required|integer|min:1|max:100',
-
-            'note' => 'nullable|string',
-
-            'status' => 'required|in:pending,confirmed,cancelled,completed',
-        ]);
-
-        $booking->update($validated);
+        $resources->update($booking, $validated);
 
         return redirect()
             ->route('admin.menu.bookings.index')
             ->with('success', 'Cập nhật booking thành công.');
     }
 
-    public function destroy(Booking $booking)
+    public function destroy(Booking $booking, AdminResourceService $resources)
     {
-        $booking->delete();
+        $resources->delete($booking);
 
         return redirect()
             ->route('admin.menu.bookings.index')
             ->with('success', 'Xóa booking thành công.');
     }
 
-    private function generateBookingCode(): string
-    {
-        do {
-            $code = 'BK' . now()->format('YmdHis') . rand(10, 99);
-        } while (Booking::where('booking_code', $code)->exists());
-
-        return $code;
-    }
 }

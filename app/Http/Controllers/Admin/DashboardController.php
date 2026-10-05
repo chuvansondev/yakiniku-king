@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\BookingStatus;
+use App\Enums\LeadStatus;
+use App\Enums\AppLocale;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Combo;
@@ -9,36 +12,32 @@ use App\Models\Lead;
 use App\Models\MenuItem;
 use App\Models\Promotion;
 use App\Models\Restaurant;
+use App\Services\AdminResourceService;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(AdminResourceService $resources)
     {
         $today = today();
         $weekStart = $today->copy()->subDays(6);
 
-        $menuItemsCount = MenuItem::count();
+        $menuItemsCount = $resources->count(MenuItem::class);
 
-        $combosCount = Combo::count();
+        $combosCount = $resources->count(Combo::class);
 
-        $promotionsCount = Promotion::count();
+        $promotionsCount = $resources->count(Promotion::class);
 
-        $restaurantsCount = Restaurant::count();
+        $restaurantsCount = $resources->count(Restaurant::class);
 
-        $bookingsCount = Booking::count();
+        $bookingsCount = $resources->count(Booking::class);
 
-        $todayBookingsCount = Booking::whereDate('booking_date', $today)->count();
+        $todayBookingsCount = $resources->countByDate(Booking::class, 'booking_date', $today);
 
-        $pendingBookingsCount = Booking::where('status', 'pending')->count();
+        $pendingBookingsCount = $resources->count(Booking::class, ['status' => BookingStatus::Pending->value]);
 
-        $newLeadsCount = Lead::where('status', 'new')->count();
+        $newLeadsCount = $resources->count(Lead::class, ['status' => LeadStatus::New->value]);
 
-        $bookingCountsByDate = Booking::query()
-            ->whereDate('booking_date', '>=', $weekStart->toDateString())
-            ->whereDate('booking_date', '<=', $today->toDateString())
-            ->selectRaw('DATE(booking_date) as booking_day, COUNT(*) as total')
-            ->groupBy('booking_day')
-            ->pluck('total', 'booking_day');
+        $bookingCountsByDate = $resources->countsByDateRange(Booking::class, 'booking_date', $weekStart->toDateString(), $today->toDateString());
 
         $bookingTrend = collect(range(6, 0))->map(function (int $daysAgo) use ($today, $bookingCountsByDate): array {
             $date = $today->copy()->subDays($daysAgo);
@@ -46,23 +45,16 @@ class DashboardController extends Controller
             return [
                 'date' => $date->toDateString(),
                 'label' => $date->format('d/m'),
-                'weekday' => $date->locale('vi')->isoFormat('dd'),
+                'weekday' => $date->locale(AppLocale::Vietnamese->value)->isoFormat('dd'),
                 'count' => (int) $bookingCountsByDate->get($date->toDateString(), 0),
             ];
         });
 
         $bookingTrendMax = max(1, (int) $bookingTrend->max('count'));
 
-        $recentBookings = Booking::with('restaurant')
-            ->orderByDesc('id')
-            ->take(5)
-            ->get();
+        $recentBookings = $resources->all(Booking::class, with: ['restaurant'], orderBy: [['id', 'desc']], limit: 5);
 
-        $recentLeads = Lead::query()
-            ->where('status', 'new')
-            ->latest()
-            ->take(4)
-            ->get();
+        $recentLeads = $resources->all(Lead::class, orderBy: [['created_at', 'desc']], filters: ['status' => LeadStatus::New->value], limit: 4);
 
         return view('admin.dashboard', compact(
             'menuItemsCount',

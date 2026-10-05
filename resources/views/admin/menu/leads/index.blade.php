@@ -79,15 +79,15 @@
 
                     @switch($lead->status)
 
-                        @case('new')
+                        @case(\App\Enums\LeadStatus::New->value)
                             Mới
                             @break
 
-                        @case('read')
+                        @case(\App\Enums\LeadStatus::Read->value)
                             Đã xem
                             @break
 
-                        @case('contacted')
+                        @case(\App\Enums\LeadStatus::Contacted->value)
                             Đã liên hệ
                             @break
 

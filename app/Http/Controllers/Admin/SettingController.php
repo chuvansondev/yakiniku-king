@@ -3,28 +3,23 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Setting;
+use App\Services\SettingService;
 use Illuminate\Http\Request;
 
 class SettingController extends Controller
 {
-    public function index()
+    public function index(SettingService $settingService)
     {
-        $settings = Setting::pluck('value', 'key');
+        $settings = $settingService->all();
 
         return view('admin.menu.settings.index', compact('settings'));
     }
 
-    public function update(Request $request)
+    public function update(Request $request, SettingService $settingService)
     {
         $settings = $request->input('settings', []);
 
-        foreach ($settings as $key => $value) {
-            Setting::updateOrCreate(
-                ['key' => $key],
-                ['value' => $value]
-            );
-        }
+        $settingService->updateMany($settings);
 
         return redirect()
             ->route('admin.menu.settings.index')

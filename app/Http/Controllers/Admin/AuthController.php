@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Services\AdminResourceService;
 use App\Http\Requests\Admin\LoginRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -18,23 +16,18 @@ class AuthController extends Controller
         return view('admin.auth.login');
     }
 
-    public function login(LoginRequest $request, AdminResourceService $resources)
+    public function login(LoginRequest $request)
     {
         $credentials = $request->validated();
+        $remember = $request->boolean('remember');
+        unset($credentials['remember']);
+        $user = User::query()
+            ->where('email', $credentials['email'])
+            ->where('is_admin', true)
+            ->first();
 
-        $user = $resources->firstWhere(User::class, 'email', $request->email);
-
-        if ($user && $user->password === $request->password) {
-            $user->password = Hash::make($request->password);
-            $user->save();
-
-            Auth::login($user);
-            $request->session()->regenerate();
-
-            return redirect()->intended('/admin');
-        }
-
-        if (Auth::attempt($credentials)) {
+        if ($user && $user->verifyAndUpgradePassword($credentials['password'])) {
+            Auth::login($user, $remember);
             $request->session()->regenerate();
 
             return redirect()->intended('/admin');
@@ -48,10 +41,9 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/admin/login');
+        return redirect()->route('admin.login');
     }
 }

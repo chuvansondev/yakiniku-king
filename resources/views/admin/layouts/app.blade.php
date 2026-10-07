@@ -256,6 +256,25 @@
             margin: 0;
         }
 
+        .admin-account-link {
+            display: inline-flex;
+            min-height: 36px;
+            align-items: center;
+            padding: 7px 11px;
+            border: 1px solid var(--admin-line);
+            border-radius: 4px;
+            background: #fff;
+            color: var(--admin-ink);
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .admin-account-link:hover {
+            border-color: #d8b4a8;
+            color: var(--admin-accent-dark);
+        }
+
         .admin-logout-button {
             min-height: 36px;
             padding: 7px 11px;
@@ -676,6 +695,7 @@
                         <span class="admin-user-avatar" aria-hidden="true">{{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}</span>
                         <span class="admin-user-name">{{ auth()->user()->name }}</span>
                     </div>
+                    <a class="admin-account-link" href="{{ route('password.change') }}">Đổi mật khẩu</a>
                     <form class="admin-logout-form" action="{{ route('admin.logout') }}" method="POST">
                         @csrf
                         <button class="admin-logout-button" type="submit">Đăng xuất</button>

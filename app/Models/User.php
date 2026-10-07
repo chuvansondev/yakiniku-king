@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Notifications\ResetPasswordNotification;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
@@ -19,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_admin',
     ];
 
     /**
@@ -41,6 +44,39 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
+    }
+
+    public function verifyAndUpgradePassword(string $plainPassword): bool
+    {
+        $storedPassword = $this->getRawOriginal('password');
+
+        if (! is_string($storedPassword) || $storedPassword === '') {
+            return false;
+        }
+
+        $passwordInfo = password_get_info($storedPassword);
+        $isHashed = $passwordInfo['algo'] !== null;
+        $isValid = $isHashed
+            ? password_verify($plainPassword, $storedPassword)
+            : hash_equals($storedPassword, $plainPassword);
+
+        if (! $isValid) {
+            return false;
+        }
+
+        if (! $isHashed || $passwordInfo['algoName'] !== 'bcrypt' || Hash::needsRehash($storedPassword)) {
+            // The hashed cast converts this verified legacy password to the active hash driver.
+            $this->password = $plainPassword;
+            $this->save();
+        }
+
+        return true;
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token));
     }
 }

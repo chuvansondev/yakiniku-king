@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\ComboController;
@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\RecipeController;
 use App\Http\Controllers\Admin\RestaurantController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\TipController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController as FrontendBookingController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LeadController as FrontendLeadController;
@@ -29,6 +30,23 @@ Route::post('/locale', function (LocaleRequest $request) {
 
     return redirect()->back();
 })->name('locale.update');
+
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1')->name('login.submit');
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:3,1')->name('register.submit');
+    Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
+    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->middleware('throttle:3,1')->name('password.email');
+    Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('password.reset');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:5,1')->name('password.update');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/account/password', [AuthController::class, 'showChangePassword'])->name('password.change');
+    Route::put('/account/password', [AuthController::class, 'changePassword'])->middleware('throttle:5,1')->name('password.change.update');
+});
 
 Route::get('/', HomeController::class)->name('home');
 
@@ -85,14 +103,15 @@ Route::prefix('admin')
     ->group(function () {
 
         // Login
-        Route::get('/login', [AuthController::class, 'showLogin'])
+        Route::get('/login', [AdminAuthController::class, 'showLogin'])
             ->name('login');
 
-        Route::post('/login', [AuthController::class, 'login'])
+        Route::post('/login', [AdminAuthController::class, 'login'])
+            ->middleware('throttle:5,1')
             ->name('login.submit');
 
         // Khu vực cần đăng nhập
-        Route::middleware('auth')->group(function () {
+        Route::middleware(['auth', 'admin'])->group(function () {
             Route::get('/', [DashboardController::class, 'index'])
                 ->name('dashboard');
 
@@ -136,7 +155,7 @@ Route::prefix('admin')
             Route::resource('kids-items', KidsItemController::class)
                 ->except(['show']);
 
-            Route::post('/logout', [AuthController::class, 'logout'])
+            Route::post('/logout', [AdminAuthController::class, 'logout'])
                 ->name('logout');
         });
     });

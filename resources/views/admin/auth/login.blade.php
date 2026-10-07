@@ -293,6 +293,7 @@
                     </div>
 
                     <button type="submit" class="login-submit">Đăng nhập</button>
+                    <p class="mt-3 small text-center"><a href="{{ route('password.request') }}">Quên mật khẩu?</a></p>
                 </form>
             </div>
         </section>

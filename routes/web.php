@@ -113,46 +113,60 @@ Route::prefix('admin')
         // Khu vực cần đăng nhập
         Route::middleware(['auth', 'admin'])->group(function () {
             Route::get('/', [DashboardController::class, 'index'])
+                ->middleware('permission:admin.dashboard.view')
                 ->name('dashboard');
 
             Route::prefix('menu')->name('menu.')->group(function () {
                 Route::resource('categories', MenuCategoryController::class)
+                    ->middleware('permission:menu.categories.manage')
                     ->except(['show']);
 
                 Route::resource('items', MenuItemController::class)
+                    ->middleware('permission:menu.items.manage')
                     ->except(['show']);
 
                 Route::resource('combos', ComboController::class)
+                    ->middleware('permission:menu.combos.manage')
                     ->except(['show']);
 
                 Route::resource('banners', BannerController::class)
+                    ->middleware('permission:menu.banners.manage')
                     ->except(['show']);
 
                 Route::resource('promotions', PromotionController::class)
+                    ->middleware('permission:menu.promotions.manage')
                     ->except(['show']);
 
                 Route::resource('recipes', RecipeController::class)
+                    ->middleware('permission:menu.recipes.manage')
                     ->except(['show']);
 
                 Route::resource('tips', TipController::class)
+                    ->middleware('permission:menu.tips.manage')
                     ->except(['show']);
 
                 Route::resource('restaurants', RestaurantController::class)
+                    ->middleware('permission:menu.restaurants.manage')
                     ->except(['show']);
 
                 Route::resource('bookings', BookingController::class)
+                    ->middleware('permission:menu.bookings.manage')
                     ->except(['show']);
 
                 Route::resource('leads', LeadController::class)
+                    ->middleware('permission:menu.leads.manage')
                     ->except(['show']);
 
                 Route::get('settings', [SettingController::class, 'index'])
+                    ->middleware('permission:menu.settings.manage')
                     ->name('settings.index');
                 Route::match(['post', 'put', 'patch'], 'settings', [SettingController::class, 'update'])
+                    ->middleware('permission:menu.settings.manage')
                     ->name('settings.update');
             });
 
             Route::resource('kids-items', KidsItemController::class)
+                ->middleware('permission:kids-items.manage')
                 ->except(['show']);
 
             Route::post('/logout', [AdminAuthController::class, 'logout'])

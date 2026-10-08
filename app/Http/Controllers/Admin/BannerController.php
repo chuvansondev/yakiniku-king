@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use App\Services\AdminResourceService;
 use App\Http\Requests\Admin\BannerRequest;
-use Illuminate\Support\Facades\Storage;
+use App\Jobs\DeletePublicFile;
 
 class BannerController extends Controller
 {
@@ -74,7 +74,7 @@ class BannerController extends Controller
         if ($request->hasFile('image')) {
 
             if ($banner->image) {
-                Storage::disk('public')->delete($banner->image);
+                DeletePublicFile::dispatch($banner->image)->afterCommit();
             }
 
             $imagePath = $request
@@ -82,7 +82,7 @@ class BannerController extends Controller
                 ->store('banners', 'public');
         } elseif ($request->boolean('remove_image')) {
             if ($banner->image) {
-                Storage::disk('public')->delete($banner->image);
+                DeletePublicFile::dispatch($banner->image)->afterCommit();
             }
 
             $imagePath = null;
@@ -113,7 +113,7 @@ class BannerController extends Controller
     public function destroy(Banner $banner, AdminResourceService $resources)
     {
         if ($banner->image) {
-            Storage::disk('public')->delete($banner->image);
+            DeletePublicFile::dispatch($banner->image)->afterCommit();
         }
 
         $resources->delete($banner);

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class PublicDataCache
@@ -25,7 +26,13 @@ class PublicDataCache
 
     public static function remember(string $group, string $key, callable $callback): mixed
     {
-        return Cache::remember(self::key($group, $key), now()->addMinutes((int) config('cache.public_data_ttl', 30)), $callback);
+        $value = Cache::remember(
+            self::key($group, $key),
+            now()->addMinutes((int) config('cache.public_data_ttl', 30)),
+            fn () => self::normalize($callback()),
+        );
+
+        return self::restore($value);
     }
 
     public static function clear(?string $group = null): void
@@ -62,5 +69,71 @@ class PublicDataCache
         $version = Cache::rememberForever($group.':version', fn (): string => Str::uuid()->toString());
 
         return $group.':'.$version.':'.$key;
+    }
+
+    private static function normalize(mixed $value): mixed
+    {
+        if ($value instanceof \Illuminate\Database\Eloquent\Model) {
+            return [
+                '__cached_model' => $value::class,
+                'attributes' => $value->getAttributes(),
+                'relations' => self::normalize($value->getRelations()),
+            ];
+        }
+
+        if ($value instanceof Collection || $value instanceof \Illuminate\Database\Eloquent\Collection) {
+            return [
+                '__cached_collection' => true,
+                'items' => array_map(fn (mixed $item): mixed => self::normalize($item), $value->all()),
+            ];
+        }
+
+        if (is_array($value)) {
+            $normalized = [];
+            foreach ($value as $key => $item) {
+                $normalized[$key] = self::normalize($item);
+            }
+
+            return $normalized;
+        }
+
+        return $value;
+    }
+
+    private static function restore(mixed $value): mixed
+    {
+        if (! is_array($value)) {
+            return $value;
+        }
+
+        if (($value['__cached_collection'] ?? false) === true) {
+            $items = array_map(fn (mixed $item): mixed => self::restore($item), $value['items']);
+            $first = reset($items);
+
+            return $first instanceof \Illuminate\Database\Eloquent\Model
+                ? new \Illuminate\Database\Eloquent\Collection($items)
+                : collect($items);
+        }
+
+        if (isset($value['__cached_model'], $value['attributes'])) {
+            $modelClass = $value['__cached_model'];
+            $model = new $modelClass;
+            $model->setRawAttributes($value['attributes'], true);
+
+            $relations = [];
+            foreach ($value['relations'] ?? [] as $name => $relation) {
+                $relations[$name] = self::restore($relation);
+            }
+            $model->setRelations($relations);
+
+            return $model;
+        }
+
+        $restored = [];
+        foreach ($value as $key => $item) {
+            $restored[$key] = self::restore($item);
+        }
+
+        return $restored;
     }
 }

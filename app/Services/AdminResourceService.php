@@ -3,10 +3,10 @@
 namespace App\Services;
 
 use App\Contracts\Repositories\AdminResourceRepositoryInterface;
+use App\Jobs\DeletePublicFile;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class AdminResourceService
@@ -81,6 +81,6 @@ class AdminResourceService
 
     public function deleteImage(?string $path): void
     {
-        if ($path) Storage::disk('public')->delete($path);
+        if ($path) DeletePublicFile::dispatch($path)->afterCommit();
     }
 }

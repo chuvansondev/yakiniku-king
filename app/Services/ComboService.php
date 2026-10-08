@@ -3,10 +3,10 @@
 namespace App\Services;
 
 use App\Contracts\Repositories\ComboRepositoryInterface;
+use App\Jobs\DeletePublicFile;
 use App\Models\Combo;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ComboService
@@ -39,13 +39,18 @@ class ComboService
         DB::transaction(fn () => $this->combos->update($combo, $attributes, $this->prepareItems($items)));
 
         if (($image !== null || $removeImage) && $oldImage) {
-            Storage::disk('public')->delete($oldImage);
+            DeletePublicFile::dispatch($oldImage)->afterCommit();
         }
     }
 
     public function delete(Combo $combo): void
     {
+        $image = $combo->image;
         $this->combos->delete($combo);
+
+        if ($image) {
+            DeletePublicFile::dispatch($image)->afterCommit();
+        }
     }
 
     private function prepareAttributes(array $attributes, bool $status): array

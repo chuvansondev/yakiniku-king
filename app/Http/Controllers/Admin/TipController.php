@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Tip;
 use App\Services\AdminResourceService;
 use App\Http\Requests\Admin\TipRequest;
-use Illuminate\Support\Facades\Storage;
+use App\Jobs\DeletePublicFile;
 use Illuminate\Support\Str;
 
 class TipController extends Controller
@@ -114,8 +114,7 @@ class TipController extends Controller
         if ($request->hasFile('image')) {
 
             if ($tip->image) {
-                Storage::disk('public')
-                    ->delete($tip->image);
+                DeletePublicFile::dispatch($tip->image)->afterCommit();
             }
 
             $imagePath = $request
@@ -123,7 +122,7 @@ class TipController extends Controller
                 ->store('tips', 'public');
         } elseif ($request->boolean('remove_image')) {
             if ($tip->image) {
-                Storage::disk('public')->delete($tip->image);
+                DeletePublicFile::dispatch($tip->image)->afterCommit();
             }
 
             $imagePath = null;
@@ -159,8 +158,7 @@ class TipController extends Controller
     public function destroy(Tip $tip)
     {
         if ($tip->image) {
-            Storage::disk('public')
-                ->delete($tip->image);
+            DeletePublicFile::dispatch($tip->image)->afterCommit();
         }
 
         $tip->delete();

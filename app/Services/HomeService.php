@@ -14,7 +14,7 @@ class HomeService
     {
         $banners = PublicDataCache::remember(PublicDataCache::BANNERS, 'homepage', fn () => $this->banners->homepageBanners());
         $banners = clone $banners;
-        $banners->each(fn (Banner $banner) => $banner->setAttribute('video_embed_url', $this->youtubeEmbedUrl($banner->video_url)));
+        $banners->transform(fn (Banner $banner) => $banner->setAttribute('video_embed_url', $this->youtubeEmbedUrl($banner->video_url)));
 
         return $banners;
     }

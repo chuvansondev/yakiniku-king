@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Recipe;
 use App\Services\AdminResourceService;
 use App\Http\Requests\Admin\RecipeRequest;
-use Illuminate\Support\Facades\Storage;
+use App\Jobs\DeletePublicFile;
 use Illuminate\Support\Str;
 
 class RecipeController extends Controller
@@ -114,8 +114,7 @@ class RecipeController extends Controller
         if ($request->hasFile('image')) {
 
             if ($recipe->image) {
-                Storage::disk('public')
-                    ->delete($recipe->image);
+                DeletePublicFile::dispatch($recipe->image)->afterCommit();
             }
 
             $imagePath = $request
@@ -123,7 +122,7 @@ class RecipeController extends Controller
                 ->store('recipes', 'public');
         } elseif ($request->boolean('remove_image')) {
             if ($recipe->image) {
-                Storage::disk('public')->delete($recipe->image);
+                DeletePublicFile::dispatch($recipe->image)->afterCommit();
             }
 
             $imagePath = null;
@@ -159,8 +158,7 @@ class RecipeController extends Controller
     public function destroy(Recipe $recipe)
     {
         if ($recipe->image) {
-            Storage::disk('public')
-                ->delete($recipe->image);
+            DeletePublicFile::dispatch($recipe->image)->afterCommit();
         }
 
         $recipe->delete();

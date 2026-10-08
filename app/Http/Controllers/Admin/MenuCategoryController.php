@@ -96,6 +96,7 @@ class MenuCategoryController extends Controller
      */
     public function destroy(MenuCategory $category, AdminResourceService $resources)
     {
+        $resources->deleteImage($category->image);
         $resources->delete($category);
 
         return redirect()

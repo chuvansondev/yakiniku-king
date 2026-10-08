@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Promotion;
 use App\Services\AdminResourceService;
 use App\Http\Requests\Admin\PromotionRequest;
-use Illuminate\Support\Facades\Storage;
+use App\Jobs\DeletePublicFile;
 use Illuminate\Support\Str;
 
 class PromotionController extends Controller
@@ -116,8 +116,7 @@ class PromotionController extends Controller
         if ($request->hasFile('image')) {
 
             if ($promotion->image) {
-                Storage::disk('public')
-                    ->delete($promotion->image);
+                DeletePublicFile::dispatch($promotion->image)->afterCommit();
             }
 
             $imagePath = $request
@@ -125,7 +124,7 @@ class PromotionController extends Controller
                 ->store('promotions', 'public');
         } elseif ($request->boolean('remove_image')) {
             if ($promotion->image) {
-                Storage::disk('public')->delete($promotion->image);
+                DeletePublicFile::dispatch($promotion->image)->afterCommit();
             }
 
             $imagePath = null;
@@ -163,8 +162,7 @@ class PromotionController extends Controller
     public function destroy(Promotion $promotion)
     {
         if ($promotion->image) {
-            Storage::disk('public')
-                ->delete($promotion->image);
+            DeletePublicFile::dispatch($promotion->image)->afterCommit();
         }
 
         $promotion->delete();
@@ -177,3 +175,4 @@ class PromotionController extends Controller
             );
     }
 }
+

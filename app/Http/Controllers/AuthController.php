@@ -34,7 +34,7 @@ class AuthController extends Controller
 
         if (! $user || ! $user->verifyAndUpgradePassword($credentials['password'])) {
             throw ValidationException::withMessages([
-                'email' => 'Email hoặc mật khẩu không chính xác.',
+                'email' => __('Email or password is incorrect.'),
             ]);
         }
 
@@ -121,7 +121,7 @@ class AuthController extends Controller
 
         if ($status !== Password::PASSWORD_RESET) {
             throw ValidationException::withMessages([
-                'email' => 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn. Hãy yêu cầu liên kết mới.',
+                'email' => __('The password reset link is invalid or has expired. Please request a new link.'),
             ]);
         }
 
@@ -142,7 +142,7 @@ class AuthController extends Controller
 
         if (! $request->user()->verifyAndUpgradePassword($data['current_password'])) {
             throw ValidationException::withMessages([
-                'current_password' => 'Mật khẩu hiện tại không chính xác.',
+                'current_password' => __('The current password is incorrect.'),
             ]);
         }
 

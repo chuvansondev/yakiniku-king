@@ -62,13 +62,13 @@ class BookingService
         $maximumFloorCapacity = array_sum($capacities);
 
         if ($partySize <= $maximumFloorCapacity && $tableCodes === []) {
-            return __('Vui lòng chọn bàn phù hợp với số lượng người.');
+            return __('Please select enough tables for your party size.');
         }
 
         $tableCapacity = array_sum(array_map(fn (string $code): int => $capacities[$code], $tableCodes));
 
         if ($tableCodes !== [] && $tableCapacity < $partySize) {
-            return __('Tổng sức chứa bàn đã chọn chưa đủ số lượng người.');
+            return __('The selected tables do not have enough seats for your party.');
         }
 
         return null;

@@ -34,7 +34,7 @@ class AuthController extends Controller
         }
 
         throw ValidationException::withMessages([
-            'email' => 'Email hoặc mật khẩu không chính xác.',
+            'email' => __('Email or password is incorrect.'),
         ]);
     }
 

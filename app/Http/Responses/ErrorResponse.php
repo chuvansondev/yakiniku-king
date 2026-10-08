@@ -33,7 +33,7 @@ class ErrorResponse
             405 => __('The request method is not supported for this resource.'),
             409 => __('The request conflicts with the current state.'),
             419 => __('The page session has expired.'),
-            422 => $exception->getMessage() ?: __('The given data was invalid.'),
+            422 => __('The given data was invalid.'),
             429 => __('Too many requests.'),
             503 => __('The service is temporarily unavailable.'),
             default => __('An unexpected error occurred.'),

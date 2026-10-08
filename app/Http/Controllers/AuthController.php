@@ -76,7 +76,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('home')->with('status', 'Bạn đã đăng xuất.');
+        return redirect()->route('home')->with('status', __('You have been signed out.'));
     }
 
     public function showForgotPassword()
@@ -91,7 +91,7 @@ class AuthController extends Controller
         Password::sendResetLink($request->only('email'));
 
         // Keep the response the same for known and unknown addresses.
-        return back()->with('status', 'Nếu email đã được đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu.');
+        return back()->with('status', __('If your email is registered, we will send a password reset link.'));
     }
 
     public function showResetPassword(Request $request, string $token)
@@ -125,7 +125,7 @@ class AuthController extends Controller
             ]);
         }
 
-        return redirect()->route('login')->with('status', 'Mật khẩu đã được đặt lại. Bạn có thể đăng nhập.');
+        return redirect()->route('login')->with('status', __('Your password has been reset. You can sign in.'));
     }
 
     public function showChangePassword()
@@ -153,6 +153,6 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return back()->with('status', 'Mật khẩu đã được đổi.');
+        return back()->with('status', __('Your password has been changed.'));
     }
 }

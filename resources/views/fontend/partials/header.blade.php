@@ -94,17 +94,17 @@
                 </form>
                 <div class="d-flex align-items-center gap-2 ms-lg-3 pb-3 pb-lg-0">
                     @auth
-                        <a class="btn btn-sm btn-outline-danger" href="{{ route('password.change') }}">Đổi mật khẩu</a>
+                        <a class="btn btn-sm btn-outline-danger" href="{{ route('password.change') }}">{{ __('Change password') }}</a>
                         @if (auth()->user()->is_admin)
-                            <a class="btn btn-sm btn-outline-secondary" href="{{ route('admin.dashboard') }}">Quản trị</a>
+                            <a class="btn btn-sm btn-outline-secondary" href="{{ route('admin.dashboard') }}">{{ __('Administration') }}</a>
                         @endif
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button class="btn btn-sm btn-danger" type="submit">Đăng xuất</button>
+                            <button class="btn btn-sm btn-danger" type="submit">{{ __('Sign out') }}</button>
                         </form>
                     @else
-                        <a class="btn btn-sm btn-outline-danger" href="{{ route('login') }}">Đăng nhập</a>
-                        <a class="btn btn-sm btn-danger" href="{{ route('register') }}">Đăng ký</a>
+                        <a class="btn btn-sm btn-outline-danger" href="{{ route('login') }}">{{ __('Sign in') }}</a>
+                        <a class="btn btn-sm btn-danger" href="{{ route('register') }}">{{ __('Create account') }}</a>
                     @endauth
                 </div>
             </div>

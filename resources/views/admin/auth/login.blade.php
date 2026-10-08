@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập quản trị - Yakiniku King</title>
+    <title>{{ __('Admin sign in') }} - Yakiniku King</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
@@ -249,14 +249,14 @@
             </div>
             <div class="login-visual-copy">
                 <p>Yakiniku King</p>
-                <h1>Quản trị<br>nhà hàng</h1>
+                <h1>{{ __('Restaurant administration') }}</h1>
             </div>
         </section>
 
         <section class="login-panel" aria-labelledby="login-title">
             <div class="login-form-wrap">
-                <p class="login-kicker">Khu vực quản trị</p>
-                <h2 id="login-title">Đăng nhập</h2>
+                <p class="login-kicker">{{ __('Administration') }}</p>
+                <h2 id="login-title">{{ __('Admin sign in') }}</h2>
                 <p class="login-subtitle">Yakiniku King · Admin</p>
 
                 @if ($errors->any())
@@ -274,26 +274,26 @@
                             type="email"
                             name="email"
                             value="{{ old('email') }}"
-                            placeholder="Nhập email"
+                            placeholder="{{ __('Enter your email') }}"
                             autocomplete="username"
                             required
                         >
                     </div>
 
                     <div class="login-form-group">
-                        <label for="password">Mật khẩu</label>
+                        <label for="password">{{ __('Password') }}</label>
                         <input
                             id="password"
                             type="password"
                             name="password"
-                            placeholder="Nhập mật khẩu"
+                            placeholder="{{ __('Enter your password') }}"
                             autocomplete="current-password"
                             required
                         >
                     </div>
 
-                    <button type="submit" class="login-submit">Đăng nhập</button>
-                    <p class="mt-3 small text-center"><a href="{{ route('password.request') }}">Quên mật khẩu?</a></p>
+                    <button type="submit" class="login-submit">{{ __('Sign in') }}</button>
+                    <p class="mt-3 small text-center"><a href="{{ route('password.request') }}">{{ __('Forgot your password?') }}</a></p>
                 </form>
             </div>
         </section>

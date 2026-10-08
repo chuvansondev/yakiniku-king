@@ -395,6 +395,14 @@
                                 </div>
 
                                 <div class="col-12 col-md-6 booking-field">
+                                    <label for="email">Email <span class="text-muted">({{ __('không bắt buộc') }})</span></label>
+                                    <input id="email" name="email" type="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" autocomplete="email">
+                                    @error('email')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="col-12 col-md-6 booking-field">
                                     <label for="number_of_guests">{{ __('Số lượng người') }} <span class="booking-required-mark" aria-hidden="true">*</span><span class="visually-hidden">({{ __('Bắt buộc') }})</span></label>
                                     <input id="number_of_guests" name="number_of_guests" type="number" min="1" max="100" class="form-control @error('number_of_guests') is-invalid @enderror" value="{{ old('number_of_guests', 2) }}" required>
                                     @error('number_of_guests')

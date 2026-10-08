@@ -4,7 +4,10 @@ use App\Models\Booking;
 use App\Models\MenuCategory;
 use App\Models\MenuItem;
 use App\Models\Restaurant;
+use App\Models\Setting;
+use App\Mail\BookingConfirmation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 
 uses(RefreshDatabase::class);
 
@@ -55,6 +58,9 @@ test('the booking form lists active restaurants', function () {
 });
 
 test('a visitor can submit a booking request', function () {
+    Mail::fake();
+    Setting::create(['key' => 'email', 'value' => 'admin@example.com']);
+
     $restaurant = Restaurant::create([
         'name' => 'Yakiniku King - Hà Nội',
         'address' => 'Hà Nội',
@@ -81,6 +87,7 @@ test('a visitor can submit a booking request', function () {
         'restaurant_id' => $restaurant->id,
         'customer_name' => 'Nguyen Van A',
         'phone' => '0901234567',
+        'email' => 'customer@example.com',
         'floor' => 1,
         'booking_date' => $bookingDate,
         'booking_time' => '19:00',
@@ -105,6 +112,9 @@ test('a visitor can submit a booking request', function () {
     $booking = Booking::query()
         ->where('customer_name', 'Nguyen Van A')
         ->firstOrFail();
+
+    Mail::assertSent(BookingConfirmation::class, fn (BookingConfirmation $mail) => $mail->hasTo('customer@example.com') && ! $mail->isAdmin);
+    Mail::assertSent(BookingConfirmation::class, fn (BookingConfirmation $mail) => $mail->hasTo('admin@example.com') && $mail->isAdmin);
 
     expect($booking->booking_date->toDateString())->toBe($bookingDate);
     expect($booking->booking_time)->toBe('19:00');
@@ -134,6 +144,33 @@ test('a visitor can submit a booking request', function () {
         ->assertDontSee('id="bookingConfirmationModal"', false)
         ->assertDontSee('Nguyen Van A')
         ->assertSee('value="2"', false);
+});
+
+test('a booking sends both customer and admin emails when their addresses match', function () {
+    Mail::fake();
+    Setting::create(['key' => 'email', 'value' => 'same@example.com']);
+
+    $restaurant = Restaurant::create([
+        'name' => 'Yakiniku King',
+        'address' => 'Ho Chi Minh City',
+        'status' => true,
+    ]);
+
+    $this->post(route('booking.store'), [
+        'restaurant_id' => $restaurant->id,
+        'customer_name' => 'Nguyen Van A',
+        'phone' => '0901234567',
+        'email' => 'same@example.com',
+        'floor' => 1,
+        'booking_date' => now()->addDay()->toDateString(),
+        'booking_time' => '19:00',
+        'number_of_guests' => 2,
+        'table_codes' => ['B4'],
+    ])->assertSessionHas('booking_success');
+
+    Mail::assertSent(BookingConfirmation::class, 2);
+    Mail::assertSent(BookingConfirmation::class, fn (BookingConfirmation $mail) => $mail->hasTo('same@example.com') && ! $mail->isAdmin);
+    Mail::assertSent(BookingConfirmation::class, fn (BookingConfirmation $mail) => $mail->hasTo('same@example.com') && $mail->isAdmin);
 });
 
 test('a visitor can cancel the booking in their session', function () {

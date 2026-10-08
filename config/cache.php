@@ -17,6 +17,9 @@ return [
 
     'default' => env('CACHE_STORE', 'database'),
 
+    // Time to live for public data that changes infrequently, in minutes.
+    'public_data_ttl' => env('PUBLIC_DATA_CACHE_TTL', 30),
+
     /*
     |--------------------------------------------------------------------------
     | Cache Stores

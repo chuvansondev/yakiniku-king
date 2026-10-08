@@ -13,12 +13,14 @@ class SettingService
 
     public function get(string $key, mixed $default = null): mixed
     {
-        return $this->settings->value($key) ?? $default;
+        $settings = PublicDataCache::remember(PublicDataCache::SETTINGS, 'all', fn () => $this->settings->allKeyed());
+
+        return $settings->get($key) ?? $default;
     }
 
     public function all(): Collection
     {
-        return $this->settings->allKeyed();
+        return PublicDataCache::remember(PublicDataCache::SETTINGS, 'all', fn () => $this->settings->allKeyed());
     }
 
     public function updateMany(array $settings): void
@@ -28,6 +30,8 @@ class SettingService
         foreach ($settings as $key => $value) {
             $this->settings->updateValue((string) $key, $value, $userId);
         }
+
+        PublicDataCache::clear(PublicDataCache::SETTINGS);
     }
 
     public function localized(string $key, mixed $default = null): mixed

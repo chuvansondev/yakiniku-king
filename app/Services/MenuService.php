@@ -17,13 +17,25 @@ class MenuService
 
     public function __construct(private readonly MenuRepositoryInterface $menus) {}
 
-    public function categories(): Collection { return $this->menus->activeCategories(); }
+    public function categories(): Collection
+    {
+        return PublicDataCache::remember(PublicDataCache::MENU, 'categories', fn () => $this->menus->activeCategories());
+    }
 
-    public function headerCategories(): Collection { return $this->menus->activeCategoriesForHeader(); }
+    public function headerCategories(): Collection
+    {
+        return PublicDataCache::remember(PublicDataCache::MENU, 'header-categories', fn () => $this->menus->activeCategoriesForHeader());
+    }
 
-    public function items(?int $categoryId = null, bool $mustTry = false): Collection { return $this->menus->activeItems($categoryId, $mustTry); }
+    public function items(?int $categoryId = null, bool $mustTry = false): Collection
+    {
+        return PublicDataCache::remember(PublicDataCache::MENU, 'items:'.($categoryId ?? 'all').':'.(int) $mustTry, fn () => $this->menus->activeItems($categoryId, $mustTry));
+    }
 
-    public function kidsItems(string $type, string $foodCategory, string $sort): Collection { return $this->menus->activeKidsItems($type, $foodCategory, $sort); }
+    public function kidsItems(string $type, string $foodCategory, string $sort): Collection
+    {
+        return PublicDataCache::remember(PublicDataCache::KIDS_ITEMS, 'items:'.md5(json_encode([$type, $foodCategory, $sort])), fn () => $this->menus->activeKidsItems($type, $foodCategory, $sort));
+    }
 
     public function kidsPageData(mixed $requestedType, mixed $requestedFoodCategory, mixed $requestedSort): array
     {
@@ -44,12 +56,15 @@ class MenuService
 
     public function combos(): Collection
     {
-        $combos = $this->menus->activeCombos();
+        $combos = clone PublicDataCache::remember(PublicDataCache::COMBOS, 'all', fn () => $this->menus->activeCombos());
         $combos->each(function (Combo $combo): void {
             $combo->setAttribute('retail_total', $combo->menuItems->sum(fn (MenuItem $item): float => (float) $item->price * $item->pivot->quantity));
         });
         return $combos;
     }
 
-    public function promotions(): Collection { return $this->menus->activePromotions(); }
+    public function promotions(): Collection
+    {
+        return PublicDataCache::remember(PublicDataCache::PROMOTIONS, 'all', fn () => $this->menus->activePromotions());
+    }
 }

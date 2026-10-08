@@ -18,6 +18,15 @@ use App\Repositories\LeadRepository;
 use App\Repositories\MenuRepository;
 use App\Repositories\SecretRepository;
 use App\Repositories\SettingRepository;
+use App\Models\Banner;
+use App\Models\Combo;
+use App\Models\ComboItem;
+use App\Models\KidsItem;
+use App\Models\MenuCategory;
+use App\Models\MenuItem;
+use App\Models\Promotion;
+use App\Models\Setting;
+use App\Observers\PublicDataCacheObserver;
 use App\Services\MenuService;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -45,6 +54,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        foreach ([MenuCategory::class, MenuItem::class, ComboItem::class, KidsItem::class, Combo::class, Promotion::class, Banner::class, Setting::class] as $model) {
+            $model::observe(PublicDataCacheObserver::class);
+        }
+
         View::composer('fontend.partials.header', function (ViewInstance $view): void {
             $view->with('menuCategories', app(MenuService::class)->headerCategories());
         });

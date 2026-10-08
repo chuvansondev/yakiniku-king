@@ -18,8 +18,16 @@ class SettingRepository implements SettingRepositoryInterface
         return Setting::query()->pluck('value', 'key');
     }
 
-    public function updateValue(string $key, mixed $value): void
+    public function updateValue(string $key, mixed $value, ?int $userId): void
     {
-        Setting::query()->updateOrCreate(['key' => $key], ['value' => $value]);
+        $setting = Setting::query()->firstOrNew(['key' => $key]);
+
+        if (! $setting->exists) {
+            $setting->create_by = $userId;
+        }
+
+        $setting->value = $value;
+        $setting->update_by = $userId;
+        $setting->save();
     }
 }

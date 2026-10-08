@@ -24,6 +24,8 @@ class User extends Authenticatable
         'password',
         'is_admin',
         'role_id',
+        'create_by',
+        'update_by',
     ];
 
     /**
@@ -94,5 +96,15 @@ class User extends Authenticatable
         }
 
         return $this->role?->hasPermission($permission) ?? false;
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'create_by');
+    }
+
+    public function updater(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'update_to');
     }
 }

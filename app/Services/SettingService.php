@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\AppLocale;
 use App\Contracts\Repositories\SettingRepositoryInterface;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class SettingService
 {
@@ -22,8 +23,10 @@ class SettingService
 
     public function updateMany(array $settings): void
     {
+        $userId = Auth::id();
+
         foreach ($settings as $key => $value) {
-            $this->settings->updateValue((string) $key, $value);
+            $this->settings->updateValue((string) $key, $value, $userId);
         }
     }
 

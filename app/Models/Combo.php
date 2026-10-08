@@ -5,9 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Concerns\TracksDeletion;
 
 class Combo extends Model
 {
+    use SoftDeletes, TracksDeletion;
+
+    public const DELETED_AT = 'delete_at';
+
     protected $fillable = [
         'name',
         'name_en',

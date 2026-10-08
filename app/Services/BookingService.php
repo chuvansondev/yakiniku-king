@@ -6,6 +6,7 @@ use App\Enums\BookingStatus;
 use App\Models\Booking;
 use App\Contracts\Repositories\BookingRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class BookingService
@@ -42,6 +43,7 @@ class BookingService
     public function createAdminBooking(array $attributes): Booking
     {
         $attributes['booking_code'] = $this->generateAdminBookingCode();
+        $attributes['create_by'] = Auth::id();
         return $this->bookings->create($attributes);
     }
 
@@ -92,6 +94,7 @@ class BookingService
             'booking_code' => $bookingCode,
             'qr_code' => $bookingCode,
             'status' => BookingStatus::Pending->value,
+            'create_by' => Auth::id(),
         ]);
     }
 

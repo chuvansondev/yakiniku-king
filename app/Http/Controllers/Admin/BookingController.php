@@ -8,6 +8,7 @@ use App\Services\AdminResourceService;
 use App\Services\BookingService;
 use App\Models\Restaurant;
 use App\Http\Requests\Admin\BookingRequest as BookingFormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
@@ -60,6 +61,7 @@ class BookingController extends Controller
     public function update(BookingFormRequest $request, Booking $booking, AdminResourceService $resources)
     {
         $validated = $request->validated();
+        $validated['update_by'] = Auth::id();
 
         $resources->update($booking, $validated);
 

@@ -10,5 +10,5 @@ interface SettingRepositoryInterface
 
     public function allKeyed(): Collection;
 
-    public function updateValue(string $key, mixed $value): void;
+    public function updateValue(string $key, mixed $value, ?int $userId): void;
 }

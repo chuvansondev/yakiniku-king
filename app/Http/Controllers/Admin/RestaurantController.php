@@ -52,8 +52,10 @@ class RestaurantController extends Controller
     public function update(RestaurantRequest $request, Restaurant $restaurant, AdminResourceService $resources)
     {
         $validated = $request->validated();
+        $oldImage = null;
 
         if ($request->hasFile('image') || $request->boolean('remove_image')) {
+            $oldImage = $restaurant->image;
             $validated['image'] = $resources->replaceImage($request->file('image'), $request->boolean('remove_image'), $restaurant->image, 'restaurants');
         }
 
@@ -61,6 +63,7 @@ class RestaurantController extends Controller
         $validated['status'] = $request->boolean('status');
 
         $resources->update($restaurant, $validated);
+        $resources->deleteImage($oldImage);
 
         return redirect()
             ->route('admin.menu.restaurants.index')
@@ -69,7 +72,6 @@ class RestaurantController extends Controller
 
     public function destroy(Restaurant $restaurant, AdminResourceService $resources)
     {
-        $resources->deleteImage($restaurant->image);
         $resources->delete($restaurant);
 
         return redirect()

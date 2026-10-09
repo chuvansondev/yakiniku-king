@@ -105,6 +105,6 @@ class User extends Authenticatable
 
     public function updater(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'update_to');
+        return $this->belongsTo(User::class, 'update_by');
     }
 }

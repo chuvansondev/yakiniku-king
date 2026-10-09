@@ -26,13 +26,19 @@ class PublicDataCache
 
     public static function remember(string $group, string $key, callable $callback): mixed
     {
+        $isEloquentCollection = false;
         $value = Cache::remember(
             self::key($group, $key),
             now()->addMinutes((int) config('cache.public_data_ttl', 30)),
-            fn () => self::normalize($callback()),
+            function () use ($callback, &$isEloquentCollection): mixed {
+                $result = $callback();
+                $isEloquentCollection = $result instanceof \Illuminate\Database\Eloquent\Collection;
+
+                return self::normalize($result);
+            },
         );
 
-        return self::restore($value);
+        return self::restore($value, $isEloquentCollection);
     }
 
     public static function clear(?string $group = null): void
@@ -68,7 +74,7 @@ class PublicDataCache
 
         $version = Cache::rememberForever($group.':version', fn (): string => Str::uuid()->toString());
 
-        return $group.':'.$version.':'.$key;
+        return $group.':'.$version.':v2:'.$key;
     }
 
     private static function normalize(mixed $value): mixed
@@ -84,6 +90,8 @@ class PublicDataCache
         if ($value instanceof Collection || $value instanceof \Illuminate\Database\Eloquent\Collection) {
             return [
                 '__cached_collection' => true,
+                'eloquent' => $value instanceof \Illuminate\Database\Eloquent\Collection,
+                'model_class' => $value instanceof \Illuminate\Database\Eloquent\Collection ? $value->getQueueableClass() : null,
                 'items' => array_map(fn (mixed $item): mixed => self::normalize($item), $value->all()),
             ];
         }
@@ -100,7 +108,7 @@ class PublicDataCache
         return $value;
     }
 
-    private static function restore(mixed $value): mixed
+    private static function restore(mixed $value, bool $expectsEloquentCollection = false): mixed
     {
         if (! is_array($value)) {
             return $value;
@@ -108,9 +116,11 @@ class PublicDataCache
 
         if (($value['__cached_collection'] ?? false) === true) {
             $items = array_map(fn (mixed $item): mixed => self::restore($item), $value['items']);
-            $first = reset($items);
+            $modelClass = $value['model_class'] ?? null;
 
-            return $first instanceof \Illuminate\Database\Eloquent\Model
+            return (is_string($modelClass) && is_a($modelClass, \Illuminate\Database\Eloquent\Model::class, true))
+                || ($value['eloquent'] ?? false)
+                || $expectsEloquentCollection
                 ? new \Illuminate\Database\Eloquent\Collection($items)
                 : collect($items);
         }

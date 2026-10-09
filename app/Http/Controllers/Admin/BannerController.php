@@ -71,19 +71,16 @@ class BannerController extends Controller
         |--------------------------------------------------------------------------
         */
 
+        $oldImage = null;
         if ($request->hasFile('image')) {
 
-            if ($banner->image) {
-                DeletePublicFile::dispatch($banner->image)->afterCommit();
-            }
+            $oldImage = $banner->image;
 
             $imagePath = $request
                 ->file('image')
                 ->store('banners', 'public');
         } elseif ($request->boolean('remove_image')) {
-            if ($banner->image) {
-                DeletePublicFile::dispatch($banner->image)->afterCommit();
-            }
+            $oldImage = $banner->image;
 
             $imagePath = null;
         }
@@ -105,6 +102,10 @@ class BannerController extends Controller
             'status' => $request->boolean('status'),
         ]);
 
+        if ($oldImage) {
+            DeletePublicFile::dispatch($oldImage)->afterCommit();
+        }
+
         return redirect()
             ->route('admin.menu.banners.index')
             ->with('success', 'Cập nhật Banner thành công.');
@@ -112,10 +113,6 @@ class BannerController extends Controller
 
     public function destroy(Banner $banner, AdminResourceService $resources)
     {
-        if ($banner->image) {
-            DeletePublicFile::dispatch($banner->image)->afterCommit();
-        }
-
         $resources->delete($banner);
 
         return redirect()

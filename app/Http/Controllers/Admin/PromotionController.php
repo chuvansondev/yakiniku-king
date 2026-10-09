@@ -112,20 +112,17 @@ class PromotionController extends Controller
         */
 
         $imagePath = $promotion->image;
+        $oldImage = null;
 
         if ($request->hasFile('image')) {
 
-            if ($promotion->image) {
-                DeletePublicFile::dispatch($promotion->image)->afterCommit();
-            }
+            $oldImage = $promotion->image;
 
             $imagePath = $request
                 ->file('image')
                 ->store('promotions', 'public');
         } elseif ($request->boolean('remove_image')) {
-            if ($promotion->image) {
-                DeletePublicFile::dispatch($promotion->image)->afterCommit();
-            }
+            $oldImage = $promotion->image;
 
             $imagePath = null;
         }
@@ -151,6 +148,10 @@ class PromotionController extends Controller
             'status' => $request->boolean('status'),
         ]);
 
+        if ($oldImage) {
+            DeletePublicFile::dispatch($oldImage)->afterCommit();
+        }
+
         return redirect()
             ->route('admin.menu.promotions.index')
             ->with(
@@ -161,10 +162,6 @@ class PromotionController extends Controller
 
     public function destroy(Promotion $promotion)
     {
-        if ($promotion->image) {
-            DeletePublicFile::dispatch($promotion->image)->afterCommit();
-        }
-
         $promotion->delete();
 
         return redirect()

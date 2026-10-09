@@ -61,14 +61,17 @@ class MenuItemController extends Controller
     public function update(MenuItemRequest $request, MenuItem $item, AdminResourceService $resources)
     {
         $validated = $request->validated();
+        $oldImage = null;
 
         if (empty($validated['slug'])) {
             $validated['slug'] = $resources->slug($validated['name']);
         }
 
         if ($request->hasFile('image')) {
+            $oldImage = $item->image;
             $validated['image'] = $resources->replaceImage($request->file('image'), false, $item->image, 'menu/items');
         } elseif ($request->boolean('remove_image')) {
+            $oldImage = $item->image;
             $validated['image'] = $resources->replaceImage(null, true, $item->image, 'menu/items');
         } else {
             unset($validated['image']);
@@ -80,6 +83,7 @@ class MenuItemController extends Controller
         $validated['status'] = $request->boolean('status');
 
         $resources->update($item, $validated);
+        $resources->deleteImage($oldImage);
 
         return redirect()
             ->route('admin.menu.items.index')

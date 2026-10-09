@@ -45,12 +45,7 @@ class ComboService
 
     public function delete(Combo $combo): void
     {
-        $image = $combo->image;
         $this->combos->delete($combo);
-
-        if ($image) {
-            DeletePublicFile::dispatch($image)->afterCommit();
-        }
     }
 
     private function prepareAttributes(array $attributes, bool $status): array

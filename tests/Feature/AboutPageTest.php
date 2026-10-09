@@ -5,5 +5,5 @@ test('about page loads', function () {
 
     $response
         ->assertOk()
-        ->assertSee('About Us');
+        ->assertSee('Giới thiệu');
 });

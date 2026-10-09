@@ -66,13 +66,10 @@ class AdminResourceService
     public function replaceImage(?UploadedFile $image, bool $remove, ?string $currentPath, string $directory): ?string
     {
         if ($image !== null) {
-            $newPath = $this->storeImage($image, $directory);
-            $this->deleteImage($currentPath);
-            return $newPath;
+            return $this->storeImage($image, $directory);
         }
 
         if ($remove) {
-            $this->deleteImage($currentPath);
             return null;
         }
 

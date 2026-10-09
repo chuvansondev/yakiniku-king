@@ -78,12 +78,15 @@ class KidsItemController extends Controller
     public function update(KidsItemRequest $request, KidsItem $kidsItem, AdminResourceService $resources): RedirectResponse
     {
         $validated = $request->validated();
+        $oldImage = null;
 
         $validated['slug'] = $resources->slug(($validated['slug'] ?? null) ?: $validated['name']);
 
         if ($request->hasFile('image')) {
+            $oldImage = $kidsItem->image;
             $validated['image'] = $resources->replaceImage($request->file('image'), false, $kidsItem->image, 'kids/items');
         } elseif ($request->boolean('remove_image')) {
+            $oldImage = $kidsItem->image;
             $validated['image'] = $resources->replaceImage(null, true, $kidsItem->image, 'kids/items');
         } else {
             unset($validated['image']);
@@ -97,6 +100,7 @@ class KidsItemController extends Controller
         $validated['status'] = $request->boolean('status');
 
         $resources->update($kidsItem, $validated);
+        $resources->deleteImage($oldImage);
 
         return redirect()
             ->route('admin.kids-items.index')
@@ -105,7 +109,6 @@ class KidsItemController extends Controller
 
     public function destroy(KidsItem $kidsItem, AdminResourceService $resources): RedirectResponse
     {
-        $resources->deleteImage($kidsItem->image);
         $resources->delete($kidsItem);
 
         return redirect()

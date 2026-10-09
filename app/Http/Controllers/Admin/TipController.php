@@ -110,20 +110,17 @@ class TipController extends Controller
         */
 
         $imagePath = $tip->image;
+        $oldImage = null;
 
         if ($request->hasFile('image')) {
 
-            if ($tip->image) {
-                DeletePublicFile::dispatch($tip->image)->afterCommit();
-            }
+            $oldImage = $tip->image;
 
             $imagePath = $request
                 ->file('image')
                 ->store('tips', 'public');
         } elseif ($request->boolean('remove_image')) {
-            if ($tip->image) {
-                DeletePublicFile::dispatch($tip->image)->afterCommit();
-            }
+            $oldImage = $tip->image;
 
             $imagePath = null;
         }
@@ -147,6 +144,10 @@ class TipController extends Controller
             'published_at' => $validated['published_at'] ?? null,
         ]);
 
+        if ($oldImage) {
+            DeletePublicFile::dispatch($oldImage)->afterCommit();
+        }
+
         return redirect()
             ->route('admin.menu.tips.index')
             ->with(
@@ -157,10 +158,6 @@ class TipController extends Controller
 
     public function destroy(Tip $tip)
     {
-        if ($tip->image) {
-            DeletePublicFile::dispatch($tip->image)->afterCommit();
-        }
-
         $tip->delete();
 
         return redirect()

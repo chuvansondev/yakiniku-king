@@ -67,14 +67,17 @@ class MenuCategoryController extends Controller
     public function update(MenuCategoryRequest $request, MenuCategory $category, AdminResourceService $resources)
     {
         $validated = $request->validated();
+        $oldImage = null;
 
         if (empty($validated['slug'])) {
             $validated['slug'] = $resources->slug($validated['name']);
         }
 
         if ($request->hasFile('image')) {
+            $oldImage = $category->image;
             $validated['image'] = $resources->replaceImage($request->file('image'), false, $category->image, 'menu/categories');
         } elseif ($request->boolean('remove_image')) {
+            $oldImage = $category->image;
             $validated['image'] = $resources->replaceImage(null, true, $category->image, 'menu/categories');
         } else {
             unset($validated['image']);
@@ -85,6 +88,7 @@ class MenuCategoryController extends Controller
         $validated['status'] = $request->boolean('status');
 
         $resources->update($category, $validated);
+        $resources->deleteImage($oldImage);
 
         return redirect()
             ->route('admin.menu.categories.index')
@@ -96,7 +100,6 @@ class MenuCategoryController extends Controller
      */
     public function destroy(MenuCategory $category, AdminResourceService $resources)
     {
-        $resources->deleteImage($category->image);
         $resources->delete($category);
 
         return redirect()

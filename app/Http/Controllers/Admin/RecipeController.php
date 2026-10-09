@@ -110,20 +110,17 @@ class RecipeController extends Controller
         */
 
         $imagePath = $recipe->image;
+        $oldImage = null;
 
         if ($request->hasFile('image')) {
 
-            if ($recipe->image) {
-                DeletePublicFile::dispatch($recipe->image)->afterCommit();
-            }
+            $oldImage = $recipe->image;
 
             $imagePath = $request
                 ->file('image')
                 ->store('recipes', 'public');
         } elseif ($request->boolean('remove_image')) {
-            if ($recipe->image) {
-                DeletePublicFile::dispatch($recipe->image)->afterCommit();
-            }
+            $oldImage = $recipe->image;
 
             $imagePath = null;
         }
@@ -147,6 +144,10 @@ class RecipeController extends Controller
             'published_at' => $validated['published_at'] ?? null,
         ]);
 
+        if ($oldImage) {
+            DeletePublicFile::dispatch($oldImage)->afterCommit();
+        }
+
         return redirect()
             ->route('admin.menu.recipes.index')
             ->with(
@@ -157,10 +158,6 @@ class RecipeController extends Controller
 
     public function destroy(Recipe $recipe)
     {
-        if ($recipe->image) {
-            DeletePublicFile::dispatch($recipe->image)->afterCommit();
-        }
-
         $recipe->delete();
 
         return redirect()

@@ -302,6 +302,42 @@
             cursor: pointer;
         }
 
+        .admin-resource-form {
+            padding: 25px;
+            border: 1px solid var(--admin-line);
+            border-radius: 6px;
+            background: var(--admin-paper);
+            box-shadow: 0 8px 24px rgb(32 41 35 / 4%);
+        }
+
+        .admin-validation-errors {
+            margin-bottom: 20px;
+            color: #b42318;
+        }
+
+        .admin-form-field {
+            margin-bottom: 15px;
+        }
+
+        .admin-form-input {
+            display: block;
+        }
+
+        .admin-form-input {
+            width: 100%;
+            padding: 10px;
+        }
+
+        .admin-current-image-preview {
+            margin-top: 10px;
+        }
+
+        .admin-current-image {
+            width: 300px;
+            max-height: 200px;
+            object-fit: cover;
+        }
+
         .admin-image-remove-button:hover,
         .admin-image-remove-button[aria-pressed="true"] {
             background: var(--admin-accent);
@@ -600,6 +636,10 @@
                 padding: 18px !important;
             }
 
+            .admin-resource-form {
+                padding: 18px;
+            }
+
             .admin-content table {
                 display: block;
                 overflow-x: auto;
@@ -709,57 +749,7 @@
         </main>
     </div>
 
-    <script>
-        const adminShell = document.querySelector('[data-admin-shell]');
-        const adminMenuToggle = document.querySelector('[data-admin-menu-toggle]');
-        const adminBackdrop = document.querySelector('[data-admin-backdrop]');
-
-        const closeAdminMenu = () => {
-            adminShell.classList.remove('admin-sidebar-open');
-            adminMenuToggle.setAttribute('aria-expanded', 'false');
-        };
-
-        adminMenuToggle.addEventListener('click', () => {
-            const isOpen = adminShell.classList.toggle('admin-sidebar-open');
-            adminMenuToggle.setAttribute('aria-expanded', String(isOpen));
-        });
-
-        adminBackdrop.addEventListener('click', closeAdminMenu);
-
-        document.querySelectorAll('.admin-nav-link').forEach((adminNavLink) => {
-            adminNavLink.addEventListener('click', closeAdminMenu);
-        });
-
-        document.querySelectorAll('[data-image-remove-toggle]').forEach((button) => {
-            const imageField = button.closest('[data-image-field]');
-            const removeImageInput = imageField.querySelector('[data-image-remove-value]');
-            const imagePreview = imageField.querySelector('[data-current-image-preview]');
-            const imageInput = imageField.querySelector('input[type="file"][name="image"]');
-
-            const setImageRemoval = (shouldRemove) => {
-                removeImageInput.value = shouldRemove ? '1' : '0';
-                imagePreview.hidden = shouldRemove;
-                button.setAttribute('aria-pressed', String(shouldRemove));
-                button.textContent = shouldRemove ? 'Giữ ảnh hiện tại' : 'Xóa ảnh hiện tại';
-            };
-
-            button.addEventListener('click', () => {
-                setImageRemoval(removeImageInput.value !== '1');
-            });
-
-            imageInput.addEventListener('change', () => {
-                if (imageInput.files.length > 0) {
-                    setImageRemoval(false);
-                }
-            });
-        });
-
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                closeAdminMenu();
-            }
-        });
-    </script>
+    @vite('resources/js/app.js')
 </body>
 
 </html>

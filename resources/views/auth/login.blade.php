@@ -1,4 +1,4 @@
-@extends('fontend.layouts.app')
+@extends('frontend.layouts.app')
 
 @section('title', __('Sign in'))
 
@@ -14,7 +14,7 @@
                 <form method="POST" action="{{ route('login.submit') }}">
                     @csrf
                     <div class="mb-3">
-                        <label class="form-label" for="email">Email</label>
+                        <label class="form-label" for="email">{{ __('Email') }}</label>
                         <input class="form-control" id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" required autofocus>
                     </div>
                     <div class="mb-3">

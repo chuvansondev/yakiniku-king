@@ -1,4 +1,4 @@
-@extends('fontend.layouts.app')
+@extends('frontend.layouts.app')
 
 @section('title', __('Đặt bàn'))
 
@@ -395,7 +395,7 @@
                                 </div>
 
                                 <div class="col-12 col-md-6 booking-field">
-                                    <label for="email">Email <span class="text-muted">({{ __('không bắt buộc') }})</span></label>
+                                    <label for="email">{{ __('Email') }} <span class="text-muted">({{ __('không bắt buộc') }})</span></label>
                                     <input id="email" name="email" type="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" autocomplete="email">
                                     @error('email')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>

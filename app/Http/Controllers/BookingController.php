@@ -32,7 +32,7 @@ class BookingController extends Controller
         $tableCapacities = $bookingService->tableCapacities();
         $maximumFloorCapacity = array_sum($tableCapacities);
 
-        return view('fontend.bookings.create', compact('booking', 'maximumFloorCapacity', 'mustTryMenuItems', 'restaurants', 'tableCapacities'));
+        return view('frontend.bookings.create', compact('booking', 'maximumFloorCapacity', 'mustTryMenuItems', 'restaurants', 'tableCapacities'));
     }
 
     public function store(BookingRequest $request, BookingService $bookingService, SettingService $settings): RedirectResponse

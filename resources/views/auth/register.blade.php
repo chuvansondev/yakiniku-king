@@ -1,4 +1,4 @@
-@extends('fontend.layouts.app')
+@extends('frontend.layouts.app')
 
 @section('title', __('Create account'))
 
@@ -17,7 +17,7 @@
                         <input class="form-control" id="name" name="name" type="text" value="{{ old('name') }}" autocomplete="name" maxlength="255" required autofocus>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label" for="email">Email</label>
+                        <label class="form-label" for="email">{{ __('Email') }}</label>
                         <input class="form-control" id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" required>
                     </div>
                     <div class="mb-3">

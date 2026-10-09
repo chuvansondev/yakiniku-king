@@ -1,4 +1,4 @@
-@extends('fontend.layouts.app')
+@extends('frontend.layouts.app')
 
 @section('title', __('Trang chủ'))
 

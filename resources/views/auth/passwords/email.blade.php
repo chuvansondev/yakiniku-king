@@ -1,4 +1,4 @@
-@extends('fontend.layouts.app')
+@extends('frontend.layouts.app')
 
 @section('title', __('Forgot password'))
 
@@ -14,7 +14,7 @@
                 <form method="POST" action="{{ route('password.email') }}">
                     @csrf
                     <div class="mb-4">
-                        <label class="form-label" for="email">Email</label>
+                        <label class="form-label" for="email">{{ __('Email') }}</label>
                         <input class="form-control" id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" required autofocus>
                     </div>
                     <button class="btn btn-danger w-100" type="submit">{{ __('Send password reset link') }}</button>

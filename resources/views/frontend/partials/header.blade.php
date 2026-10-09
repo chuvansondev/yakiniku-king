@@ -7,7 +7,7 @@
             {{-- Logo --}}
             <a class="navbar-brand fw-bold"
                href="{{ url('/') }}">
-                <img src="{{ asset('yakiniku-king/logo.png') }}" alt="Yakiniku King logo" width="none" height="80">
+                <img src="{{ asset('yakiniku-king/logo.png') }}" alt="Yakiniku King logo" width="250" height="56">
             </a>
 
 

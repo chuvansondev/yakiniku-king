@@ -27,13 +27,13 @@
 
 <body>
 
-    @include('fontend.partials.header')
+    @include('frontend.partials.header')
 
     <main>
         @yield('content')
     </main>
 
-    @include('fontend.partials.footer')
+    @include('frontend.partials.footer')
 
 
     <script

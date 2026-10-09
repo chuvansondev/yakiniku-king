@@ -502,7 +502,7 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label" for="offerEmail">Email</label>
+                        <label class="form-label" for="offerEmail">{{ __('Email') }}</label>
                         <input class="form-control" id="offerEmail" name="email" type="email" maxlength="255" autocomplete="email" placeholder="ban@example.com" required>
                     </div>
 

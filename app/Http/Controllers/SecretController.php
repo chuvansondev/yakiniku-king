@@ -10,7 +10,7 @@ class SecretController extends Controller
 {
     public function recipes(SecretService $secretService): View
     {
-        return view('fontend.secret.index', [
+        return view('frontend.secret.index', [
             'pageTitle' => __('Công thức'),
             'pageDescription' => __('Khám phá những công thức ngon để thưởng thức cùng thịt nướng.'),
             'articles' => $secretService->recipes(),
@@ -20,7 +20,7 @@ class SecretController extends Controller
 
     public function tips(SecretService $secretService): View
     {
-        return view('fontend.secret.index', [
+        return view('frontend.secret.index', [
             'pageTitle' => __('Bí kíp ăn ngon'),
             'pageDescription' => __('Bí quyết thưởng thức thịt nướng trọn vị hơn.'),
             'articles' => $secretService->tips(),
@@ -32,7 +32,7 @@ class SecretController extends Controller
     {
         $recipe = $secretService->recipe($recipe);
 
-        return view('fontend.secret.show', [
+        return view('frontend.secret.show', [
             'article' => $recipe,
             'pageTitle' => localized_text($recipe, 'title'),
         ]);
@@ -42,7 +42,7 @@ class SecretController extends Controller
     {
         $tip = $secretService->tip($tip);
 
-        return view('fontend.secret.show', [
+        return view('frontend.secret.show', [
             'article' => $tip,
             'pageTitle' => localized_text($tip, 'title'),
         ]);

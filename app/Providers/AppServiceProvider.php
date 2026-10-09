@@ -58,7 +58,7 @@ class AppServiceProvider extends ServiceProvider
             $model::observe(PublicDataCacheObserver::class);
         }
 
-        View::composer('fontend.partials.header', function (ViewInstance $view): void {
+        View::composer('frontend.partials.header', function (ViewInstance $view): void {
             $view->with('menuCategories', app(MenuService::class)->headerCategories());
         });
     }

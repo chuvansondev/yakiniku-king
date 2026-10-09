@@ -268,7 +268,7 @@
                 <form action="{{ route('admin.login.submit') }}" method="POST">
                     @csrf
                     <div class="login-form-group">
-                        <label for="email">Email</label>
+                        <label for="email">{{ __('Email') }}</label>
                         <input
                             id="email"
                             type="email"

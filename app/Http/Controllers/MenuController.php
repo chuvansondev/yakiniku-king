@@ -27,7 +27,7 @@ class MenuController extends Controller
             $request->query('sort'),
         );
 
-        return view('fontend.menu.index', [
+        return view('frontend.menu.index', [
             'pageTitle' => __('Dành cho trẻ em'),
             'menuCategories' => $menuService->categories(),
             'menuItems' => collect(),
@@ -41,7 +41,7 @@ class MenuController extends Controller
     {
         $combos = $menuService->combos();
 
-        return view('fontend.menu.index', [
+        return view('frontend.menu.index', [
             'pageTitle' => __('Combo'),
             'menuCategories' => $menuService->categories(),
             'menuItems' => collect(),
@@ -52,7 +52,7 @@ class MenuController extends Controller
 
     public function promotions(MenuService $menuService): View
     {
-        return view('fontend.menu.index', [
+        return view('frontend.menu.index', [
             'pageTitle' => __('Khuyến mãi'),
             'menuCategories' => $menuService->categories(),
             'menuItems' => collect(),
@@ -67,7 +67,7 @@ class MenuController extends Controller
 
         $menuItems = $menuService->items($category?->id, $mustTry);
 
-        return view('fontend.menu.index', [
+        return view('frontend.menu.index', [
             'pageTitle' => $pageTitle,
             'menuCategories' => $menuService->categories(),
             'menuItems' => $menuItems,

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Lead;
 use App\Services\AdminResourceService;
-use App\Http\Requests\Admin\LeadRequest as LeadFormRequest;
+use App\Http\Requests\Admin\LeadRequest;
 
 class LeadController extends Controller
 {
@@ -21,7 +21,7 @@ class LeadController extends Controller
         return view('admin.menu.leads.create');
     }
 
-    public function store(LeadFormRequest $request, AdminResourceService $resources)
+    public function store(LeadRequest $request, AdminResourceService $resources)
     {
         $validated = $request->validated();
 
@@ -45,7 +45,7 @@ class LeadController extends Controller
         return view('admin.menu.leads.edit', compact('lead'));
     }
 
-    public function update(LeadFormRequest $request, Lead $lead, AdminResourceService $resources)
+    public function update(LeadRequest $request, Lead $lead, AdminResourceService $resources)
     {
         $validated = $request->validated();
 

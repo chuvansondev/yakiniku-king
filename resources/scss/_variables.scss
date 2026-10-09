@@ -1,0 +1,53 @@
+// Palette
+$color-primary: #b91c1c;
+$color-primary-hover: #991b1b;
+$color-brand: #a83d32;
+$color-brand-hover: #87332b;
+$color-secondary: #1f2937;
+$color-accent: #f59e0b;
+
+$color-background: #ffffff;
+$color-surface: #f9fafb;
+$color-border: #e5e7eb;
+$color-text: #111827;
+$color-text-muted: #6b7280;
+$color-success: #16a34a;
+$color-warning: #d97706;
+$color-danger: #dc2626;
+
+// Spacing scale (rem)
+$space-0: 0;
+$space-1: 0.25rem;
+$space-2: 0.5rem;
+$space-3: 0.75rem;
+$space-4: 1rem;
+$space-5: 1.25rem;
+$space-6: 1.5rem;
+$space-8: 2rem;
+$space-10: 2.5rem;
+$space-12: 3rem;
+$space-16: 4rem;
+
+// Border radius
+$radius-none: 0;
+$radius-sm: 0.25rem;
+$radius-md: 0.5rem;
+$radius-lg: 0.75rem;
+$radius-xl: 1rem;
+$radius-full: 9999px;
+
+// Borders and shadows
+$border-width: 1px;
+$shadow-sm: 0 1px 2px rgb(0 0 0 / 0.05);
+$shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+$shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+// Motion
+$transition-fast: 150ms ease;
+$transition-base: 200ms ease;
+
+// Common frontend neutrals used by the booking, footer, and content pages.
+$color-ink: #29241f;
+$color-muted: #67635d;
+$color-warm-surface: #f6f4ee;
+$color-warm-border: #d6d0c7;

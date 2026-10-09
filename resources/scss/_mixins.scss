@@ -1,0 +1,100 @@
+@use 'variables' as *;
+
+// Center content with flexbox. Pass an axis when only one direction is needed.
+@mixin flex-center($direction: row, $gap: null) {
+    display: flex;
+    flex-direction: $direction;
+    align-items: center;
+    justify-content: center;
+
+    @if $gap != null {
+        gap: $gap;
+    }
+}
+
+// Keep content within a centered, responsive page width.
+@mixin container($max-width: 72rem, $gutter: $space-4) {
+    width: min(100% - #{$gutter * 2}, #{$max-width});
+    margin-inline: auto;
+}
+
+// Truncate one line or clamp to a chosen number of lines.
+@mixin text-truncate($lines: 1) {
+    @if $lines == 1 {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    } @else {
+        display: -webkit-box;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: $lines;
+    }
+}
+
+// Accessible keyboard focus treatment.
+@mixin focus-ring($color: $color-primary, $offset: 2px) {
+    &:focus-visible {
+        outline: 2px solid $color;
+        outline-offset: $offset;
+    }
+}
+
+// Breakpoint helpers. Defaults follow a compact mobile-first scale.
+@mixin up($breakpoint) {
+    @media (min-width: $breakpoint) {
+        @content;
+    }
+}
+
+@mixin down($breakpoint) {
+    @media (max-width: ($breakpoint - 0.02px)) {
+        @content;
+    }
+}
+
+// Standard surface card using shared design tokens.
+@mixin surface-card($padding: $space-6) {
+    padding: $padding;
+    background: $color-background;
+    border: $border-width solid $color-border;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+}
+
+// Reusable form control base for custom controls that share the same treatment.
+@mixin form-control($padding-block: $space-3, $padding-inline: $space-4) {
+    width: 100%;
+    padding: $padding-block $padding-inline;
+    border: $border-width solid $color-warm-border;
+    border-radius: $radius-sm;
+    background: $color-background;
+    color: $color-ink;
+    transition: border-color $transition-fast, box-shadow $transition-fast;
+
+    &:focus {
+        border-color: $color-brand;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgb(168 61 50 / 14%);
+    }
+}
+
+// Consistent solid action button for custom frontend/admin controls.
+@mixin button-solid($background: $color-brand, $hover: $color-brand-hover) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: $space-2;
+    border: $border-width solid $background;
+    border-radius: $radius-sm;
+    padding: $space-3 $space-5;
+    background: $background;
+    color: $color-background;
+    cursor: pointer;
+    transition: background-color $transition-fast, border-color $transition-fast;
+
+    &:hover {
+        border-color: $hover;
+        background: $hover;
+    }
+}

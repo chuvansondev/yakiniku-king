@@ -1,0 +1,4 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+// General purpose entry for views that do not use a dedicated area layout.
+@use 'global';

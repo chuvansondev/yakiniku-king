@@ -1,0 +1,66 @@
+@use 'variables' as *;
+
+// Shared component styles. Add a component here only when it is used by more
+// than one page or layout; page-specific variants belong with that page.
+.ui-card {
+    padding: $space-6;
+    border: $border-width solid $color-border;
+    border-radius: $radius-lg;
+    background: $color-background;
+    box-shadow: $shadow-sm;
+}
+
+.ui-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: $space-2;
+    border: $border-width solid $color-brand;
+    border-radius: $radius-sm;
+    padding: $space-3 $space-5;
+    background: $color-brand;
+    color: $color-background;
+    cursor: pointer;
+    transition: background-color $transition-fast, border-color $transition-fast;
+
+    &:hover {
+        border-color: $color-brand-hover;
+        background: $color-brand-hover;
+    }
+
+    &:focus-visible {
+        outline: 2px solid $color-brand;
+        outline-offset: 2px;
+    }
+}
+
+.ui-form-control {
+    width: 100%;
+    border: $border-width solid $color-warm-border;
+    border-radius: $radius-sm;
+    padding: $space-3 $space-4;
+    background: $color-background;
+    color: $color-ink;
+    transition: border-color $transition-fast, box-shadow $transition-fast;
+
+    &:focus {
+        border-color: $color-brand;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgb(168 61 50 / 14%);
+    }
+}
+
+.admin-page-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-4;
+    margin-bottom: $space-5;
+}
+
+.admin-table-card {
+    overflow-x: auto;
+    padding: $space-5;
+    border-radius: $radius-md;
+    background: $color-background;
+}

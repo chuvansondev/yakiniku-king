@@ -299,7 +299,8 @@ test('banner update removes its current image when requested', function () {
     $this->actingAs(User::factory()->create())
         ->get(route('admin.menu.banners.edit', $banner))
         ->assertOk()
-        ->assertSee('data-image-remove-toggle', false);
+        ->assertSee('data-vue-banner-form', false)
+        ->assertSee('banners\\/current.jpg', false);
 
     $this->actingAs(User::factory()->create())
         ->put(route('admin.menu.banners.update', $banner), [
@@ -353,7 +354,8 @@ test('recipe update removes its current image when requested', function () {
     $this->actingAs(User::factory()->create())
         ->get(route('admin.menu.recipes.edit', $recipe))
         ->assertOk()
-        ->assertSee('data-image-remove-toggle', false);
+        ->assertSee('data-vue-image-field', false)
+        ->assertSee('data-image-path="recipes/current.jpg"', false);
 
     $this->actingAs(User::factory()->create())
         ->put(route('admin.menu.recipes.update', $recipe), [
@@ -382,7 +384,8 @@ test('tip update removes its current image when requested', function () {
     $this->actingAs(User::factory()->create())
         ->get(route('admin.menu.tips.edit', $tip))
         ->assertOk()
-        ->assertSee('data-image-remove-toggle', false);
+        ->assertSee('data-vue-image-field', false)
+        ->assertSee('data-image-path="tips/current.jpg"', false);
 
     $this->actingAs(User::factory()->create())
         ->put(route('admin.menu.tips.update', $tip), [

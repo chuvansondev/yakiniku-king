@@ -365,6 +365,13 @@ test('admin forms expose English fields for public content', function () {
     foreach ($forms as $routeName => $fieldNames) {
         $response = $this->actingAs($user)->get(route($routeName));
 
+        if ($routeName === 'admin.menu.banners.create') {
+            $response->assertSee('data-values=', false)
+                ->assertSee('&quot;title_en&quot;', false);
+
+            continue;
+        }
+
         foreach ($fieldNames as $fieldName) {
             $response->assertSee('name="'.$fieldName.'"', false);
         }

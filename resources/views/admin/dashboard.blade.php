@@ -396,30 +396,65 @@
         .dashboard-priority {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            padding: 14px 18px;
+            gap: 13px;
+            padding: 13px 15px;
             margin-bottom: 20px;
-            border: 1px solid #f0d7a9;
-            border-radius: 10px;
-            background: #fff8e9;
+            border: 1px solid #f0dfbd;
+            border-left: 4px solid #c58a2c;
+            border-radius: 12px;
+            background: linear-gradient(100deg, #fffaf0, #fffdf8);
             color: #674b1e;
+            font-size: 13px;
+            box-shadow: 0 5px 16px rgb(103 75 30 / 5%);
+        }
+
+        .dashboard-priority__icon {
+            display: grid;
+            width: 34px;
+            height: 34px;
+            flex: 0 0 34px;
+            place-items: center;
+            border-radius: 50%;
+            background: #f7e8c9;
+            color: #8b5c12;
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .dashboard-priority__copy {
+            display: grid;
+            flex: 1;
+            gap: 2px;
+        }
+
+        .dashboard-priority__copy strong {
+            color: #513b18;
             font-size: 13px;
         }
 
-        .dashboard-priority strong {
-            color: #513b18;
+        .dashboard-priority__copy span {
+            color: #80683f;
+            font-size: 11px;
         }
 
         .dashboard-priority a {
-            color: #8b5c12 !important;
+            display: inline-flex;
+            min-height: 36px;
+            align-items: center;
+            justify-content: center;
+            padding: 7px 12px;
+            border: 1px solid #e4c68e;
+            border-radius: 7px;
+            background: #fffdf8;
+            color: #80500e !important;
             font-weight: 700;
             text-decoration: none;
             white-space: nowrap;
         }
 
         .dashboard-priority a:hover {
-            text-decoration: underline;
+            border-color: #c58a2c;
+            background: #fdf3df;
         }
 
         .dashboard-lead-name {
@@ -514,8 +549,16 @@
 
             .dashboard-priority {
                 align-items: flex-start;
-                flex-direction: column;
-                gap: 6px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .dashboard-priority__copy {
+                min-width: calc(100% - 50px);
+            }
+
+            .dashboard-priority a {
+                margin-left: 44px;
             }
 
             .dashboard-stat-grid,
@@ -558,8 +601,12 @@
 
         @if ($pendingBookingsCount > 0)
             <aside class="dashboard-priority" aria-label="Việc cần ưu tiên">
-                <span><strong>{{ number_format($pendingBookingsCount) }} yêu cầu đặt bàn</strong> đang chờ xác nhận.</span>
-                <a href="{{ route('admin.menu.bookings.index') }}">Xem và xử lý &rarr;</a>
+                <span class="dashboard-priority__icon" aria-hidden="true">!</span>
+                <span class="dashboard-priority__copy">
+                    <strong>Cần xác nhận đặt bàn</strong>
+                    <span>{{ number_format($pendingBookingsCount) }} yêu cầu đang chờ xử lý.</span>
+                </span>
+                <a href="{{ route('admin.menu.bookings.index') }}">Xem và xử lý <span aria-hidden="true">&rarr;</span></a>
             </aside>
         @endif
 

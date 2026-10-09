@@ -49,7 +49,7 @@
 
     <div style="background: white; padding: 20px; border-radius: 8px;">
 
-        <table
+        <div class="admin-table-wrap"><table
             width="100%"
             cellpadding="10"
             cellspacing="0"
@@ -160,7 +160,7 @@
 
             </tbody>
 
-        </table>
+        </table></div>
 
     </div>
 

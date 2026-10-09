@@ -27,7 +27,7 @@
             <div class="collapse navbar-collapse"
                  id="frontendNavbar">
 
-                <ul class="navbar-nav align-items-right ms-auto mb-2 mb-lg-0">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
 
                     <li class="nav-item">
                         <a class="nav-link"
@@ -87,24 +87,24 @@
                     </li>
                 </ul>
 
-                <form class="d-flex align-items-center gap-1 ms-lg-3 pb-3 pb-lg-0" method="POST" action="{{ route('locale.update') }}" aria-label="{{ __('Chọn ngôn ngữ') }}">
+                <form class="header-locale" method="POST" action="{{ route('locale.update') }}" aria-label="{{ __('Chọn ngôn ngữ') }}">
                     @csrf
-                    <button class="btn btn-sm {{ app()->getLocale() === \App\Enums\AppLocale::Vietnamese->value ? 'btn-danger' : 'btn-outline-secondary' }}" type="submit" name="locale" value="{{ \App\Enums\AppLocale::Vietnamese->value }}" lang="{{ \App\Enums\AppLocale::Vietnamese->value }}" aria-pressed="{{ app()->getLocale() === \App\Enums\AppLocale::Vietnamese->value ? 'true' : 'false' }}">VI</button>
-                    <button class="btn btn-sm {{ app()->getLocale() === \App\Enums\AppLocale::English->value ? 'btn-danger' : 'btn-outline-secondary' }}" type="submit" name="locale" value="{{ \App\Enums\AppLocale::English->value }}" lang="{{ \App\Enums\AppLocale::English->value }}" aria-pressed="{{ app()->getLocale() === \App\Enums\AppLocale::English->value ? 'true' : 'false' }}">EN</button>
+                    <button class="header-locale__button {{ app()->getLocale() === \App\Enums\AppLocale::Vietnamese->value ? 'is-active' : '' }}" type="submit" name="locale" value="{{ \App\Enums\AppLocale::Vietnamese->value }}" lang="{{ \App\Enums\AppLocale::Vietnamese->value }}" aria-pressed="{{ app()->getLocale() === \App\Enums\AppLocale::Vietnamese->value ? 'true' : 'false' }}">VI</button>
+                    <button class="header-locale__button {{ app()->getLocale() === \App\Enums\AppLocale::English->value ? 'is-active' : '' }}" type="submit" name="locale" value="{{ \App\Enums\AppLocale::English->value }}" lang="{{ \App\Enums\AppLocale::English->value }}" aria-pressed="{{ app()->getLocale() === \App\Enums\AppLocale::English->value ? 'true' : 'false' }}">EN</button>
                 </form>
-                <div class="d-flex align-items-center gap-2 ms-lg-3 pb-3 pb-lg-0">
+                <div class="header-account">
                     @auth
-                        <a class="btn btn-sm btn-outline-danger" href="{{ route('password.change') }}">{{ __('Change password') }}</a>
+                        <a class="header-account__button header-account__button--outline" href="{{ route('password.change') }}">{{ __('Change password') }}</a>
                         @if (auth()->user()->is_admin)
-                            <a class="btn btn-sm btn-outline-secondary" href="{{ route('admin.dashboard') }}">{{ __('Administration') }}</a>
+                            <a class="header-account__button header-account__button--neutral" href="{{ route('admin.dashboard') }}">{{ __('Administration') }}</a>
                         @endif
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button class="btn btn-sm btn-danger" type="submit">{{ __('Sign out') }}</button>
+                            <button class="header-account__button header-account__button--solid" type="submit">{{ __('Sign out') }}</button>
                         </form>
                     @else
-                        <a class="btn btn-sm btn-outline-danger" href="{{ route('login') }}">{{ __('Sign in') }}</a>
-                        <a class="btn btn-sm btn-danger" href="{{ route('register') }}">{{ __('Create account') }}</a>
+                        <a class="header-account__button header-account__button--outline" href="{{ route('login') }}">{{ __('Sign in') }}</a>
+                        <a class="header-account__button header-account__button--solid" href="{{ route('register') }}">{{ __('Create account') }}</a>
                     @endauth
                 </div>
             </div>

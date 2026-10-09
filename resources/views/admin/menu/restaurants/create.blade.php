@@ -1,5 +1,8 @@
 @extends('admin.layouts.app')
 
+@section('title', 'Thêm nhà hàng')
+@section('page-title', 'Nhà hàng / Thêm mới')
+
 @section('content')
 
 <h1>Thêm nhà hàng</h1>
@@ -16,7 +19,7 @@
     </div>
 @endif
 
-<form
+<form class="admin-entity-form"
     action="{{ route('admin.menu.restaurants.store') }}"
     method="POST"
     enctype="multipart/form-data"

@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ __('Admin sign in') }} - Yakiniku King</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
     <style>
         *,
         *::before,
@@ -15,7 +12,7 @@
         }
 
         :root {
-            font-family: 'DM Sans', 'Segoe UI', sans-serif;
+            font-family: Arial, 'Segoe UI', sans-serif;
             color: #202923;
             background: #f1f4f1;
         }
@@ -24,7 +21,7 @@
             min-width: 320px;
             min-height: 100vh;
             margin: 0;
-            font-family: 'DM Sans', 'Segoe UI', sans-serif;
+            font-family: Arial, 'Segoe UI', sans-serif;
         }
 
         .login-shell {
@@ -67,8 +64,8 @@
             height: 44px;
             place-items: center;
             border: 1px solid rgb(255 255 255 / 55%);
-            color: #ff0000;
-            font-family: 'DM Serif Display', Georgia, serif;
+            color: #e7b983;
+            font-family: Arial, 'Segoe UI', sans-serif;
             font-size: 18px;
         }
 
@@ -86,7 +83,7 @@
 
         .login-visual-copy p {
             margin: 0 0 12px;
-            color: #ff0000;
+            color: #c84b3b;
             font-size: 11px;
             font-weight: 700;
             letter-spacing: .16em;
@@ -96,9 +93,9 @@
         .login-visual-copy h1 {
             margin: 0;
             color: #fff;
-            font-family: 'DM Serif Display', Georgia, serif;
+            font-family: Arial, 'Segoe UI', sans-serif;
             font-size: clamp(38px, 5vw, 66px);
-            font-weight: 400;
+            font-weight: 700;
             line-height: 1.04;
         }
 
@@ -108,11 +105,18 @@
             align-content: center;
             justify-items: center;
             padding: 44px 28px;
-            background: #f1f4f1;
+            background:
+                radial-gradient(circle at 100% 0%, rgb(200 75 59 / 7%), transparent 35%),
+                #f1f4f1;
         }
 
         .login-form-wrap {
             width: min(100%, 390px);
+            padding: 38px;
+            border: 1px solid #e1e7e2;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 20px 55px rgb(32 41 35 / 8%);
         }
 
         .login-kicker {
@@ -126,9 +130,9 @@
 
         .login-form-wrap h2 {
             margin: 0 0 8px;
-            font-family: 'DM Serif Display', Georgia, serif;
+            font-family: Arial, 'Segoe UI', sans-serif;
             font-size: 34px;
-            font-weight: 400;
+            font-weight: 700;
         }
 
         .login-subtitle {
@@ -163,7 +167,7 @@
             min-height: 46px;
             padding: 11px 13px;
             border: 1px solid #ccd5ce;
-            border-radius: 4px;
+            border-radius: 9px;
             background: #fff;
             color: #202923;
             font: inherit;
@@ -172,7 +176,8 @@
 
         .login-form-group input:focus {
             border-color: #70917b;
-            outline: 3px solid rgb(82 119 97 / 14%);
+            outline: 0;
+            box-shadow: 0 0 0 3px rgb(82 119 97 / 14%);
         }
 
         .login-submit {
@@ -180,7 +185,7 @@
             min-height: 46px;
             margin-top: 4px;
             border: 1px solid #aa3d31;
-            border-radius: 4px;
+            border-radius: 9px;
             background: #c84b3b;
             color: #fff;
             cursor: pointer;
@@ -196,6 +201,25 @@
 
         .login-submit:focus-visible {
             outline: 3px solid rgb(200 75 59 / 30%);
+            outline-offset: 3px;
+        }
+
+        .login-form-wrap a {
+            color: #a93c31;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            text-underline-offset: 3px;
+        }
+
+        .login-form-wrap a:hover {
+            color: #812f28;
+            text-decoration: underline;
+        }
+
+        .login-form-wrap a:focus-visible {
+            border-radius: 3px;
+            outline: 3px solid rgb(200 75 59 / 24%);
             outline-offset: 3px;
         }
 
@@ -221,6 +245,10 @@
             .login-panel {
                 min-height: auto;
                 padding: 42px 24px 54px;
+            }
+
+            .login-form-wrap {
+                padding: 30px 24px;
             }
         }
 

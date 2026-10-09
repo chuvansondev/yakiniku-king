@@ -17,6 +17,7 @@
             color: var(--dashboard-ink);
             max-width: 1560px;
             margin: 0 auto;
+            padding-bottom: 20px;
         }
 
         .dashboard-page a {
@@ -28,11 +29,14 @@
             align-items: flex-end;
             justify-content: space-between;
             gap: 24px;
-            padding: 28px 32px;
-            margin-bottom: 22px;
+            padding: 30px 32px;
+            margin-bottom: 20px;
+            border: 1px solid #303b34;
             border-left: 5px solid var(--dashboard-red);
+            border-radius: 14px;
             background: var(--dashboard-ink);
             color: #fff;
+            box-shadow: 0 12px 30px rgb(32 39 34 / 10%);
         }
 
         .dashboard-eyebrow,
@@ -52,9 +56,9 @@
         .dashboard-hero h1 {
             margin: 8px 0 6px;
             color: #fff;
-            font-family: Georgia, 'Times New Roman', serif;
+            font-family: Arial, 'Segoe UI', sans-serif;
             font-size: 34px;
-            font-weight: 500;
+            font-weight: 700;
         }
 
         .dashboard-hero-copy {
@@ -85,6 +89,7 @@
             justify-content: center;
             padding: 10px 15px;
             border: 1px solid transparent;
+            border-radius: 7px;
             background: var(--dashboard-red);
             color: #fff !important;
             font-size: 13px;
@@ -114,10 +119,18 @@
 
         .dashboard-stat {
             min-height: 145px;
-            padding: 18px 20px;
+            padding: 19px 20px;
             border: 1px solid var(--dashboard-line);
             border-top: 3px solid var(--dashboard-red);
+            border-radius: 12px;
             background: var(--dashboard-paper);
+            box-shadow: 0 3px 12px rgb(32 39 34 / 3%);
+            transition: transform 150ms ease, box-shadow 150ms ease;
+        }
+
+        .dashboard-stat:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 9px 22px rgb(32 39 34 / 8%);
         }
 
         .dashboard-stat:nth-child(2) {
@@ -166,7 +179,10 @@
         .dashboard-panel {
             min-width: 0;
             border: 1px solid var(--dashboard-line);
+            border-radius: 12px;
             background: var(--dashboard-paper);
+            box-shadow: 0 3px 12px rgb(32 39 34 / 3%);
+            overflow: hidden;
         }
 
         .dashboard-panel-heading {
@@ -237,6 +253,8 @@
             min-height: 112px;
             align-items: flex-end;
             justify-content: center;
+            border-radius: 5px 5px 0 0;
+            background: linear-gradient(to top, #f7f8f6, #fff);
             border-bottom: 1px solid var(--dashboard-line);
         }
 
@@ -245,6 +263,8 @@
             width: min(30px, 62%);
             min-height: 3px;
             background: var(--dashboard-green);
+            border-radius: 5px 5px 0 0;
+            transition: height 250ms ease;
         }
 
         .dashboard-trend-day:last-child .dashboard-trend-bar {
@@ -294,6 +314,10 @@
 
         .dashboard-table tbody tr:hover {
             background: #fafbf9;
+        }
+
+        .dashboard-table tbody tr:last-child td {
+            border-bottom: 0;
         }
 
         .dashboard-booking-code {
@@ -360,6 +384,44 @@
             background: var(--dashboard-canvas);
         }
 
+        .dashboard-lead-link:focus-visible,
+        .dashboard-action-link:focus-visible,
+        .dashboard-resource-link:focus-visible {
+            position: relative;
+            z-index: 1;
+            outline: 3px solid #e29a47;
+            outline-offset: -3px;
+        }
+
+        .dashboard-priority {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            border: 1px solid #f0d7a9;
+            border-radius: 10px;
+            background: #fff8e9;
+            color: #674b1e;
+            font-size: 13px;
+        }
+
+        .dashboard-priority strong {
+            color: #513b18;
+        }
+
+        .dashboard-priority a {
+            color: #8b5c12 !important;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .dashboard-priority a:hover {
+            text-decoration: underline;
+        }
+
         .dashboard-lead-name {
             display: block;
             font-size: 13px;
@@ -398,6 +460,12 @@
         }
 
         .dashboard-action-link span:last-child {
+            display: grid;
+            width: 26px;
+            height: 26px;
+            place-items: center;
+            border-radius: 50%;
+            background: #fbefed;
             color: var(--dashboard-red);
             font-weight: 700;
         }
@@ -427,7 +495,8 @@
             .dashboard-hero {
                 align-items: flex-start;
                 flex-direction: column;
-                padding: 22px 20px;
+                padding: 22px 18px;
+                border-radius: 10px;
             }
 
             .dashboard-hero h1 {
@@ -435,7 +504,18 @@
             }
 
             .dashboard-hero-tools {
+                width: 100%;
                 justify-content: flex-start;
+            }
+
+            .dashboard-hero-tools .dashboard-button {
+                flex: 1 1 auto;
+            }
+
+            .dashboard-priority {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 6px;
             }
 
             .dashboard-stat-grid,
@@ -445,6 +525,10 @@
 
             .dashboard-stat {
                 min-height: 126px;
+            }
+
+            .dashboard-stat-value {
+                font-size: 30px;
             }
 
             .dashboard-panel-heading {
@@ -471,6 +555,13 @@
                 <a class="dashboard-button" href="{{ route('admin.menu.items.create') }}">+ Thêm món ăn</a>
             </div>
         </header>
+
+        @if ($pendingBookingsCount > 0)
+            <aside class="dashboard-priority" aria-label="Việc cần ưu tiên">
+                <span><strong>{{ number_format($pendingBookingsCount) }} yêu cầu đặt bàn</strong> đang chờ xác nhận.</span>
+                <a href="{{ route('admin.menu.bookings.index') }}">Xem và xử lý &rarr;</a>
+            </aside>
+        @endif
 
         <section class="dashboard-stat-grid" aria-label="Tổng quan hoạt động">
             <article class="dashboard-stat">

@@ -1,5 +1,8 @@
 @extends('admin.layouts.app')
 
+@section('title', 'Thêm đặt bàn')
+@section('page-title', 'Đặt bàn / Thêm mới')
+
 @section('content')
 
 <h1>Thêm booking</h1>
@@ -19,7 +22,7 @@
 @endif
 
 
-<form
+<form class="admin-entity-form"
     action="{{ route('admin.menu.bookings.store') }}"
     method="POST"
 >

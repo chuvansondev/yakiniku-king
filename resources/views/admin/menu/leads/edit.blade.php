@@ -1,5 +1,8 @@
 @extends('admin.layouts.app')
 
+@section('title', 'Chỉnh sửa khách hàng tiềm năng')
+@section('page-title', 'Khách hàng tiềm năng / Chỉnh sửa')
+
 @section('content')
 
 <h1>Chỉnh sửa Lead</h1>
@@ -19,7 +22,7 @@
 @endif
 
 
-<form
+<form class="admin-entity-form"
     action="{{ route('admin.menu.leads.update', $lead) }}"
     method="POST"
 >

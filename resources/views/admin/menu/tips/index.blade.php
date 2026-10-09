@@ -24,7 +24,7 @@
     @endif
 
     <div style="background:white; padding:20px;">
-        <table width="100%" border="1" cellpadding="10" cellspacing="0">
+        <div class="admin-table-wrap"><table width="100%" border="1" cellpadding="10" cellspacing="0">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -89,7 +89,7 @@
                     </tr>
                 @endforelse
             </tbody>
-        </table>
+        </table></div>
     </div>
 
 @endsection

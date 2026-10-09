@@ -19,7 +19,7 @@
     @endif
 
     <div style="background:white; padding:20px; overflow-x:auto;">
-        <table width="100%" cellpadding="10" cellspacing="0" style="border-collapse:collapse;">
+        <div class="admin-table-wrap"><table width="100%" cellpadding="10" cellspacing="0" style="border-collapse:collapse;">
             <thead>
                 <tr>
                     <th>Tên</th>
@@ -53,6 +53,6 @@
                     </tr>
                 @endforelse
             </tbody>
-        </table>
+        </table></div>
     </div>
 @endsection

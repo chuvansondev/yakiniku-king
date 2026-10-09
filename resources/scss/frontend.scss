@@ -2,4 +2,134 @@
 @use 'mixins' as *;
 @use 'global';
 
+.navbar {
+    .navbar-collapse {
+        align-items: center;
+    }
+
+    .header-locale,
+    .header-account {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0 0 0 1rem;
+    }
+
+    .header-locale {
+        gap: 0.25rem;
+        padding: 0.25rem;
+        border: 1px solid #e5e1dc;
+        border-radius: 0.65rem;
+        background: #f8f6f3;
+    }
+
+    .header-locale__button {
+        min-width: 2.5rem;
+        min-height: 2.25rem;
+        padding: 0.35rem 0.5rem;
+        border: 0;
+        border-radius: 0.45rem;
+        background: transparent;
+        color: #625b54;
+        font-size: 0.75rem;
+        font-weight: 700;
+        line-height: 1;
+        cursor: pointer;
+        transition: background-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+
+        &:hover {
+            color: #a83d32;
+        }
+
+        &.is-active {
+            background: #a83d32;
+            color: #fff;
+            box-shadow: 0 2px 5px rgb(88 37 29 / 18%);
+        }
+
+        &:focus-visible {
+            outline: 2px solid #a83d32;
+            outline-offset: 2px;
+        }
+    }
+
+    .header-account {
+        form {
+            margin: 0;
+        }
+    }
+
+    .header-account__button {
+        display: inline-flex;
+        min-height: 2.5rem;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 0.9rem;
+        border: 1px solid transparent;
+        border-radius: 0.55rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        line-height: 1.2;
+        text-align: center;
+        text-decoration: none;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+
+        &:focus-visible {
+            outline: 2px solid #a83d32;
+            outline-offset: 2px;
+        }
+    }
+
+    .header-account__button--outline {
+        border-color: #a83d32;
+        background: #fff;
+        color: #96382e;
+
+        &:hover {
+            background: #fbf2f0;
+            color: #7d2e26;
+        }
+    }
+
+    .header-account__button--solid {
+        background: #a83d32;
+        color: #fff;
+
+        &:hover {
+            background: #87332b;
+            color: #fff;
+            box-shadow: 0 3px 8px rgb(88 37 29 / 18%);
+        }
+    }
+
+    .header-account__button--neutral {
+        border-color: #d8d5d1;
+        background: #fff;
+        color: #3f3a35;
+
+        &:hover {
+            background: #f5f3f0;
+            color: #29241f;
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        .header-locale,
+        .header-account {
+            width: 100%;
+            margin: 0 0 0.75rem;
+        }
+
+        .header-account {
+            flex-wrap: wrap;
+        }
+
+        .header-account form {
+            display: flex;
+        }
+    }
+}
+
 // Frontend-wide styles shared by the public site layouts.

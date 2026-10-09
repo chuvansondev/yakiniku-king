@@ -51,7 +51,7 @@
 
 <div style="background:white; padding:20px;">
 
-    <table
+    <div class="admin-table-wrap"><table
         width="100%"
         border="1"
         cellpadding="10"
@@ -218,7 +218,7 @@
 
         </tbody>
 
-    </table>
+    </table></div>
 
 </div>
 

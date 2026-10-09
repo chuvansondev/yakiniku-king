@@ -5,14 +5,31 @@ const adminMenuToggle = document.querySelector('[data-admin-menu-toggle]');
 const adminBackdrop = document.querySelector('[data-admin-backdrop]');
 
 if (adminShell && adminMenuToggle && adminBackdrop) {
-    const closeAdminMenu = () => {
+    const sidebar = adminShell.querySelector('#admin-sidebar');
+    const mobileNavigation = window.matchMedia('(max-width: 960px)');
+
+    const syncAdminMenu = (isOpen = adminShell.classList.contains('admin-sidebar-open')) => {
+        const isMobile = mobileNavigation.matches;
+        adminShell.classList.toggle('admin-sidebar-open', isMobile && isOpen);
+        adminMenuToggle.setAttribute('aria-expanded', String(isMobile && isOpen));
+
+        if (sidebar) {
+            sidebar.inert = isMobile && !isOpen;
+            sidebar.setAttribute('aria-hidden', String(isMobile && !isOpen));
+        }
+
+        adminBackdrop.setAttribute('aria-hidden', String(!isMobile || !isOpen));
+    };
+
+    const closeAdminMenu = (restoreFocus = false) => {
         adminShell.classList.remove('admin-sidebar-open');
-        adminMenuToggle.setAttribute('aria-expanded', 'false');
+        syncAdminMenu(false);
+
+        if (restoreFocus && mobileNavigation.matches) adminMenuToggle.focus();
     };
 
     adminMenuToggle.addEventListener('click', () => {
-        const isOpen = adminShell.classList.toggle('admin-sidebar-open');
-        adminMenuToggle.setAttribute('aria-expanded', String(isOpen));
+        syncAdminMenu(!adminShell.classList.contains('admin-sidebar-open'));
     });
 
     adminBackdrop.addEventListener('click', closeAdminMenu);
@@ -21,8 +38,13 @@ if (adminShell && adminMenuToggle && adminBackdrop) {
     });
 
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') closeAdminMenu();
+        if (event.key === 'Escape' && adminShell.classList.contains('admin-sidebar-open')) {
+            closeAdminMenu(true);
+        }
     });
+
+    mobileNavigation.addEventListener('change', () => syncAdminMenu(false));
+    syncAdminMenu(false);
 }
 
 const ImageUploadField = {

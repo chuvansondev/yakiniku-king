@@ -1,19 +1,15 @@
 @extends('admin.layouts.app')
 
+@section('title', 'Nhà hàng')
+@section('page-title', 'Nhà hàng')
+
 @section('content')
 
 @if(session('success'))
-    <div style="margin-bottom: 15px;">
-        {{ session('success') }}
-    </div>
+    <div class="admin-notice" role="status">{{ session('success') }}</div>
 @endif
 
-<div style="
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        margin-bottom:20px;
-    ">
+<div class="admin-page-heading">
     <h1>Quản lý nhà hàng</h1>
     <a href="{{ route('admin.menu.restaurants.create') }}"
     style="
@@ -29,7 +25,7 @@
 </div>
 
 
-<table
+<div class="admin-table-wrap"><table
     border="1"
     cellpadding="10"
     cellspacing="0"
@@ -151,6 +147,6 @@
         @endforelse
 
     </tbody>
-</table>
+</table></div>
 
 @endsection

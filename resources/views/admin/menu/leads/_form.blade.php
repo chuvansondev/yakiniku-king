@@ -87,6 +87,7 @@
 </div>
 
 
-<button type="submit">
-    {{ $buttonText ?? 'Lưu' }}
-</button>
+<div class="admin-form-actions">
+    <button type="submit">{{ $buttonText }}</button>
+    <a href="{{ route('admin.menu.leads.index') }}">Quay l&#7841;i danh s&#225;ch</a>
+</div>

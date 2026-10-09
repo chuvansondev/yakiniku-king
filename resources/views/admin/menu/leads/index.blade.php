@@ -1,17 +1,15 @@
 @extends('admin.layouts.app')
 
+@section('title', 'Khách hàng tiềm năng')
+@section('page-title', 'Khách hàng tiềm năng')
+
 @section('content')
 
 @if(session('success'))
-
-    <div style="margin-bottom: 15px;">
-        {{ session('success') }}
-    </div>
-
+    <div class="admin-notice" role="status">{{ session('success') }}</div>
 @endif
 
-
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<div class="admin-page-heading">
     <h1>Quản lý Lead</h1>
     <a href="{{ route('admin.menu.leads.create') }}"
         style="background:#111; color:white; padding:10px 15px; text-decoration:none; border-radius:5px;">
@@ -21,7 +19,7 @@
 </div>
 
 
-<table
+<div class="admin-table-wrap"><table
     border="1"
     cellpadding="10"
     cellspacing="0"
@@ -142,6 +140,6 @@
 
     </tbody>
 
-</table>
+</table></div>
 
 @endsection

@@ -3,7 +3,7 @@
     $fieldType = $type ?? 'text';
 @endphp
 
-<div style="margin-bottom: {{ $margin ?? '15px' }};">
+<div class="admin-form-field">
     <label for="{{ $fieldId }}">{{ $label }} (English)</label>
 
     @if ($fieldType === 'textarea')
@@ -11,7 +11,7 @@
             id="{{ $fieldId }}"
             name="{{ $name }}"
             rows="{{ $rows ?? 4 }}"
-            style="width:100%; padding:10px;"
+            class="admin-form-input"
         >{{ old($name, $value ?? '') }}</textarea>
     @else
         <input
@@ -19,7 +19,7 @@
             type="text"
             name="{{ $name }}"
             value="{{ old($name, $value ?? '') }}"
-            style="width:100%; padding:10px;"
+            class="admin-form-input"
         >
     @endif
 </div>

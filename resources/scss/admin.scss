@@ -767,9 +767,25 @@ textarea {
     border-top: 1px solid var(--admin-line);
 }
 
-.admin-settings-actions span {
-    color: var(--admin-muted);
-    font-size: 11px;
+.admin-settings-save-note {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 12px;
+    border: 1px solid #ecd6a8;
+    border-radius: 8px;
+    background: #fff8e9;
+    color: #765416;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.admin-settings-save-note svg {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 17px;
+    color: #a97622;
 }
 
 .admin-notice,

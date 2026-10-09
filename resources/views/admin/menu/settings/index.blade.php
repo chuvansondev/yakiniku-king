@@ -125,7 +125,13 @@
             </section>
 
             <footer class="admin-settings-actions">
-                <span>Nhớ lưu thay đổi trước khi rời trang.</span>
+                <span class="admin-settings-save-note">
+                    <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                        <path d="M10 2.5 18 17H2L10 2.5Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.6" />
+                        <path d="M10 7v4.5m0 2.2v.1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" />
+                    </svg>
+                    Nhớ lưu thay đổi trước khi rời trang.
+                </span>
                 <button type="submit">Lưu cài đặt</button>
             </footer>
         </form>

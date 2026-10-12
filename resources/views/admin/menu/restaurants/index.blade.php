@@ -4,6 +4,8 @@
 @section('page-title', 'Nhà hàng')
 
 @section('content')
+@include('admin.menu.partials.list-styles')
+@include('admin.menu.partials.list-controls', ['listModel' => App\Models\Restaurant::class, 'listRoute' => route('admin.menu.restaurants.index')])
 
 @if(session('success'))
     <div class="admin-notice" role="status">{{ session('success') }}</div>
@@ -149,4 +151,6 @@
     </tbody>
 </table></div>
 
+
+@include('admin.menu.partials.pagination', ['paginator' => $restaurants])
 @endsection

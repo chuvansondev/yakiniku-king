@@ -4,10 +4,13 @@ namespace App\Contracts\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface AdminResourceRepositoryInterface
 {
     public function all(string $modelClass, array $with = [], array $orderBy = [], array $filters = [], ?int $limit = null): Collection;
+
+    public function paginate(string $modelClass, array $criteria, array $options, array $with = [], array $defaultOrderBy = []): LengthAwarePaginator;
 
     public function count(string $modelClass, array $filters = []): int;
 

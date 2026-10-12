@@ -5,6 +5,8 @@
 @section('page-title', 'Recipes')
 
 @section('content')
+@include('admin.menu.partials.list-styles')
+@include('admin.menu.partials.list-controls', ['listModel' => App\Models\Recipe::class, 'listRoute' => route('admin.menu.recipes.index')])
 
 <div
     style="
@@ -215,4 +217,6 @@
 
 </div>
 
+
+@include('admin.menu.partials.pagination', ['paginator' => $recipes])
 @endsection

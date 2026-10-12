@@ -9,9 +9,9 @@ use App\Http\Requests\Admin\LeadRequest;
 
 class LeadController extends Controller
 {
-    public function index(AdminResourceService $resources)
+    public function index(\Illuminate\Http\Request $request, AdminResourceService $resources)
     {
-        $leads = $resources->all(Lead::class, orderBy: [['id', 'desc']]);
+        $leads = $resources->paginate(Lead::class, $request, orderBy: [['id', 'desc']]);
 
         return view('admin.menu.leads.index', compact('leads'));
     }

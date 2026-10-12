@@ -9,9 +9,9 @@ use App\Http\Requests\Admin\RestaurantRequest;
 
 class RestaurantController extends Controller
 {
-    public function index(AdminResourceService $resources)
+    public function index(\Illuminate\Http\Request $request, AdminResourceService $resources)
     {
-        $restaurants = $resources->all(Restaurant::class, orderBy: [['name', 'asc']]);
+        $restaurants = $resources->paginate(Restaurant::class, $request, orderBy: [['name', 'asc']]);
 
         return view('admin.menu.restaurants.index', compact('restaurants'));
     }

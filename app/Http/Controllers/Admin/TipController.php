@@ -11,9 +11,9 @@ use Illuminate\Support\Str;
 
 class TipController extends Controller
 {
-    public function index(AdminResourceService $resources)
+    public function index(\Illuminate\Http\Request $request, AdminResourceService $resources)
     {
-        $tips = $resources->all(Tip::class, orderBy: [['id', 'desc']]);
+        $tips = $resources->paginate(Tip::class, $request, orderBy: [['id', 'desc']]);
 
         return view(
             'admin.menu.tips.index',

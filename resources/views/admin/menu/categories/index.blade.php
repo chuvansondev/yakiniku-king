@@ -5,6 +5,8 @@
 @section('page-title', 'Danh mục Menu')
 
 @section('content')
+@include('admin.menu.partials.list-styles')
+@include('admin.menu.partials.list-controls', ['listModel' => App\Models\MenuCategory::class, 'listRoute' => route('admin.menu.categories.index')])
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
 
@@ -164,4 +166,6 @@
 
     </div>
 
+
+@include('admin.menu.partials.pagination', ['paginator' => $categories])
 @endsection

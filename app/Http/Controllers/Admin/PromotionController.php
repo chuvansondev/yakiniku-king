@@ -11,9 +11,9 @@ use Illuminate\Support\Str;
 
 class PromotionController extends Controller
 {
-    public function index(AdminResourceService $resources)
+    public function index(\Illuminate\Http\Request $request, AdminResourceService $resources)
     {
-        $promotions = $resources->all(Promotion::class, orderBy: [['id', 'desc']]);
+        $promotions = $resources->paginate(Promotion::class, $request, orderBy: [['id', 'desc']]);
 
         return view(
             'admin.menu.promotions.index',

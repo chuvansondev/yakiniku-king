@@ -5,6 +5,8 @@
 @section('page-title', 'Khuyến mãi')
 
 @section('content')
+@include('admin.menu.partials.list-styles')
+@include('admin.menu.partials.list-controls', ['listModel' => App\Models\Promotion::class, 'listRoute' => route('admin.menu.promotions.index')])
 
 <div
     style="
@@ -222,4 +224,6 @@
 
 </div>
 
+
+@include('admin.menu.partials.pagination', ['paginator' => $promotions])
 @endsection

@@ -10,11 +10,12 @@ use App\Http\Requests\Admin\MenuItemRequest;
 
 class MenuItemController extends Controller
 {
-    public function index(AdminResourceService $resources)
+    public function index(\Illuminate\Http\Request $request, AdminResourceService $resources)
     {
-        $items = $resources->all(MenuItem::class, with: ['category'], orderBy: [['sort_order', 'asc'], ['id', 'asc']]);
+        $items = $resources->paginate(MenuItem::class, $request, with: ['category'], orderBy: [['sort_order', 'asc'], ['id', 'asc']]);
+        $filterOptions = $resources->listFilterOptions(MenuItem::class);
 
-        return view('admin.menu.items.index', compact('items'));
+        return view('admin.menu.items.index', compact('items', 'filterOptions'));
     }
 
     public function create(AdminResourceService $resources)

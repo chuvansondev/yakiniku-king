@@ -5,6 +5,8 @@
 @section('page-title', 'Combo')
 
 @section('content')
+@include('admin.menu.partials.list-styles')
+@include('admin.menu.partials.list-controls', ['listModel' => App\Models\Combo::class, 'listRoute' => route('admin.menu.combos.index')])
 
     <div style="
         display:flex;
@@ -209,4 +211,6 @@
 
     </div>
 
+
+@include('admin.menu.partials.pagination', ['paginator' => $combos])
 @endsection

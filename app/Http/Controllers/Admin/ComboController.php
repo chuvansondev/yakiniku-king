@@ -14,9 +14,9 @@ class ComboController extends Controller
     /**
      * Danh sách Combo
      */
-    public function index(AdminResourceService $resources)
+    public function index(\Illuminate\Http\Request $request, AdminResourceService $resources)
     {
-        $combos = $resources->all(Combo::class, with: ['menuItems'], orderBy: [['sort_order', 'asc'], ['id', 'asc']]);
+        $combos = $resources->paginate(Combo::class, $request, with: ['menuItems'], orderBy: [['sort_order', 'asc'], ['id', 'asc']]);
 
         return view(
             'admin.menu.combos.index',

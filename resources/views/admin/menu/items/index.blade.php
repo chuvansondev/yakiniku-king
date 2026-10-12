@@ -5,6 +5,8 @@
 @section('page-title', 'Menu Items')
 
 @section('content')
+@include('admin.menu.partials.list-styles')
+@include('admin.menu.partials.list-controls', ['listModel' => App\Models\MenuItem::class, 'listRoute' => route('admin.menu.items.index')])
 
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
 
@@ -163,4 +165,6 @@
 
     </div>
 
+
+@include('admin.menu.partials.pagination', ['paginator' => $items])
 @endsection

@@ -12,11 +12,12 @@ use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
-    public function index(AdminResourceService $resources)
+    public function index(\Illuminate\Http\Request $request, AdminResourceService $resources)
     {
-        $bookings = $resources->all(Booking::class, with: ['restaurant'], orderBy: [['id', 'desc']]);
+        $bookings = $resources->paginate(Booking::class, $request, with: ['restaurant'], orderBy: [['id', 'desc']]);
+        $filterOptions = $resources->listFilterOptions(Booking::class);
 
-        return view('admin.menu.bookings.index', compact('bookings'));
+        return view('admin.menu.bookings.index', compact('bookings', 'filterOptions'));
     }
 
     public function create(AdminResourceService $resources)
@@ -67,7 +68,7 @@ class BookingController extends Controller
 
         return redirect()
             ->route('admin.menu.bookings.index')
-            ->with('success', __('Cập nhật booking thành công.'));
+            ->with('success', __('C?p nh?t booking thành công.'));
     }
 
     public function destroy(Booking $booking, AdminResourceService $resources)

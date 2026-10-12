@@ -11,9 +11,9 @@ use Illuminate\Support\Str;
 
 class RecipeController extends Controller
 {
-    public function index(AdminResourceService $resources)
+    public function index(\Illuminate\Http\Request $request, AdminResourceService $resources)
     {
-        $recipes = $resources->all(Recipe::class, orderBy: [['id', 'desc']]);
+        $recipes = $resources->paginate(Recipe::class, $request, orderBy: [['id', 'desc']]);
 
         return view(
             'admin.menu.recipes.index',

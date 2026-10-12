@@ -5,6 +5,8 @@
 @section('page-title', 'Banner')
 
 @section('content')
+@include('admin.menu.partials.list-styles')
+@include('admin.menu.partials.list-controls', ['listModel' => App\Models\Banner::class, 'listRoute' => route('admin.menu.banners.index')])
 
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
 
@@ -220,4 +222,6 @@
 
 </div>
 
+
+@include('admin.menu.partials.pagination', ['paginator' => $banners])
 @endsection

@@ -5,6 +5,8 @@
 @section('page-title', 'Dành cho trẻ em')
 
 @section('content')
+@include('admin.menu.partials.list-styles')
+@include('admin.menu.partials.list-controls', ['listModel' => App\Models\KidsItem::class, 'listRoute' => route('admin.kids-items.index')])
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
         <h1>Nội dung dành cho trẻ em</h1>
         <a href="{{ route('admin.kids-items.create') }}" style="background:#111; color:white; padding:10px 15px; text-decoration:none;">
@@ -55,4 +57,6 @@
             </tbody>
         </table></div>
     </div>
+
+@include('admin.menu.partials.pagination', ['paginator' => $items])
 @endsection

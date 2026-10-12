@@ -28,9 +28,9 @@ class KidsItemController extends Controller
         KidsFoodCategory::Dessert->value => 'Tráng miệng',
     ];
 
-    public function index(AdminResourceService $resources): View
+    public function index(\Illuminate\Http\Request $request, AdminResourceService $resources): View
     {
-        $items = $resources->all(KidsItem::class, orderBy: [['type', 'asc'], ['sort_order', 'asc'], ['name', 'asc']]);
+        $items = $resources->paginate(KidsItem::class, $request, orderBy: [['type', 'asc'], ['sort_order', 'asc'], ['name', 'asc']]);
 
         return view('admin.kids-items.index', [
             'items' => $items,

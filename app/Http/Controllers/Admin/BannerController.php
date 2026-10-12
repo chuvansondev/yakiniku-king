@@ -10,9 +10,9 @@ use App\Jobs\DeletePublicFile;
 
 class BannerController extends Controller
 {
-    public function index(AdminResourceService $resources)
+    public function index(\Illuminate\Http\Request $request, AdminResourceService $resources)
     {
-        $banners = $resources->all(Banner::class, orderBy: [['sort_order', 'asc'], ['id', 'asc']]);
+        $banners = $resources->paginate(Banner::class, $request, orderBy: [['sort_order', 'asc'], ['id', 'asc']]);
 
         return view('admin.menu.banners.index', compact('banners'));
     }

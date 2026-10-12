@@ -12,9 +12,9 @@ class MenuCategoryController extends Controller
     /**
      * Hiển thị danh sách category
      */
-    public function index(AdminResourceService $resources)
+    public function index(\Illuminate\Http\Request $request, AdminResourceService $resources)
     {
-        $categories = $resources->all(MenuCategory::class, orderBy: [['sort_order', 'asc'], ['id', 'asc']]);
+        $categories = $resources->paginate(MenuCategory::class, $request, orderBy: [['sort_order', 'asc'], ['id', 'asc']]);
 
         return view('admin.menu.categories.index', compact('categories'));
     }

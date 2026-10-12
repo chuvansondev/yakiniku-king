@@ -5,6 +5,8 @@
 @section('page-title', 'Bí kíp ăn ngon')
 
 @section('content')
+@include('admin.menu.partials.list-styles')
+@include('admin.menu.partials.list-controls', ['listModel' => App\Models\Tip::class, 'listRoute' => route('admin.menu.tips.index')])
 
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
         <h1>Danh sách bí kíp</h1>
@@ -92,4 +94,6 @@
         </table></div>
     </div>
 
+
+@include('admin.menu.partials.pagination', ['paginator' => $tips])
 @endsection

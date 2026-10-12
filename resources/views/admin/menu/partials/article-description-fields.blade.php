@@ -1,7 +1,7 @@
-@include('admin.menu.partials.english-field', ['name' => 'short_description_en', 'label' => 'Mô tả ngắn', 'value' => $article->short_description_en ?? '', 'type' => 'textarea', 'rows' => 4])
+@include('admin.menu.partials.english-field', ['name' => 'short_description_en', 'label' => __('Mô tả ngắn'), 'value' => $article->short_description_en ?? '', 'type' => 'textarea', 'rows' => 4])
 
 <div class="admin-form-field">
-    <label>Mô tả ngắn</label>
+    <label>{{ __('Mô tả ngắn') }}</label>
     <br>
     <textarea class="admin-form-input" name="short_description" rows="4">{{ old('short_description', $article->short_description ?? '') }}</textarea>
 </div>

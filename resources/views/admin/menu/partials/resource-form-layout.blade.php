@@ -17,6 +17,6 @@
         @include($fieldsComponent, $fieldsData)
 
         <button type="submit">{{ $submitLabel }}</button>
-        <a href="{{ $backUrl }}">Quay lại</a>
+        <a href="{{ $backUrl }}">{{ __('Quay lại') }}</a>
     </form>
 @endsection

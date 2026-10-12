@@ -1,16 +1,16 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Chỉnh sửa khách hàng tiềm năng')
-@section('page-title', 'Khách hàng tiềm năng / Chỉnh sửa')
+@section('title', __('Chỉnh sửa khách hàng tiềm năng'))
+@section('page-title', __('Khách hàng tiềm năng / Chỉnh sửa'))
 
 @section('content')
 
-<h1>Chỉnh sửa Lead</h1>
+<h1>{{ __('Chỉnh sửa Lead') }}</h1>
 
 @if ($errors->any())
 
     <div>
-        <strong>Có lỗi xảy ra:</strong>
+        <strong>{{ __('Có lỗi xảy ra:') }}</strong>
 
         <ul>
             @foreach ($errors->all() as $error)
@@ -30,7 +30,7 @@
     @method('PUT')
 
     @include('admin.menu.leads._form', [
-        'buttonText' => 'Cập nhật Lead'
+        'buttonText' => __('Cập nhật Lead')
     ])
 
 </form>

@@ -285,7 +285,7 @@
             <div class="login-form-wrap">
                 <p class="login-kicker">{{ __('Administration') }}</p>
                 <h2 id="login-title">{{ __('Admin sign in') }}</h2>
-                <p class="login-subtitle">Yakiniku King · Admin</p>
+                <p class="login-subtitle">{{ __('Yakiniku King · Admin') }}</p>
 
                 @if ($errors->any())
                     <div class="login-error" role="alert">

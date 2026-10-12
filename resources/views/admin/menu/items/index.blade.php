@@ -1,8 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Menu Items')
+@section('title', __('Menu Items'))
 
-@section('page-title', 'Menu Items')
+@section('page-title', __('Menu Items'))
 
 @section('content')
 @include('admin.menu.partials.list-styles')
@@ -10,7 +10,7 @@
 
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
 
-        <h1>Món ăn</h1>
+        <h1>{{ __('Món ăn') }}</h1>
 
         <a
             href="{{ route('admin.menu.items.create') }}"
@@ -22,8 +22,7 @@
                 border-radius:5px;
             "
         >
-            + Thêm món
-        </a>
+            {{ __('+ Thêm món') }}</a>
 
     </div>
 
@@ -58,12 +57,12 @@
 
                 <tr>
                     <th>ID</th>
-                    <th>Tên món</th>
-                    <th>Danh mục</th>
-                    <th>Giá</th>
-                    <th>Must Try</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
+                    <th>{{ __('Tên món') }}</th>
+                    <th>{{ __('Danh mục') }}</th>
+                    <th>{{ __('Giá') }}</th>
+                    <th>{{ __('Must Try') }}</th>
+                    <th>{{ __('Trạng thái') }}</th>
+                    <th>{{ __('Thao tác') }}</th>
                 </tr>
 
             </thead>
@@ -87,11 +86,11 @@
                         </td>
 
                         <td>
-                            {{ number_format($item->price, 0, ',', '.') }} ₫
+                            {{ localized_price($item->price) }}
                         </td>
 
                         <td>
-                            {{ $item->is_must_try ? 'Có' : 'Không' }}
+                            {{ $item->is_must_try ? __('Có') : __('Không') }}
                         </td>
 
                         <td>
@@ -99,14 +98,12 @@
                             @if($item->status)
 
                                 <span style="color:green;">
-                                    Hiển thị
-                                </span>
+                                    {{ __('Hiển thị') }}</span>
 
                             @else
 
                                 <span style="color:red;">
-                                    Ẩn
-                                </span>
+                                    {{ __('Ẩn') }}</span>
 
                             @endif
 
@@ -117,14 +114,13 @@
                             <a
                                 href="{{ route('admin.menu.items.edit', $item) }}"
                             >
-                                Sửa
-                            </a>
+                                {{ __('Sửa') }}</a>
 
                             <form
                                 action="{{ route('admin.menu.items.destroy', $item) }}"
                                 method="POST"
                                 style="display:inline;"
-                                onsubmit="return confirm('Bạn có chắc muốn xóa món này?')"
+                                onsubmit="return confirm(@json(__('Bạn có chắc muốn xóa món này?')))"
                             >
 
                                 @csrf
@@ -135,8 +131,7 @@
                                     type="submit"
                                     style="color:red; margin-left:10px;"
                                 >
-                                    Xóa
-                                </button>
+                                    {{ __('Xóa') }}</button>
 
                             </form>
 
@@ -152,8 +147,7 @@
                             colspan="7"
                             style="text-align:center;"
                         >
-                            Chưa có món ăn nào.
-                        </td>
+                            {{ __('Chưa có món ăn nào.') }}</td>
 
                     </tr>
 

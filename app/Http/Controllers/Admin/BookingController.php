@@ -68,7 +68,7 @@ class BookingController extends Controller
 
         return redirect()
             ->route('admin.menu.bookings.index')
-            ->with('success', __('C?p nh?t booking thành công.'));
+            ->with('success', __('Cập nhật booking thành công.'));
     }
 
     public function destroy(Booking $booking, AdminResourceService $resources)

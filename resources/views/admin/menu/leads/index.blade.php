@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Khách hàng tiềm năng')
-@section('page-title', 'Khách hàng tiềm năng')
+@section('title', __('Khách hàng tiềm năng'))
+@section('page-title', __('Khách hàng tiềm năng'))
 
 @section('content')
 @include('admin.menu.partials.list-styles')
@@ -12,11 +12,10 @@
 @endif
 
 <div class="admin-page-heading">
-    <h1>Quản lý Lead</h1>
+    <h1>{{ __('Quản lý Lead') }}</h1>
     <a href="{{ route('admin.menu.leads.create') }}"
         style="background:#111; color:white; padding:10px 15px; text-decoration:none; border-radius:5px;">
-        + Thêm Lead
-    </a>
+        {{ __('+ Thêm Lead') }}</a>
 
 </div>
 
@@ -32,13 +31,13 @@
 
         <tr>
             <th>ID</th>
-            <th>Họ tên</th>
-            <th>SĐT</th>
+            <th>{{ __('Họ tên') }}</th>
+            <th>{{ __('SĐT') }}</th>
             <th>Email</th>
-            <th>Nội dung</th>
-            <th>Trạng thái</th>
-            <th>Ngày gửi</th>
-            <th>Thao tác</th>
+            <th>{{ __('Nội dung') }}</th>
+            <th>{{ __('Trạng thái') }}</th>
+            <th>{{ __('Ngày gửi') }}</th>
+            <th>{{ __('Thao tác') }}</th>
         </tr>
 
     </thead>
@@ -80,15 +79,15 @@
                     @switch($lead->status)
 
                         @case(\App\Enums\LeadStatus::New->value)
-                            Mới
+                            {{ __('Mới') }}
                             @break
 
                         @case(\App\Enums\LeadStatus::Read->value)
-                            Đã xem
+                            {{ __('Đã xem') }}
                             @break
 
                         @case(\App\Enums\LeadStatus::Contacted->value)
-                            Đã liên hệ
+                            {{ __('Đã liên hệ') }}
                             @break
 
                     @endswitch
@@ -104,23 +103,21 @@
                 <td>
 
                     <a href="{{ route('admin.menu.leads.edit', $lead) }}">
-                        Sửa
-                    </a>
+                        {{ __('Sửa') }}</a>
 
 
                     <form
                         action="{{ route('admin.menu.leads.destroy', $lead) }}"
                         method="POST"
                         style="display:inline;"
-                        onsubmit="return confirm('Bạn có chắc muốn xóa lead này?')"
+                        onsubmit="return confirm(@json(__('Bạn có chắc muốn xóa lead này?')))"
                     >
 
                         @csrf
                         @method('DELETE')
 
                         <button type="submit">
-                            Xóa
-                        </button>
+                            {{ __('Xóa') }}</button>
 
                     </form>
 
@@ -133,8 +130,7 @@
             <tr>
 
                 <td colspan="8">
-                    Chưa có lead nào.
-                </td>
+                    {{ __('Chưa có lead nào.') }}</td>
 
             </tr>
 

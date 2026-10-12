@@ -1,5 +1,5 @@
 <div style="margin-bottom: 15px;">
-    <label>Tên nhà hàng</label>
+    <label>{{ __('Tên nhà hàng') }}</label>
 
     <input
         type="text"
@@ -10,11 +10,11 @@
     >
 </div>
 
-@include('admin.menu.partials.english-field', ['name' => 'name_en', 'label' => 'Tên nhà hàng', 'value' => $restaurant->name_en ?? '', 'margin' => '15px'])
+@include('admin.menu.partials.english-field', ['name' => 'name_en', 'label' => __('Tên nhà hàng'), 'value' => $restaurant->name_en ?? '', 'margin' => '15px'])
 
 
 <div style="margin-bottom: 15px;">
-    <label>Địa chỉ</label>
+    <label>{{ __('Địa chỉ') }}</label>
 
     <textarea
         name="address"
@@ -24,11 +24,11 @@
     >{{ old('address', $restaurant->address ?? '') }}</textarea>
 </div>
 
-@include('admin.menu.partials.english-field', ['name' => 'address_en', 'label' => 'Địa chỉ', 'value' => $restaurant->address_en ?? '', 'type' => 'textarea', 'rows' => 3, 'margin' => '15px'])
+@include('admin.menu.partials.english-field', ['name' => 'address_en', 'label' => __('Địa chỉ'), 'value' => $restaurant->address_en ?? '', 'type' => 'textarea', 'rows' => 3, 'margin' => '15px'])
 
 
 <div style="margin-bottom: 15px;">
-    <label>Số điện thoại</label>
+    <label>{{ __('Số điện thoại') }}</label>
 
     <input
         type="text"
@@ -84,7 +84,7 @@
 <div style="display: flex; gap: 15px; margin-bottom: 15px;">
 
     <div style="flex: 1;">
-        <label>Giờ mở cửa</label>
+        <label>{{ __('Giờ mở cửa') }}</label>
 
         <input
             type="time"
@@ -95,7 +95,7 @@
     </div>
 
     <div style="flex: 1;">
-        <label>Giờ đóng cửa</label>
+        <label>{{ __('Giờ đóng cửa') }}</label>
 
         <input
             type="time"
@@ -109,7 +109,7 @@
 
 
 <div data-image-field style="margin-bottom: 15px;">
-    <label>Ảnh nhà hàng</label>
+    <label>{{ __('Ảnh nhà hàng') }}</label>
 
     <input
         type="file"
@@ -128,7 +128,7 @@
             >
         </div>
 
-        <button class="admin-image-remove-button" type="button" data-image-remove-toggle aria-pressed="false">Xóa ảnh hiện tại</button>
+        <button class="admin-image-remove-button" type="button" data-image-remove-toggle aria-pressed="false">{{ __('Xóa ảnh hiện tại') }}</button>
 
     @endif
 </div>
@@ -143,8 +143,7 @@
             {{ old('status', $restaurant->status ?? true) ? 'checked' : '' }}
         >
 
-        Đang hoạt động
-    </label>
+        {{ __('Đang hoạt động') }}</label>
 </div>
 
 

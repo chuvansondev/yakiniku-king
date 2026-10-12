@@ -1,8 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Recipes')
+@section('title', __('Recipes'))
 
-@section('page-title', 'Recipes')
+@section('page-title', __('Recipes'))
 
 @section('content')
 @include('admin.menu.partials.list-styles')
@@ -17,7 +17,7 @@
     "
 >
 
-    <h1>Danh sách công thức</h1>
+    <h1>{{ __('Danh sách công thức') }}</h1>
 
     <a
         href="{{ route('admin.menu.recipes.create') }}"
@@ -29,8 +29,7 @@
             border-radius:5px;
         "
     >
-        + Thêm công thức
-    </a>
+        {{ __('+ Thêm công thức') }}</a>
 
 </div>
 
@@ -66,17 +65,17 @@
 
                 <th>ID</th>
 
-                <th>Hình ảnh</th>
+                <th>{{ __('Hình ảnh') }}</th>
 
-                <th>Tiêu đề</th>
+                <th>{{ __('Tiêu đề') }}</th>
 
                 <th>Slug</th>
 
-                <th>Ngày đăng</th>
+                <th>{{ __('Ngày đăng') }}</th>
 
-                <th>Trạng thái</th>
+                <th>{{ __('Trạng thái') }}</th>
 
-                <th>Thao tác</th>
+                <th>{{ __('Thao tác') }}</th>
 
             </tr>
 
@@ -110,7 +109,7 @@
 
                         @else
 
-                            Không có ảnh
+                            {{ __('Không có ảnh') }}
 
                         @endif
 
@@ -135,7 +134,7 @@
 
                         @else
 
-                            Chưa đăng
+                            {{ __('Chưa đăng') }}
 
                         @endif
 
@@ -147,14 +146,12 @@
                         @if($recipe->status)
 
                             <span style="color:green;">
-                                Đang hiển thị
-                            </span>
+                                {{ __('Đang hiển thị') }}</span>
 
                         @else
 
                             <span style="color:red;">
-                                Đang ẩn
-                            </span>
+                                {{ __('Đang ẩn') }}</span>
 
                         @endif
 
@@ -166,8 +163,7 @@
                         <a
                             href="{{ route('admin.menu.recipes.edit', $recipe) }}"
                         >
-                            Sửa
-                        </a>
+                            {{ __('Sửa') }}</a>
 
 
                         <form
@@ -175,9 +171,7 @@
                             method="POST"
                             style="display:inline;"
                             onsubmit="
-                                return confirm(
-                                    'Bạn có chắc muốn xóa công thức này?'
-                                )
+                                return confirm(@json(__('Bạn có chắc muốn xóa công thức này?')))
                             "
                         >
 
@@ -186,8 +180,7 @@
                             @method('DELETE')
 
                             <button type="submit">
-                                Xóa
-                            </button>
+                                {{ __('Xóa') }}</button>
 
                         </form>
 
@@ -203,9 +196,7 @@
                         colspan="7"
                         style="text-align:center;"
                     >
-                        Chưa có công thức.
-
-                    </td>
+                        {{ __('Chưa có công thức.') }}</td>
 
                 </tr>
 

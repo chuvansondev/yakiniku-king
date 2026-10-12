@@ -6,7 +6,7 @@
     data-image-path="{{ $image ?? '' }}"
     data-storage-url="{{ asset('storage') }}"
     data-image-alt="{{ $alt ?? '' }}"
-    data-label="{{ $label ?? 'Hình ảnh' }}"
+    data-label="{{ $label ?? __('Image') }}"
     data-preview-style="{{ $previewStyle ?? 'width:300px; max-height:200px; object-fit:cover;' }}"
     data-show-caption="{{ ($showCaption ?? true) ? 'true' : 'false' }}"
 ></div>

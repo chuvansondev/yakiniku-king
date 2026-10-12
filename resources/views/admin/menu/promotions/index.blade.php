@@ -1,8 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Khuyến mãi')
+@section('title', __('Khuyến mãi'))
 
-@section('page-title', 'Khuyến mãi')
+@section('page-title', __('Khuyến mãi'))
 
 @section('content')
 @include('admin.menu.partials.list-styles')
@@ -17,7 +17,7 @@
     "
 >
 
-    <h1>Danh sách khuyến mãi</h1>
+    <h1>{{ __('Danh sách khuyến mãi') }}</h1>
 
     <a
         href="{{ route('admin.menu.promotions.create') }}"
@@ -29,8 +29,7 @@
             border-radius:5px;
         "
     >
-        + Thêm khuyến mãi
-    </a>
+        {{ __('+ Thêm khuyến mãi') }}</a>
 
 </div>
 
@@ -66,17 +65,17 @@
 
                 <th>ID</th>
 
-                <th>Hình ảnh</th>
+                <th>{{ __('Hình ảnh') }}</th>
 
-                <th>Tiêu đề</th>
+                <th>{{ __('Tiêu đề') }}</th>
 
                 <th>Slug</th>
 
-                <th>Thời gian</th>
+                <th>{{ __('Thời gian') }}</th>
 
-                <th>Trạng thái</th>
+                <th>{{ __('Trạng thái') }}</th>
 
-                <th>Thao tác</th>
+                <th>{{ __('Thao tác') }}</th>
 
             </tr>
 
@@ -110,7 +109,7 @@
 
                         @else
 
-                            Không có ảnh
+                            {{ __('Không có ảnh') }}
 
                         @endif
 
@@ -137,9 +136,7 @@
 
                         <br>
 
-                        đến
-
-                        <br>
+                        {{ __('đến') }}<br>
 
                         @if($promotion->end_date)
                             {{ $promotion->end_date->format('d/m/Y') }}
@@ -155,14 +152,12 @@
                         @if($promotion->status)
 
                             <span style="color:green;">
-                                Đang hiển thị
-                            </span>
+                                {{ __('Đang hiển thị') }}</span>
 
                         @else
 
                             <span style="color:red;">
-                                Đang ẩn
-                            </span>
+                                {{ __('Đang ẩn') }}</span>
 
                         @endif
 
@@ -174,8 +169,7 @@
                         <a
                             href="{{ route('admin.menu.promotions.edit', $promotion) }}"
                         >
-                            Sửa
-                        </a>
+                            {{ __('Sửa') }}</a>
 
 
                         <form
@@ -183,9 +177,7 @@
                             method="POST"
                             style="display:inline;"
                             onsubmit="
-                                return confirm(
-                                    'Bạn có chắc muốn xóa khuyến mãi này?'
-                                )
+                                return confirm(@json(__('Bạn có chắc muốn xóa khuyến mãi này?')))
                             "
                         >
 
@@ -194,8 +186,7 @@
                             @method('DELETE')
 
                             <button type="submit">
-                                Xóa
-                            </button>
+                                {{ __('Xóa') }}</button>
 
                         </form>
 
@@ -211,8 +202,7 @@
                         colspan="7"
                         style="text-align:center;"
                     >
-                        Chưa có chương trình khuyến mãi.
-                    </td>
+                        {{ __('Chưa có chương trình khuyến mãi.') }}</td>
 
                 </tr>
 

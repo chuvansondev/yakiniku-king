@@ -46,12 +46,17 @@ class BookingController extends Controller
         }
 
         $tableCapacities = $bookingService->tableCapacities();
-        $maximumFloorCapacity = array_sum($tableCapacities);
+        $tableFloors = $bookingService->tableFloors();
+        $floorCapacities = [];
+        foreach ($tableCapacities as $code => $capacity) {
+            $floorCapacities[$tableFloors[$code]] = ($floorCapacities[$tableFloors[$code]] ?? 0) + $capacity;
+        }
+        $maximumFloorCapacity = max($floorCapacities);
         $unavailableTables = $bookingService->unavailableTables(
             old('restaurant_id'), old('booking_date'), old('booking_time')
         );
 
-        return view('frontend.bookings.create', compact('booking', 'maximumFloorCapacity', 'mustTryMenuItems', 'restaurants', 'tableCapacities', 'unavailableTables'));
+        return view('frontend.bookings.create', compact('booking', 'maximumFloorCapacity', 'mustTryMenuItems', 'restaurants', 'tableCapacities', 'tableFloors', 'unavailableTables'));
     }
 
     public function store(BookingRequest $request, BookingService $bookingService, SettingService $settings): RedirectResponse
@@ -59,9 +64,14 @@ class BookingController extends Controller
         $validated = $request->validated();
 
         $tableCapacities = $bookingService->tableCapacities();
-        $maximumFloorCapacity = array_sum($tableCapacities);
+        $tableFloors = $bookingService->tableFloors();
+        $floorCapacities = [];
+        foreach ($tableCapacities as $code => $capacity) {
+            $floorCapacities[$tableFloors[$code]] = ($floorCapacities[$tableFloors[$code]] ?? 0) + $capacity;
+        }
+        $maximumFloorCapacity = max($floorCapacities);
 
-        if ($error = $bookingService->tableSelectionError($validated['number_of_guests'], $validated['table_codes'] ?? [])) {
+        if ($error = $bookingService->tableSelectionError($validated['number_of_guests'], $validated['table_codes'] ?? [], $validated['floor'])) {
             throw ValidationException::withMessages(['table_codes' => $error]);
         }
 

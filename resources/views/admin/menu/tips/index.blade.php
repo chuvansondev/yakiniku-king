@@ -1,22 +1,21 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Bí kíp ăn ngon')
+@section('title', __('Bí kíp ăn ngon'))
 
-@section('page-title', 'Bí kíp ăn ngon')
+@section('page-title', __('Bí kíp ăn ngon'))
 
 @section('content')
 @include('admin.menu.partials.list-styles')
 @include('admin.menu.partials.list-controls', ['listModel' => App\Models\Tip::class, 'listRoute' => route('admin.menu.tips.index')])
 
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h1>Danh sách bí kíp</h1>
+        <h1>{{ __('Danh sách bí kíp') }}</h1>
 
         <a
             href="{{ route('admin.menu.tips.create') }}"
             style="background:#111; color:white; padding:10px 15px; text-decoration:none; border-radius:5px;"
         >
-            + Thêm bí kíp
-        </a>
+            {{ __('+ Thêm bí kíp') }}</a>
     </div>
 
     @if(session('success'))
@@ -30,12 +29,12 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Hình ảnh</th>
-                    <th>Tiêu đề</th>
+                    <th>{{ __('Hình ảnh') }}</th>
+                    <th>{{ __('Tiêu đề') }}</th>
                     <th>Slug</th>
-                    <th>Ngày đăng</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
+                    <th>{{ __('Ngày đăng') }}</th>
+                    <th>{{ __('Trạng thái') }}</th>
+                    <th>{{ __('Thao tác') }}</th>
                 </tr>
             </thead>
 
@@ -51,7 +50,7 @@
                                     style="width:180px; height:100px; object-fit:cover;"
                                 >
                             @else
-                                Không có ảnh
+                            {{ __('Không có ảnh') }}
                             @endif
                         </td>
                         <td>{{ $tip->title }}</td>
@@ -60,34 +59,34 @@
                             @if($tip->published_at)
                                 {{ $tip->published_at->format('d/m/Y H:i') }}
                             @else
-                                Chưa đăng
+                            {{ __('Chưa đăng') }}
                             @endif
                         </td>
                         <td>
                             @if($tip->status)
-                                <span style="color:green;">Đang hiển thị</span>
+                                <span style="color:green;">{{ __('Đang hiển thị') }}</span>
                             @else
-                                <span style="color:red;">Đang ẩn</span>
+                                <span style="color:red;">{{ __('Đang ẩn') }}</span>
                             @endif
                         </td>
                         <td>
-                            <a href="{{ route('admin.menu.tips.edit', $tip) }}">Sửa</a>
+                            <a href="{{ route('admin.menu.tips.edit', $tip) }}">{{ __('Sửa') }}</a>
 
                             <form
                                 action="{{ route('admin.menu.tips.destroy', $tip) }}"
                                 method="POST"
                                 style="display:inline;"
-                                onsubmit="return confirm('Bạn có chắc muốn xóa bí kíp này?')"
+                                onsubmit="return confirm(@json(__('Bạn có chắc muốn xóa bí kíp này?')))"
                             >
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit">Xóa</button>
+                                <button type="submit">{{ __('Xóa') }}</button>
                             </form>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" style="text-align:center;">Chưa có bí kíp.</td>
+                        <td colspan="7" style="text-align:center;">{{ __('Chưa có bí kíp.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

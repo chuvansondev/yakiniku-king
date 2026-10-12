@@ -1,8 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Banner')
+@section('title', __('Banner'))
 
-@section('page-title', 'Banner')
+@section('page-title', __('Banner'))
 
 @section('content')
 @include('admin.menu.partials.list-styles')
@@ -10,7 +10,7 @@
 
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
 
-    <h1>Danh sách Banner</h1>
+    <h1>{{ __('Danh sách Banner') }}</h1>
 
     <a
         href="{{ route('admin.menu.banners.create') }}"
@@ -22,8 +22,7 @@
             border-radius:5px;
         "
     >
-        + Thêm Banner
-    </a>
+        {{ __('+ Thêm Banner') }}</a>
 
 </div>
 
@@ -61,17 +60,17 @@
 
                 <th>Banner</th>
 
-                <th>Tiêu đề</th>
+                <th>{{ __('Tiêu đề') }}</th>
 
-                <th>Loại</th>
+                <th>{{ __('Loại') }}</th>
 
                 <th>Link</th>
 
-                <th>Thứ tự</th>
+                <th>{{ __('Thứ tự') }}</th>
 
-                <th>Trạng thái</th>
+                <th>{{ __('Trạng thái') }}</th>
 
-                <th>Thao tác</th>
+                <th>{{ __('Thao tác') }}</th>
 
             </tr>
 
@@ -113,7 +112,7 @@
 
                         @else
 
-                            Không có
+                            {{ __('Không có') }}
 
                         @endif
 
@@ -160,14 +159,12 @@
                         @if($banner->status)
 
                             <span style="color:green;">
-                                Đang hiển thị
-                            </span>
+                                {{ __('Đang hiển thị') }}</span>
 
                         @else
 
                             <span style="color:red;">
-                                Đang ẩn
-                            </span>
+                                {{ __('Đang ẩn') }}</span>
 
                         @endif
 
@@ -179,15 +176,14 @@
                         <a
                             href="{{ route('admin.menu.banners.edit', $banner) }}"
                         >
-                            Sửa
-                        </a>
+                            {{ __('Sửa') }}</a>
 
 
                         <form
                             action="{{ route('admin.menu.banners.destroy', $banner) }}"
                             method="POST"
                             style="display:inline;"
-                            onsubmit="return confirm('Bạn có chắc muốn xóa banner này?')"
+                            onsubmit="return confirm(@json(__('Bạn có chắc muốn xóa banner này?')))"
                         >
 
                             @csrf
@@ -195,8 +191,7 @@
                             @method('DELETE')
 
                             <button type="submit">
-                                Xóa
-                            </button>
+                                {{ __('Xóa') }}</button>
 
                         </form>
 
@@ -209,8 +204,7 @@
                 <tr>
 
                     <td colspan="8" style="text-align:center;">
-                        Chưa có Banner.
-                    </td>
+                        {{ __('Chưa có Banner.') }}</td>
 
                 </tr>
 

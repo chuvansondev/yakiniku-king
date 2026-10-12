@@ -1,8 +1,7 @@
 <div style="margin-bottom:20px;">
 
     <label>
-        Tên Combo
-    </label>
+        {{ __('Tên Combo') }}</label>
 
     <br>
 
@@ -18,7 +17,7 @@
 
 @include('admin.menu.partials.english-field', [
     'name' => 'name_en',
-    'label' => 'Tên Combo',
+    'label' => __('Tên Combo'),
     'value' => $combo->name_en ?? '',
     'margin' => '20px',
 ])
@@ -45,8 +44,7 @@
 <div style="margin-bottom:20px;">
 
     <label>
-        Mô tả
-    </label>
+        {{ __('Mô tả') }}</label>
 
     <br>
 
@@ -60,7 +58,7 @@
 
 @include('admin.menu.partials.english-field', [
     'name' => 'description_en',
-    'label' => 'Mô tả',
+    'label' => __('Mô tả'),
     'value' => $combo->description_en ?? '',
     'type' => 'textarea',
     'rows' => 5,
@@ -71,8 +69,7 @@
 <div data-image-field style="margin-bottom:20px;">
 
     <label>
-        Hình ảnh
-    </label>
+        {{ __('Hình ảnh') }}</label>
 
     <br>
 
@@ -86,11 +83,11 @@
     @if(isset($combo) && $combo->image)
         <input type="hidden" name="remove_image" value="0" data-image-remove-value>
         <div data-current-image-preview>
-            <p>Ảnh hiện tại:</p>
+            <p>{{ __('Ảnh hiện tại:') }}</p>
             <img src="{{ asset('storage/' . $combo->image) }}" alt="{{ $combo->name }}" style="max-width:240px;">
-            <p>Để trống nếu muốn giữ ảnh hiện tại.</p>
+            <p>{{ __('Để trống nếu muốn giữ ảnh hiện tại.') }}</p>
         </div>
-        <button class="admin-image-remove-button" type="button" data-image-remove-toggle aria-pressed="false">Xóa ảnh hiện tại</button>
+        <button class="admin-image-remove-button" type="button" data-image-remove-toggle aria-pressed="false">{{ __('Xóa ảnh hiện tại') }}</button>
     @endif
 
 </div>
@@ -99,8 +96,7 @@
 <div style="margin-bottom:20px;">
 
     <label>
-        Giá bán
-    </label>
+        {{ __('Giá bán') }}</label>
 
     <br>
 
@@ -120,8 +116,7 @@
 <div style="margin-bottom:20px;">
 
     <label>
-        Giá gốc
-    </label>
+        {{ __('Giá gốc') }}</label>
 
     <br>
 
@@ -140,8 +135,7 @@
 <div style="margin-bottom:20px;">
 
     <label>
-        Ngày bắt đầu
-    </label>
+        {{ __('Ngày bắt đầu') }}</label>
 
     <br>
 
@@ -158,8 +152,7 @@
 <div style="margin-bottom:20px;">
 
     <label>
-        Ngày kết thúc
-    </label>
+        {{ __('Ngày kết thúc') }}</label>
 
     <br>
 
@@ -176,8 +169,7 @@
 <div style="margin-bottom:20px;">
 
     <label>
-        Thứ tự
-    </label>
+        {{ __('Thứ tự') }}</label>
 
     <br>
 
@@ -193,8 +185,7 @@
 
 
 <h2>
-    Các món trong Combo
-</h2>
+    {{ __('Các món trong Combo') }}</h2>
 
 
 <div id="combo-items">
@@ -241,8 +232,7 @@
             >
 
                 <option value="">
-                    -- Chọn món --
-                </option>
+                    {{ __('-- Chọn món --') }}</option>
 
                 @foreach($menuItems as $menuItem)
 
@@ -252,7 +242,7 @@
                     >
                         {{ $menuItem->name }}
                         -
-                        {{ number_format($menuItem->price, 0, ',', '.') }} ₫
+                        {{ localized_price($menuItem->price) }}
                     </option>
 
                 @endforeach
@@ -276,8 +266,7 @@
                 type="button"
                 onclick="removeComboItem(this)"
             >
-                Xóa
-            </button>
+                {{ __('Xóa') }}</button>
 
         </div>
 
@@ -294,8 +283,7 @@
         padding:10px 15px;
     "
 >
-    + Thêm món
-</button>
+    {{ __('+ Thêm món') }}</button>
 
 
 <div style="margin-bottom:20px;">
@@ -313,9 +301,7 @@
             {{ $isActive ? 'checked' : '' }}
         >
 
-        Hiển thị
-
-    </label>
+        {{ __('Hiển thị') }}</label>
 
 </div>
 
@@ -348,15 +334,14 @@
             >
 
                 <option value="">
-                    -- Chọn món --
-                </option>
+                    {{ __('-- Chọn món --') }}</option>
 
                 @foreach($menuItems as $menuItem)
 
                     <option value="{{ $menuItem->id }}">
                         {{ $menuItem->name }}
                         -
-                        {{ number_format($menuItem->price, 0, ',', '.') }} ₫
+                        {{ localized_price($menuItem->price) }}
                     </option>
 
                 @endforeach
@@ -375,8 +360,7 @@
                 type="button"
                 onclick="removeComboItem(this)"
             >
-                Xóa
-            </button>
+                {{ __('Xóa') }}</button>
 
         `;
 

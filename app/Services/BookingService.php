@@ -12,13 +12,26 @@ use Illuminate\Support\Carbon;
 
 class BookingService
 {
-    private const TABLE_CAPACITIES = ['B1' => 4, 'B2' => 4, 'B3' => 6, 'B4' => 2, 'B5' => 2, 'B6' => 4];
+    private const TABLE_CAPACITIES = [
+        'B1' => 4, 'B2' => 4, 'B3' => 6, 'B4' => 2, 'B5' => 2, 'B6' => 4,
+        'B7' => 2, 'B8' => 2, 'B9' => 4, 'B10' => 4, 'B11' => 4, 'B12' => 6,
+    ];
+
+    private const TABLE_FLOORS = [
+        'B1' => 1, 'B2' => 1, 'B3' => 1, 'B4' => 1, 'B5' => 1, 'B6' => 1,
+        'B7' => 2, 'B8' => 2, 'B9' => 2, 'B10' => 2, 'B11' => 2, 'B12' => 2,
+    ];
 
     public function __construct(private readonly BookingRepositoryInterface $bookings) {}
 
     public function tableCapacities(): array
     {
         return self::TABLE_CAPACITIES;
+    }
+
+    public function tableFloors(): array
+    {
+        return self::TABLE_FLOORS;
     }
 
     public function unavailableTables(?int $restaurantId, ?string $date, ?string $time, ?int $excludeBookingId = null): array
@@ -80,13 +93,21 @@ class BookingService
         return $code;
     }
 
-    public function tableSelectionError(int $partySize, array $tableCodes): ?string
+    public function tableSelectionError(int $partySize, array $tableCodes, ?int $floor = null): ?string
     {
         $capacities = self::TABLE_CAPACITIES;
-        $maximumFloorCapacity = array_sum($capacities);
+        $floorCapacities = [];
+        foreach ($capacities as $code => $capacity) {
+            $floorCapacities[self::TABLE_FLOORS[$code]] = ($floorCapacities[self::TABLE_FLOORS[$code]] ?? 0) + $capacity;
+        }
+        $maximumFloorCapacity = max($floorCapacities);
 
         if ($partySize <= $maximumFloorCapacity && $tableCodes === []) {
             return __('Please select enough tables for your party size.');
+        }
+
+        if ($floor !== null && collect($tableCodes)->contains(fn (string $code): bool => self::TABLE_FLOORS[$code] !== $floor)) {
+            return __('Please select tables on the chosen floor.');
         }
 
         $tableCapacity = array_sum(array_map(fn (string $code): int => $capacities[$code], $tableCodes));

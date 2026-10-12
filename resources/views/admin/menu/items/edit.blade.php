@@ -1,12 +1,12 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Sửa món')
+@section('title', __('Sửa món'))
 
-@section('page-title', 'Sửa món')
+@section('page-title', __('Sửa món'))
 
 @section('content')
 
-    <h1>Sửa món ăn</h1>
+    <h1>{{ __('Sửa món ăn') }}</h1>
 
     @if($errors->any())
 
@@ -41,7 +41,7 @@
 
         <div style="margin-bottom:20px;">
 
-            <label>Danh mục</label>
+            <label>{{ __('Danh mục') }}</label>
 
             <br>
 
@@ -66,12 +66,12 @@
 
         </div>
 
-        @include('admin.menu.partials.english-field', ['name' => 'name_en', 'label' => 'Tên món', 'value' => $item->name_en ?? '', 'margin' => '20px'])
+        @include('admin.menu.partials.english-field', ['name' => 'name_en', 'label' => __('Tên món'), 'value' => $item->name_en ?? '', 'margin' => '20px'])
 
 
         <div style="margin-bottom:20px;">
 
-            <label>Tên món</label>
+            <label>{{ __('Tên món') }}</label>
 
             <br>
 
@@ -104,7 +104,7 @@
 
         <div style="margin-bottom:20px;">
 
-            <label>Mô tả</label>
+            <label>{{ __('Mô tả') }}</label>
 
             <br>
 
@@ -116,12 +116,12 @@
 
         </div>
 
-        @include('admin.menu.partials.english-field', ['name' => 'description_en', 'label' => 'Mô tả', 'value' => $item->description_en ?? '', 'type' => 'textarea', 'rows' => 5, 'margin' => '20px'])
+        @include('admin.menu.partials.english-field', ['name' => 'description_en', 'label' => __('Mô tả'), 'value' => $item->description_en ?? '', 'type' => 'textarea', 'rows' => 5, 'margin' => '20px'])
 
 
         <div data-image-field style="margin-bottom:20px;">
 
-            <label>Hình ảnh</label>
+            <label>{{ __('Hình ảnh') }}</label>
 
             <br>
 
@@ -135,11 +135,11 @@
             @if($item->image)
                 <input type="hidden" name="remove_image" value="0" data-image-remove-value>
                 <div data-current-image-preview>
-                    <p>Ảnh hiện tại:</p>
+                    <p>{{ __('Ảnh hiện tại:') }}</p>
                     <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}" style="max-width:240px;">
-                    <p>Để trống nếu muốn giữ ảnh hiện tại.</p>
+                    <p>{{ __('Để trống nếu muốn giữ ảnh hiện tại.') }}</p>
                 </div>
-                <button class="admin-image-remove-button" type="button" data-image-remove-toggle aria-pressed="false">Xóa ảnh hiện tại</button>
+                <button class="admin-image-remove-button" type="button" data-image-remove-toggle aria-pressed="false">{{ __('Xóa ảnh hiện tại') }}</button>
             @endif
 
         </div>
@@ -147,7 +147,7 @@
 
         <div style="margin-bottom:20px;">
 
-            <label>Giá</label>
+            <label>{{ __('Giá') }}</label>
 
             <br>
 
@@ -166,7 +166,7 @@
 
         <div style="margin-bottom:20px;">
 
-            <label>Thứ tự</label>
+            <label>{{ __('Thứ tự') }}</label>
 
             <br>
 
@@ -210,9 +210,7 @@
                     {{ $item->status ? 'checked' : '' }}
                 >
 
-                Hiển thị
-
-            </label>
+                {{ __('Hiển thị') }}</label>
 
         </div>
 
@@ -227,15 +225,13 @@
                 border-radius:5px;
             "
         >
-            Cập nhật
-        </button>
+            {{ __('Cập nhật') }}</button>
 
         <a
             href="{{ route('admin.menu.items.index') }}"
             style="margin-left:10px;"
         >
-            Quay lại
-        </a>
+            {{ __('Quay lại') }}</a>
 
     </form>
 

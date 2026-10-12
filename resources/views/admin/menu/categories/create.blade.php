@@ -1,12 +1,12 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Thêm danh mục')
+@section('title', __('Thêm danh mục'))
 
-@section('page-title', 'Thêm danh mục')
+@section('page-title', __('Thêm danh mục'))
 
 @section('content')
 
-    <h1>Thêm danh mục Menu</h1>
+    <h1>{{ __('Thêm danh mục Menu') }}</h1>
 
     @if($errors->any())
 
@@ -40,8 +40,7 @@
         <div style="margin-bottom: 20px;">
 
             <label>
-                Tên danh mục
-            </label>
+                {{ __('Tên danh mục') }}</label>
 
             <br>
 
@@ -55,7 +54,7 @@
 
         </div>
 
-        @include('admin.menu.partials.english-field', ['name' => 'name_en', 'label' => 'Tên danh mục', 'value' => old('name_en', ''), 'margin' => '20px'])
+        @include('admin.menu.partials.english-field', ['name' => 'name_en', 'label' => __('Tên danh mục'), 'value' => old('name_en', ''), 'margin' => '20px'])
 
 
         <div style="margin-bottom: 20px;">
@@ -70,20 +69,19 @@
                 type="text"
                 name="slug"
                 value="{{ old('slug') }}"
-                placeholder="Để trống để tự tạo"
+                placeholder="{{ __('Để trống để tự tạo') }}"
                 style="width: 100%; padding: 10px;"
             >
 
         </div>
 
-        @include('admin.menu.partials.english-field', ['name' => 'description_en', 'label' => 'Mô tả', 'value' => old('description_en', ''), 'type' => 'textarea', 'rows' => 5, 'margin' => '20px'])
+        @include('admin.menu.partials.english-field', ['name' => 'description_en', 'label' => __('Mô tả'), 'value' => old('description_en', ''), 'type' => 'textarea', 'rows' => 5, 'margin' => '20px'])
 
 
         <div style="margin-bottom: 20px;">
 
             <label>
-                Mô tả
-            </label>
+                {{ __('Mô tả') }}</label>
 
             <br>
 
@@ -117,8 +115,7 @@
         <div style="margin-bottom: 20px;">
 
             <label>
-                Thứ tự
-            </label>
+                {{ __('Thứ tự') }}</label>
 
             <br>
 
@@ -144,9 +141,7 @@
                     checked
                 >
 
-                Hiển thị
-
-            </label>
+                {{ __('Hiển thị') }}</label>
 
         </div>
 
@@ -161,16 +156,14 @@
                 border-radius: 5px;
             "
         >
-            Lưu
-        </button>
+            {{ __('Lưu') }}</button>
 
 
         <a
             href="{{ route('admin.menu.categories.index') }}"
             style="margin-left: 10px;"
         >
-            Quay lại
-        </a>
+            {{ __('Quay lại') }}</a>
 
     </form>
 

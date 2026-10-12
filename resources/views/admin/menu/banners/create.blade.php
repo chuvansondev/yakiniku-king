@@ -1,12 +1,12 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Thêm Banner')
+@section('title', __('Thêm Banner'))
 
-@section('page-title', 'Thêm Banner')
+@section('page-title', __('Thêm Banner'))
 
 @section('content')
 
-    <h1>Thêm Banner</h1>
+    <h1>{{ __('Thêm Banner') }}</h1>
 
     @if($errors->any())
 
@@ -38,12 +38,10 @@
         @include('admin.menu.banners._form')
 
         <button type="submit">
-            Lưu Banner
-        </button>
+            {{ __('Lưu Banner') }}</button>
 
         <a href="{{ route('admin.menu.banners.index') }}">
-            Quay lại
-        </a>
+            {{ __('Quay lại') }}</a>
 
     </form>
 

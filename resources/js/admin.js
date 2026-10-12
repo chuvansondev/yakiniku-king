@@ -3,6 +3,13 @@ import { createApp } from 'vue/dist/vue.esm-bundler.js';
 const adminShell = document.querySelector('[data-admin-shell]');
 const adminMenuToggle = document.querySelector('[data-admin-menu-toggle]');
 const adminBackdrop = document.querySelector('[data-admin-backdrop]');
+const adminLabels = (() => {
+    try {
+        return JSON.parse(adminShell?.dataset.adminLabels ?? '{}');
+    } catch {
+        return {};
+    }
+})();
 
 if (adminShell && adminMenuToggle && adminBackdrop) {
     const sidebar = adminShell.querySelector('#admin-sidebar');
@@ -54,7 +61,8 @@ const ImageUploadField = {
         imagePath: { type: String, default: '' },
         storageUrl: { type: String, default: '' },
         alt: { type: String, default: '' },
-        label: { type: String, default: 'H\u00ecnh \u1ea3nh' },
+        label: { type: String, default: '' },
+        labels: { type: Object, default: () => adminLabels },
         previewStyle: { type: String, default: 'width:300px; max-height:200px; object-fit:cover;' },
         showCaption: { type: Boolean, default: true },
     },
@@ -81,16 +89,16 @@ const ImageUploadField = {
         <template v-if="imagePath">
             <input type="hidden" name="remove_image" :value="removeImage ? '1' : '0'">
             <div class="admin-current-image-preview" :hidden="removeImage">
-                <p v-if="showCaption">\u1ea2nh hi\u1ec7n t\u1ea1i:</p>
-                <img class="admin-current-image" :src="imageUrl" :alt="alt" :style="previewStyle">
+                <p v-if="showCaption">{{ labels.currentImage }}</p>
+                <img class="admin-current-image" :src="imageUrl" :alt="alt || labels.selectedImage" :style="previewStyle">
             </div>
             <button class="admin-image-remove-button" type="button" :aria-pressed="removeImage ? 'true' : 'false'" @click="removeImage = !removeImage">
-                {{ removeImage ? 'Gi\u1eef \u1ea3nh hi\u1ec7n t\u1ea1i' : 'X\u00f3a \u1ea3nh hi\u1ec7n t\u1ea1i' }}
+                {{ removeImage ? labels.keepImage : labels.removeImage }}
             </button>
         </template>
         <div v-if="previewUrl" class="admin-current-image-preview">
-            <p>Xem tr\u01b0\u1edbc:</p>
-            <img class="admin-current-image" :src="previewUrl" alt="\u1ea2nh \u0111\u01b0\u1ee3c ch\u1ecdn" :style="previewStyle">
+            <p>{{ labels.preview }}</p>
+            <img class="admin-current-image" :src="previewUrl" :alt="labels.selectedImage" :style="previewStyle">
         </div>
     `,
 };
@@ -102,29 +110,31 @@ const BannerForm = {
         imageType: { type: String, required: true },
         videoType: { type: String, required: true },
         storageUrl: { type: String, required: true },
+        labels: { type: Object, default: () => adminLabels },
     },
     data() {
         return { values: { ...this.initialValues } };
     },
     template: `
         <div class="admin-form-field">
-            <label for="banner-title">Ti\u00eau \u0111\u1ec1</label>
+            <label for="banner-title">{{ labels.title }}</label>
             <input id="banner-title" class="admin-form-input" type="text" name="title" v-model="values.title">
         </div>
         <div class="admin-form-field">
-            <label for="banner-title-en">Ti\u00eau \u0111\u1ec1 (English)</label>
+            <label for="banner-title-en">{{ labels.titleEnglish }}</label>
             <input id="banner-title-en" class="admin-form-input" type="text" name="title_en" v-model="values.title_en">
         </div>
         <div class="admin-form-field">
-            <label for="banner-type">Lo\u1ea1i banner</label>
+            <label for="banner-type">{{ labels.bannerType }}</label>
             <select id="banner-type" class="admin-form-input" name="type" v-model="values.type">
-                <option :value="imageType">H\u00ecnh \u1ea3nh</option>
+                <option :value="imageType">{{ labels.image }}</option>
                 <option :value="videoType">Video</option>
             </select>
         </div>
         <div v-show="values.type === imageType" class="admin-form-field" data-image-field>
             <ImageUploadField
-                label="H\u00ecnh \u1ea3nh"
+                :label="labels.image"
+                :labels="labels"
                 :image-path="values.image"
                 :storage-url="storageUrl"
                 :alt="values.title"
@@ -136,17 +146,17 @@ const BannerForm = {
             <input id="banner-video-url" class="admin-form-input" type="url" name="video_url" v-model="values.video_url" placeholder="https://www.youtube.com/...">
         </div>
         <div class="admin-form-field">
-            <label for="banner-link">Link khi click banner</label>
+            <label for="banner-link">{{ labels.bannerLink }}</label>
             <input id="banner-link" class="admin-form-input" type="text" name="link" v-model="values.link" placeholder="https://example.com">
         </div>
         <div class="admin-form-field">
-            <label for="banner-sort-order">Th\u1ee9 t\u1ef1 hi\u1ec3n th\u1ecb</label>
+            <label for="banner-sort-order">{{ labels.displayOrder }}</label>
             <input id="banner-sort-order" class="admin-form-input" type="number" name="sort_order" v-model="values.sort_order" min="0">
         </div>
         <div class="admin-form-field">
             <label>
                 <input type="checkbox" name="status" value="1" v-model="values.status">
-                Hi\u1ec3n th\u1ecb banner
+                {{ labels.showBanner }}
             </label>
         </div>
     `,
@@ -168,6 +178,7 @@ document.querySelectorAll('[data-vue-image-field]').forEach((element) => {
         storageUrl: element.dataset.storageUrl,
         alt: element.dataset.imageAlt,
         label: element.dataset.label,
+        labels: adminLabels,
         previewStyle: element.dataset.previewStyle,
         showCaption: element.dataset.showCaption === 'true',
     }).mount(element);
@@ -179,5 +190,6 @@ document.querySelectorAll('[data-vue-banner-form]').forEach((element) => {
         imageType: element.dataset.imageType,
         videoType: element.dataset.videoType,
         storageUrl: element.dataset.storageUrl,
+        labels: adminLabels,
     }).mount(element);
 });

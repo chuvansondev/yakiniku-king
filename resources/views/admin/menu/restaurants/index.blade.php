@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Nhà hàng')
-@section('page-title', 'Nhà hàng')
+@section('title', __('Nhà hàng'))
+@section('page-title', __('Nhà hàng'))
 
 @section('content')
 @include('admin.menu.partials.list-styles')
@@ -12,7 +12,7 @@
 @endif
 
 <div class="admin-page-heading">
-    <h1>Quản lý nhà hàng</h1>
+    <h1>{{ __('Quản lý nhà hàng') }}</h1>
     <a href="{{ route('admin.menu.restaurants.create') }}"
     style="
             background:#111;
@@ -22,8 +22,7 @@
             border-radius:5px;
         "
     >
-        + Thêm nhà hàng
-    </a>
+        {{ __('+ Thêm nhà hàng') }}</a>
 </div>
 
 
@@ -35,13 +34,13 @@
 >
     <thead>
         <tr>
-            <th>Ảnh</th>
-            <th>Tên</th>
-            <th>Địa chỉ</th>
-            <th>SĐT</th>
-            <th>Giờ mở cửa</th>
-            <th>Trạng thái</th>
-            <th>Thao tác</th>
+            <th>{{ __('Ảnh') }}</th>
+            <th>{{ __('Tên') }}</th>
+            <th>{{ __('Địa chỉ') }}</th>
+            <th>{{ __('SĐT') }}</th>
+            <th>{{ __('Giờ mở cửa') }}</th>
+            <th>{{ __('Trạng thái') }}</th>
+            <th>{{ __('Thao tác') }}</th>
         </tr>
     </thead>
 
@@ -62,7 +61,7 @@
 
                     @else
 
-                        Không có ảnh
+                            {{ __('Không có ảnh') }}
 
                     @endif
                 </td>
@@ -102,11 +101,11 @@
 
                     @if($restaurant->status)
 
-                        <span>Đang hoạt động</span>
+                        <span>{{ __('Đang hoạt động') }}</span>
 
                     @else
 
-                        <span>Ngừng hoạt động</span>
+                        <span>{{ __('Ngừng hoạt động') }}</span>
 
                     @endif
 
@@ -116,22 +115,20 @@
                 <td>
 
                     <a href="{{ route('admin.menu.restaurants.edit', $restaurant) }}">
-                        Sửa
-                    </a>
+                        {{ __('Sửa') }}</a>
 
 
                     <form
                         action="{{ route('admin.menu.restaurants.destroy', $restaurant) }}"
                         method="POST"
                         style="display:inline;"
-                        onsubmit="return confirm('Bạn có chắc muốn xóa nhà hàng này?')"
+                        onsubmit="return confirm(@json(__('Bạn có chắc muốn xóa nhà hàng này?')))"
                     >
                         @csrf
                         @method('DELETE')
 
                         <button type="submit">
-                            Xóa
-                        </button>
+                            {{ __('Xóa') }}</button>
                     </form>
 
                 </td>
@@ -142,8 +139,7 @@
 
             <tr>
                 <td colspan="7" style="text-align:center;">
-                    Chưa có nhà hàng nào.
-                </td>
+                    {{ __('Chưa có nhà hàng nào.') }}</td>
             </tr>
 
         @endforelse

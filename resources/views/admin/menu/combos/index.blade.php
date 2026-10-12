@@ -1,8 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Combo')
+@section('title', __('Combo'))
 
-@section('page-title', 'Combo')
+@section('page-title', __('Combo'))
 
 @section('content')
 @include('admin.menu.partials.list-styles')
@@ -15,7 +15,7 @@
         margin-bottom:20px;
     ">
 
-        <h1>Combo</h1>
+        <h1>{{ __('Combo') }}</h1>
 
         <a
             href="{{ route('admin.menu.combos.create') }}"
@@ -27,8 +27,7 @@
                 border-radius:5px;
             "
         >
-            + Thêm Combo
-        </a>
+            {{ __('+ Thêm Combo') }}</a>
 
     </div>
 
@@ -67,17 +66,17 @@
 
                     <th>ID</th>
 
-                    <th>Tên Combo</th>
+                    <th>{{ __('Tên Combo') }}</th>
 
-                    <th>Giá</th>
+                    <th>{{ __('Giá') }}</th>
 
-                    <th>Giá gốc</th>
+                    <th>{{ __('Giá gốc') }}</th>
 
-                    <th>Món trong Combo</th>
+                    <th>{{ __('Món trong Combo') }}</th>
 
-                    <th>Trạng thái</th>
+                    <th>{{ __('Trạng thái') }}</th>
 
-                    <th>Thao tác</th>
+                    <th>{{ __('Thao tác') }}</th>
 
                 </tr>
 
@@ -98,14 +97,14 @@
                         </td>
 
                         <td>
-                            {{ number_format($combo->price, 0, ',', '.') }} ₫
+                            {{ localized_price($combo->price) }}
                         </td>
 
                         <td>
 
                             @if($combo->original_price)
 
-                                {{ number_format($combo->original_price, 0, ',', '.') }} ₫
+                                {{ localized_price($combo->original_price) }}
 
                             @else
 
@@ -128,8 +127,7 @@
                             @empty
 
                                 <span>
-                                    Chưa có món
-                                </span>
+                                    {{ __('Chưa có món') }}</span>
 
                             @endforelse
 
@@ -140,14 +138,12 @@
                             @if($combo->status)
 
                                 <span style="color:green;">
-                                    Hiển thị
-                                </span>
+                                    {{ __('Hiển thị') }}</span>
 
                             @else
 
                                 <span style="color:red;">
-                                    Ẩn
-                                </span>
+                                    {{ __('Ẩn') }}</span>
 
                             @endif
 
@@ -158,15 +154,14 @@
                             <a
                                 href="{{ route('admin.menu.combos.edit', $combo) }}"
                             >
-                                Sửa
-                            </a>
+                                {{ __('Sửa') }}</a>
 
                             <form
                                 action="{{ route('admin.menu.combos.destroy', $combo) }}"
                                 method="POST"
                                 style="display:inline;"
                                 onsubmit="
-                                    return confirm('Bạn có chắc muốn xóa Combo này?')
+                                    return confirm(@json(__('Bạn có chắc muốn xóa Combo này?')))
                                 "
                             >
 
@@ -181,8 +176,7 @@
                                         margin-left:10px;
                                     "
                                 >
-                                    Xóa
-                                </button>
+                                    {{ __('Xóa') }}</button>
 
                             </form>
 
@@ -198,8 +192,7 @@
                             colspan="7"
                             style="text-align:center;"
                         >
-                            Chưa có Combo nào.
-                        </td>
+                            {{ __('Chưa có Combo nào.') }}</td>
 
                     </tr>
 

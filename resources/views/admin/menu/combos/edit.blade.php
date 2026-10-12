@@ -1,12 +1,12 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Sửa Combo')
+@section('title', __('Sửa Combo'))
 
-@section('page-title', 'Sửa Combo')
+@section('page-title', __('Sửa Combo'))
 
 @section('content')
 
-    <h1>Sửa Combo</h1>
+    <h1>{{ __('Sửa Combo') }}</h1>
 
 
     @if($errors->any())
@@ -58,16 +58,14 @@
                 border-radius:5px;
             "
         >
-            Cập nhật Combo
-        </button>
+            {{ __('Cập nhật Combo') }}</button>
 
 
         <a
             href="{{ route('admin.menu.combos.index') }}"
             style="margin-left:10px;"
         >
-            Quay lại
-        </a>
+            {{ __('Quay lại') }}</a>
 
     </form>
 

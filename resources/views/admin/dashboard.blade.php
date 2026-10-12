@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Dashboard')
+@section('title', __('Dashboard'))
 
 @section('content')
     <style>
@@ -588,48 +588,48 @@
     <div class="dashboard-page">
         <header class="dashboard-hero">
             <div>
-                <p class="dashboard-eyebrow">Yakiniku King / Trung tâm vận hành</p>
-                <h1>Xin chào, {{ auth()->user()->name }}</h1>
-                <p class="dashboard-hero-copy">Theo dõi hoạt động nhà hàng và xử lý các yêu cầu mới nhất.</p>
+                <p class="dashboard-eyebrow">{{ __('Yakiniku King / Trung tâm vận hành') }}</p>
+                <h1>{{ __('Xin chào :name', ['name' => auth()->user()->name]) }}</h1>
+                <p class="dashboard-hero-copy">{{ __('Theo dõi hoạt động nhà hàng và xử lý các yêu cầu mới nhất.') }}</p>
             </div>
             <div class="dashboard-hero-tools">
                 <time class="dashboard-date" datetime="{{ now()->toDateString() }}">{{ now()->format('d/m/Y') }}</time>
-                <a class="dashboard-button" href="{{ route('admin.menu.bookings.create') }}">+ Tạo đặt bàn</a>
-                <a class="dashboard-button" href="{{ route('admin.menu.items.create') }}">+ Thêm món ăn</a>
+                <a class="dashboard-button" href="{{ route('admin.menu.bookings.create') }}">{{ __('+ Tạo đặt bàn') }}</a>
+                <a class="dashboard-button" href="{{ route('admin.menu.items.create') }}">{{ __('+ Thêm món ăn') }}</a>
             </div>
         </header>
 
         @if ($pendingBookingsCount > 0)
-            <aside class="dashboard-priority" aria-label="Việc cần ưu tiên">
+            <aside class="dashboard-priority" aria-label="{{ __('Việc cần ưu tiên') }}">
                 <span class="dashboard-priority__icon" aria-hidden="true">!</span>
                 <span class="dashboard-priority__copy">
-                    <strong>Cần xác nhận đặt bàn</strong>
-                    <span>{{ number_format($pendingBookingsCount) }} yêu cầu đang chờ xử lý.</span>
+                    <strong>{{ __('Cần xác nhận đặt bàn') }}</strong>
+                    <span>{{ __(':count requests are waiting to be processed.', ['count' => number_format($pendingBookingsCount)]) }}</span>
                 </span>
-                <a href="{{ route('admin.menu.bookings.index') }}">Xem và xử lý <span aria-hidden="true">&rarr;</span></a>
+                <a href="{{ route('admin.menu.bookings.index') }}">{{ __('Xem và xử lý') }}<span aria-hidden="true">&rarr;</span></a>
             </aside>
         @endif
 
-        <section class="dashboard-stat-grid" aria-label="Tổng quan hoạt động">
+        <section class="dashboard-stat-grid" aria-label="{{ __('Tổng quan hoạt động') }}">
             <article class="dashboard-stat">
-                <span class="dashboard-stat-label">Đặt bàn hôm nay</span>
+                <span class="dashboard-stat-label">{{ __('Đặt bàn hôm nay') }}</span>
                 <strong class="dashboard-stat-value">{{ number_format($todayBookingsCount) }}</strong>
-                <span class="dashboard-stat-note">{{ number_format($bookingsCount) }} lượt đặt bàn toàn hệ thống</span>
+                <span class="dashboard-stat-note">{{ __(':count bookings across the system', ['count' => number_format($bookingsCount)]) }}</span>
             </article>
             <article class="dashboard-stat">
-                <span class="dashboard-stat-label">Chờ xác nhận</span>
+                <span class="dashboard-stat-label">{{ __('Chờ xác nhận') }}</span>
                 <strong class="dashboard-stat-value">{{ number_format($pendingBookingsCount) }}</strong>
-                <span class="dashboard-stat-note">Yêu cầu cần được xử lý</span>
+                <span class="dashboard-stat-note">{{ __('Yêu cầu cần được xử lý') }}</span>
             </article>
             <article class="dashboard-stat">
-                <span class="dashboard-stat-label">Lead mới</span>
+                <span class="dashboard-stat-label">{{ __('Lead mới') }}</span>
                 <strong class="dashboard-stat-value">{{ number_format($newLeadsCount) }}</strong>
-                <span class="dashboard-stat-note">Khách hàng đang chờ liên hệ</span>
+                <span class="dashboard-stat-note">{{ __('Khách hàng đang chờ liên hệ') }}</span>
             </article>
             <article class="dashboard-stat">
-                <span class="dashboard-stat-label">Món ăn</span>
+                <span class="dashboard-stat-label">{{ __('Món ăn') }}</span>
                 <strong class="dashboard-stat-value">{{ number_format($menuItemsCount) }}</strong>
-                <span class="dashboard-stat-note">{{ number_format($combosCount) }} combo trong thực đơn</span>
+                <span class="dashboard-stat-note">{{ __(':count combos on the menu', ['count' => number_format($combosCount)]) }}</span>
             </article>
         </section>
 
@@ -638,18 +638,18 @@
                 <section class="dashboard-panel" aria-labelledby="booking-trend-title">
                     <header class="dashboard-panel-heading">
                         <div>
-                            <p class="dashboard-panel-kicker">Nhịp độ hoạt động</p>
-                            <h2 id="booking-trend-title">Đặt bàn trong 7 ngày</h2>
+                            <p class="dashboard-panel-kicker">{{ __('Nhịp độ hoạt động') }}</p>
+                            <h2 id="booking-trend-title">{{ __('Đặt bàn trong 7 ngày') }}</h2>
                         </div>
-                        <a class="dashboard-panel-link" href="{{ route('admin.menu.bookings.index') }}">Quản lý đặt bàn &rarr;</a>
+                        <a class="dashboard-panel-link" href="{{ route('admin.menu.bookings.index') }}">{{ __('Quản lý đặt bàn →') }}</a>
                     </header>
                     <div class="dashboard-trend-summary">
                         <strong>{{ number_format($bookingTrend->sum('count')) }}</strong>
-                        <span>lượt đặt bàn từ {{ $bookingTrend->first()['label'] }} đến hôm nay</span>
+                        <span>{{ __(':count bookings from :start through today', ['count' => number_format($bookingTrend->sum('count')), 'start' => $bookingTrend->first()['label']]) }}</span>
                     </div>
-                    <div class="dashboard-trend-chart" role="img" aria-label="Số lượt đặt bàn theo ngày trong 7 ngày gần nhất">
+                    <div class="dashboard-trend-chart" role="img" aria-label="{{ __('Số lượt đặt bàn theo ngày trong 7 ngày gần nhất') }}">
                         @foreach ($bookingTrend as $day)
-                            <div class="dashboard-trend-day" aria-label="{{ $day['weekday'] }} {{ $day['label'] }}: {{ $day['count'] }} lượt">
+                            <div class="dashboard-trend-day" aria-label="{{ __(':weekday :date: :count bookings', ['weekday' => $day['weekday'], 'date' => $day['label'], 'count' => $day['count']]) }}">
                                 <span class="dashboard-trend-count">{{ $day['count'] }}</span>
                                 <div class="dashboard-trend-track">
                                     <span class="dashboard-trend-bar" style="height: {{ $day['count'] > 0 ? max(10, (int) round($day['count'] / $bookingTrendMax * 100)) : 3 }}%"></span>
@@ -663,21 +663,21 @@
                 <section class="dashboard-panel" aria-labelledby="recent-bookings-title">
                     <header class="dashboard-panel-heading">
                         <div>
-                            <p class="dashboard-panel-kicker">Cập nhật mới nhất</p>
-                            <h2 id="recent-bookings-title">Đặt bàn gần đây</h2>
+                            <p class="dashboard-panel-kicker">{{ __('Cập nhật mới nhất') }}</p>
+                            <h2 id="recent-bookings-title">{{ __('Đặt bàn gần đây') }}</h2>
                         </div>
-                        <a class="dashboard-panel-link" href="{{ route('admin.menu.bookings.index') }}">Xem tất cả &rarr;</a>
+                        <a class="dashboard-panel-link" href="{{ route('admin.menu.bookings.index') }}">{{ __('Xem tất cả →') }}</a>
                     </header>
                     <div class="dashboard-table-wrap">
                         <table class="dashboard-table">
                             <thead>
                                 <tr>
-                                    <th>Mã đặt bàn</th>
-                                    <th>Khách hàng</th>
-                                    <th>Nhà hàng</th>
-                                    <th>Lịch đặt</th>
-                                    <th>Số khách</th>
-                                    <th>Trạng thái</th>
+                                    <th>{{ __('Mã đặt bàn') }}</th>
+                                    <th>{{ __('Khách hàng') }}</th>
+                                    <th>{{ __('Nhà hàng') }}</th>
+                                    <th>{{ __('Lịch đặt') }}</th>
+                                    <th>{{ __('Số khách') }}</th>
+                                    <th>{{ __('Trạng thái') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -685,24 +685,24 @@
                                     <tr>
                                         <td class="dashboard-booking-code">{{ $booking->booking_code }}</td>
                                         <td>{{ $booking->customer_name }}</td>
-                                        <td>{{ $booking->restaurant->name ?? '—' }}</td>
+                                        <td>{{ $booking->restaurant ? localized_text($booking->restaurant, 'name') : '—' }}</td>
                                         <td>{{ $booking->booking_date?->format('d/m') }} · {{ $booking->booking_time }}</td>
-                                        <td>{{ $booking->number_of_guests }} khách</td>
+                                        <td>{{ __(':count guests', ['count' => $booking->number_of_guests]) }}</td>
                                         <td>
                                             @if ($booking->status === \App\Enums\BookingStatus::Pending->value)
-                                                <span class="dashboard-status dashboard-status-pending">Chờ xác nhận</span>
+                                                <span class="dashboard-status dashboard-status-pending">{{ __('Chờ xác nhận') }}</span>
                                             @elseif ($booking->status === \App\Enums\BookingStatus::Confirmed->value)
-                                                <span class="dashboard-status dashboard-status-confirmed">Đã xác nhận</span>
+                                                <span class="dashboard-status dashboard-status-confirmed">{{ __('Đã xác nhận') }}</span>
                                             @elseif ($booking->status === \App\Enums\BookingStatus::Cancelled->value)
-                                                <span class="dashboard-status dashboard-status-cancelled">Đã hủy</span>
+                                                <span class="dashboard-status dashboard-status-cancelled">{{ __('Đã hủy') }}</span>
                                             @elseif ($booking->status === \App\Enums\BookingStatus::Completed->value)
-                                                <span class="dashboard-status dashboard-status-completed">Hoàn thành</span>
+                                                <span class="dashboard-status dashboard-status-completed">{{ __('Hoàn thành') }}</span>
                                             @endif
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td class="dashboard-empty" colspan="6">Chưa có đặt bàn nào.</td>
+                                        <td class="dashboard-empty" colspan="6">{{ __('Chưa có đặt bàn nào.') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -715,22 +715,22 @@
                 <section class="dashboard-panel" aria-labelledby="new-leads-title">
                     <header class="dashboard-panel-heading">
                         <div>
-                            <p class="dashboard-panel-kicker">Cần liên hệ</p>
-                            <h2 id="new-leads-title">Lead mới</h2>
+                            <p class="dashboard-panel-kicker">{{ __('Cần liên hệ') }}</p>
+                            <h2 id="new-leads-title">{{ __('Lead mới') }}</h2>
                         </div>
-                        <a class="dashboard-panel-link" href="{{ route('admin.menu.leads.index') }}">Tất cả &rarr;</a>
+                        <a class="dashboard-panel-link" href="{{ route('admin.menu.leads.index') }}">{{ __('Tất cả →') }}</a>
                     </header>
                     <div class="dashboard-lead-list">
                         @forelse ($recentLeads as $lead)
                             <a class="dashboard-lead-link" href="{{ route('admin.menu.leads.edit', $lead) }}">
                                 <span>
                                     <span class="dashboard-lead-name">{{ $lead->name }}</span>
-                                    <span class="dashboard-lead-contact">{{ $lead->phone ?: ($lead->email ?: 'Chưa có thông tin liên hệ') }}</span>
+                                    <span class="dashboard-lead-contact">{{ $lead->phone ?: ($lead->email ?: __('Chưa có thông tin liên hệ')) }}</span>
                                 </span>
                                 <time class="dashboard-lead-date" datetime="{{ $lead->created_at->toDateString() }}">{{ $lead->created_at->format('d/m') }}</time>
                             </a>
                         @empty
-                            <p class="dashboard-empty">Không có lead mới cần xử lý.</p>
+                            <p class="dashboard-empty">{{ __('Không có lead mới cần xử lý.') }}</p>
                         @endforelse
                     </div>
                 </section>
@@ -738,29 +738,29 @@
                 <section class="dashboard-panel" aria-labelledby="quick-actions-title">
                     <header class="dashboard-panel-heading">
                         <div>
-                            <p class="dashboard-panel-kicker">Lối tắt</p>
-                            <h2 id="quick-actions-title">Truy cập nhanh</h2>
+                            <p class="dashboard-panel-kicker">{{ __('Lối tắt') }}</p>
+                            <h2 id="quick-actions-title">{{ __('Truy cập nhanh') }}</h2>
                         </div>
                     </header>
-                    <nav class="dashboard-action-list" aria-label="Truy cập nhanh">
-                        <a class="dashboard-action-link" href="{{ route('admin.menu.bookings.create') }}"><span>Tạo đặt bàn</span><span>+</span></a>
-                        <a class="dashboard-action-link" href="{{ route('admin.menu.items.create') }}"><span>Thêm món ăn</span><span>+</span></a>
-                        <a class="dashboard-action-link" href="{{ route('admin.menu.combos.create') }}"><span>Thêm combo</span><span>+</span></a>
-                        <a class="dashboard-action-link" href="{{ route('admin.menu.promotions.create') }}"><span>Tạo khuyến mãi</span><span>+</span></a>
+                    <nav class="dashboard-action-list" aria-label="{{ __('Truy cập nhanh') }}">
+                        <a class="dashboard-action-link" href="{{ route('admin.menu.bookings.create') }}"><span>{{ __('Tạo đặt bàn') }}</span><span>+</span></a>
+                        <a class="dashboard-action-link" href="{{ route('admin.menu.items.create') }}"><span>{{ __('Thêm món ăn') }}</span><span>+</span></a>
+                        <a class="dashboard-action-link" href="{{ route('admin.menu.combos.create') }}"><span>{{ __('Thêm combo') }}</span><span>+</span></a>
+                        <a class="dashboard-action-link" href="{{ route('admin.menu.promotions.create') }}"><span>{{ __('Tạo khuyến mãi') }}</span><span>+</span></a>
                     </nav>
                 </section>
 
                 <section class="dashboard-panel" aria-labelledby="content-overview-title">
                     <header class="dashboard-panel-heading">
                         <div>
-                            <p class="dashboard-panel-kicker">Quản lý nội dung</p>
-                            <h2 id="content-overview-title">Danh mục hệ thống</h2>
+                            <p class="dashboard-panel-kicker">{{ __('Quản lý nội dung') }}</p>
+                            <h2 id="content-overview-title">{{ __('Danh mục hệ thống') }}</h2>
                         </div>
                     </header>
-                    <nav class="dashboard-resource-list" aria-label="Danh mục hệ thống">
+                    <nav class="dashboard-resource-list" aria-label="{{ __('Danh mục hệ thống') }}">
                         <a class="dashboard-resource-link" href="{{ route('admin.menu.combos.index') }}"><span>Combo</span><strong>{{ number_format($combosCount) }}</strong></a>
-                        <a class="dashboard-resource-link" href="{{ route('admin.menu.promotions.index') }}"><span>Khuyến mãi</span><strong>{{ number_format($promotionsCount) }}</strong></a>
-                        <a class="dashboard-resource-link" href="{{ route('admin.menu.restaurants.index') }}"><span>Nhà hàng</span><strong>{{ number_format($restaurantsCount) }}</strong></a>
+                        <a class="dashboard-resource-link" href="{{ route('admin.menu.promotions.index') }}"><span>{{ __('Khuyến mãi') }}</span><strong>{{ number_format($promotionsCount) }}</strong></a>
+                        <a class="dashboard-resource-link" href="{{ route('admin.menu.restaurants.index') }}"><span>{{ __('Nhà hàng') }}</span><strong>{{ number_format($restaurantsCount) }}</strong></a>
                     </nav>
                 </section>
             </aside>

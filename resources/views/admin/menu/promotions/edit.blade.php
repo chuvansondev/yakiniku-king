@@ -1,12 +1,12 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Sửa khuyến mãi')
+@section('title', __('Sửa khuyến mãi'))
 
-@section('page-title', 'Sửa khuyến mãi')
+@section('page-title', __('Sửa khuyến mãi'))
 
 @section('content')
 
-<h1>Sửa khuyến mãi</h1>
+<h1>{{ __('Sửa khuyến mãi') }}</h1>
 
 
 @if($errors->any())
@@ -49,13 +49,11 @@
 
 
     <button type="submit">
-        Cập nhật khuyến mãi
-    </button>
+        {{ __('Cập nhật khuyến mãi') }}</button>
 
 
     <a href="{{ route('admin.menu.promotions.index') }}">
-        Quay lại
-    </a>
+        {{ __('Quay lại') }}</a>
 
 </form>
 

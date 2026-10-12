@@ -187,6 +187,10 @@
 
         .booking-floor-plan { overflow: hidden; border: 1px solid #e2ddd4; border-radius: 5px; }
         .booking-plan-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .75rem; }
+        .booking-floor-tabs { display: flex; justify-content: center; gap: clamp(1.5rem, 8vw, 5rem); margin: .5rem 0 0; border-bottom: 1px solid #d8d0c4; }
+        .booking-floor-tab { min-width: 5rem; padding: .55rem .35rem; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #625b54; font-size: .92rem; font-weight: 600; cursor: pointer; }
+        .booking-floor-tab[aria-selected="true"] { border-bottom-color: #a83d32; color: #87332b; }
+        .booking-floor-tab:focus-visible { outline: 2px solid #a83d32; outline-offset: 2px; }
         .booking-plan-caption { margin: 0; color: #5c5750; font-size: .82rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; }
         .booking-plan-legend { display: flex; flex-wrap: wrap; gap: .5rem 1rem; margin-top: .85rem; color: #5f5a53; font-size: .78rem; }
         .booking-plan-legend span { display: inline-flex; align-items: center; gap: .4rem; }
@@ -428,19 +432,6 @@
                                 </div>
 
                                 <div class="col-12 col-md-6 booking-field">
-                                    <label for="floor">{{ __('Chọn tầng') }} <span class="booking-required-mark" aria-hidden="true">*</span><span class="visually-hidden">({{ __('Bắt buộc') }})</span></label>
-                                    <select id="floor" name="floor" class="form-select @error('floor') is-invalid @enderror" required>
-                                        <option value="">{{ __('Chọn tầng') }}</option>
-                                        @foreach ([1, 2] as $floor)
-                                            <option value="{{ $floor }}" @selected(old('floor') == $floor)>{{ __('Tầng') }} {{ $floor }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('floor')
-                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-12 col-md-6 booking-field">
                                     <label for="customer_name">{{ __('Họ và tên') }} <span class="booking-required-mark" aria-hidden="true">*</span><span class="visually-hidden">({{ __('Bắt buộc') }})</span></label>
                                     <input id="customer_name" name="customer_name" type="text" class="form-control @error('customer_name') is-invalid @enderror" value="{{ old('customer_name') }}" autocomplete="name" required>
                                     @error('customer_name')
@@ -499,6 +490,15 @@
 
                                 <fieldset class="col-12 booking-table-fieldset" aria-describedby="bookingTableHelp">
                                     <legend class="booking-table-title">{{ __('Chọn bàn') }}</legend>
+                                    <label class="visually-hidden" for="floor">{{ __('Chọn tầng') }}</label>
+                                    <select id="floor" name="floor" class="visually-hidden @error('floor') is-invalid @enderror" required>
+                                        @foreach ([1, 2] as $floor)
+                                            <option value="{{ $floor }}" @selected(old('floor', 1) == $floor)>{{ __('Tầng') }} {{ $floor }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('floor')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
                                     <p class="booking-table-help" id="bookingTableHelp">
                                         {{ __('Chọn một hoặc nhiều bàn ở tầng đã chọn để đủ chỗ cho số khách. Mỗi tầng có tổng sức chứa :capacity người; với đoàn đông hơn, nhà hàng sẽ bố trí bàn khi xác nhận.', ['capacity' => $maximumFloorCapacity]) }}
                                     </p>
@@ -506,11 +506,16 @@
                                         <p class="booking-plan-caption">{{ __('Sơ đồ nhà hàng') }}</p>
                                         <span class="small text-secondary" id="bookingAvailabilityMessage" aria-live="polite">{{ __('Chọn ngày và giờ để xem tình trạng bàn') }}</span>
                                     </div>
-                                    <div class="booking-table-grid">
+                                    <div class="booking-floor-tabs" role="tablist" aria-label="{{ __('Chọn tầng') }}">
+                                        @foreach ([1, 2] as $floorTab)
+                                            <button class="booking-floor-tab" id="floor-tab-{{ $floorTab }}" type="button" role="tab" aria-controls="bookingFloorPlan" aria-selected="{{ (int) old('floor') === $floorTab ? 'true' : 'false' }}" data-floor-tab="{{ $floorTab }}">{{ __('Tầng') }} {{ $floorTab }}</button>
+                                        @endforeach
+                                    </div>
+                                    <div class="booking-table-grid" id="bookingFloorPlan" role="tabpanel" aria-labelledby="floor-tab-{{ old('floor', 1) }}">
                                         <span class="booking-room-label">{{ __('KHU VỰC ĂN UỐNG') }}</span>
                                         @foreach ($tableCapacities as $tableCode => $capacity)
                                             @php($unavailable = in_array($tableCode, $unavailableTables ?? [], true))
-                                            <label class="booking-table-option {{ $unavailable ? 'is-unavailable' : '' }}" for="table_{{ $tableCode }}" data-floor="{{ in_array($tableCode, ['B1', 'B2', 'B3'], true) ? 1 : 2 }}" data-capacity="{{ $capacity }}">
+                                            <label class="booking-table-option {{ $unavailable ? 'is-unavailable' : '' }}" for="table_{{ $tableCode }}" data-floor="{{ $tableFloors[$tableCode] }}" data-capacity="{{ $capacity }}">
                                                 <input
                                                     id="table_{{ $tableCode }}"
                                                     name="table_codes[]"
@@ -727,6 +732,8 @@
             const time = form.querySelector('[name="booking_time"]');
             const guests = form.querySelector('[name="number_of_guests"]');
             const tables = [...form.querySelectorAll('.booking-table-option')];
+            const floorTabs = [...form.querySelectorAll('[data-floor-tab]')];
+            const floorPlan = document.getElementById('bookingFloorPlan');
             const summary = document.getElementById('bookingSelectedSummary');
             const capacitySummary = document.getElementById('bookingCapacitySummary');
             const availabilityMessage = document.getElementById('bookingAvailabilityMessage');
@@ -748,6 +755,12 @@
             };
 
             const updateFloor = () => {
+                floorTabs.forEach(tab => {
+                    const active = Number(tab.dataset.floorTab) === Number(floor.value);
+                    tab.setAttribute('aria-selected', String(active));
+                    tab.tabIndex = active ? 0 : -1;
+                });
+                floorPlan?.setAttribute('aria-labelledby', `floor-tab-${floor.value}`);
                 tables.forEach(table => {
                     const matchesFloor = !floor.value || Number(table.dataset.floor) === Number(floor.value);
                     table.hidden = !matchesFloor;
@@ -809,6 +822,19 @@
             };
 
             tables.forEach(table => table.querySelector('input').addEventListener('change', updateSummary));
+            floorTabs.forEach((tab, index) => {
+                tab.addEventListener('click', () => {
+                    floor.value = tab.dataset.floorTab;
+                    floor.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+                tab.addEventListener('keydown', event => {
+                    if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+                    event.preventDefault();
+                    const nextIndex = (index + (event.key === 'ArrowRight' ? 1 : floorTabs.length - 1)) % floorTabs.length;
+                    floorTabs[nextIndex].focus();
+                    floorTabs[nextIndex].click();
+                });
+            });
             floor.addEventListener('change', updateFloor);
             guests.addEventListener('input', updateCapacityAvailability);
             [restaurant, date, time].forEach(input => input.addEventListener('change', refreshAvailability));

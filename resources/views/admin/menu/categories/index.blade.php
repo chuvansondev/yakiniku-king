@@ -1,8 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Danh mục Menu')
+@section('title', __('Danh mục Menu'))
 
-@section('page-title', 'Danh mục Menu')
+@section('page-title', __('Danh mục Menu'))
 
 @section('content')
 @include('admin.menu.partials.list-styles')
@@ -10,7 +10,7 @@
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
 
-        <h1>Danh mục Menu</h1>
+        <h1>{{ __('Danh mục Menu') }}</h1>
 
         <a
             href="{{ route('admin.menu.categories.create') }}"
@@ -22,8 +22,7 @@
                 border-radius: 5px;
             "
         >
-            + Thêm danh mục
-        </a>
+            {{ __('+ Thêm danh mục') }}</a>
 
     </div>
 
@@ -63,11 +62,11 @@
 
                 <tr>
                     <th>ID</th>
-                    <th>Tên</th>
+                    <th>{{ __('Tên') }}</th>
                     <th>Slug</th>
-                    <th>Thứ tự</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
+                    <th>{{ __('Thứ tự') }}</th>
+                    <th>{{ __('Trạng thái') }}</th>
+                    <th>{{ __('Thao tác') }}</th>
                 </tr>
 
             </thead>
@@ -99,14 +98,12 @@
                             @if($category->status)
 
                                 <span style="color: green;">
-                                    Đang hiển thị
-                                </span>
+                                    {{ __('Đang hiển thị') }}</span>
 
                             @else
 
                                 <span style="color: red;">
-                                    Đã ẩn
-                                </span>
+                                    {{ __('Đã ẩn') }}</span>
 
                             @endif
 
@@ -117,15 +114,14 @@
                             <a
                                 href="{{ route('admin.menu.categories.edit', $category) }}"
                             >
-                                Sửa
-                            </a>
+                                {{ __('Sửa') }}</a>
 
 
                             <form
                                 action="{{ route('admin.menu.categories.destroy', $category) }}"
                                 method="POST"
                                 style="display:inline;"
-                                onsubmit="return confirm('Bạn có chắc muốn xóa danh mục này?')"
+                                onsubmit="return confirm(@json(__('Bạn có chắc muốn xóa danh mục này?')))"
                             >
 
                                 @csrf
@@ -136,8 +132,7 @@
                                     type="submit"
                                     style="color: red; margin-left: 10px;"
                                 >
-                                    Xóa
-                                </button>
+                                    {{ __('Xóa') }}</button>
 
                             </form>
 
@@ -153,8 +148,7 @@
                             colspan="6"
                             style="text-align: center;"
                         >
-                            Chưa có danh mục nào.
-                        </td>
+                            {{ __('Chưa có danh mục nào.') }}</td>
 
                     </tr>
 

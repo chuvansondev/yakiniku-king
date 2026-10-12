@@ -1,5 +1,5 @@
 <div style="margin-bottom: 15px;">
-    <label>Họ tên</label>
+    <label>{{ __('Họ tên') }}</label>
 
     <input
         type="text"
@@ -12,7 +12,7 @@
 
 
 <div style="margin-bottom: 15px;">
-    <label>Số điện thoại</label>
+    <label>{{ __('Số điện thoại') }}</label>
 
     <input
         type="text"
@@ -36,7 +36,7 @@
 
 
 <div style="margin-bottom: 15px;">
-    <label>Nội dung</label>
+    <label>{{ __('Nội dung') }}</label>
 
     <textarea
         name="message"
@@ -47,7 +47,7 @@
 
 
 <div style="margin-bottom: 15px;">
-    <label>Trạng thái</label>
+    <label>{{ __('Trạng thái') }}</label>
 
     @php
         $currentStatus = old(
@@ -66,22 +66,19 @@
             value="new"
             {{ $currentStatus === \App\Enums\LeadStatus::New->value ? 'selected' : '' }}
         >
-            Mới
-        </option>
+            {{ __('Mới') }}</option>
 
         <option
             value="read"
             {{ $currentStatus === \App\Enums\LeadStatus::Read->value ? 'selected' : '' }}
         >
-            Đã xem
-        </option>
+            {{ __('Đã xem') }}</option>
 
         <option
             value="contacted"
             {{ $currentStatus === \App\Enums\LeadStatus::Contacted->value ? 'selected' : '' }}
         >
-            Đã liên hệ
-        </option>
+            {{ __('Đã liên hệ') }}</option>
 
     </select>
 </div>

@@ -1,8 +1,7 @@
 <div style="margin-bottom:15px;">
 
     <label>
-        Tiêu đề
-    </label>
+        {{ __('Tiêu đề') }}</label>
 
     <br>
 
@@ -20,7 +19,7 @@
 
 @include('admin.menu.partials.english-field', [
     'name' => 'title_en',
-    'label' => 'Tiêu đề',
+    'label' => __('Tiêu đề'),
     'value' => $promotion->title_en ?? '',
 ])
 
@@ -37,7 +36,7 @@
         type="text"
         name="slug"
         value="{{ old('slug', $promotion->slug ?? '') }}"
-        placeholder="Để trống để Laravel tự tạo"
+        placeholder="{{ __('Để trống để Laravel tự tạo') }}"
         style="
             width:100%;
             padding:10px;
@@ -48,7 +47,7 @@
 
 @include('admin.menu.partials.english-field', [
     'name' => 'short_description_en',
-    'label' => 'Mô tả ngắn',
+    'label' => __('Mô tả ngắn'),
     'value' => $promotion->short_description_en ?? '',
     'type' => 'textarea',
     'rows' => 4,
@@ -58,8 +57,7 @@
 <div style="margin-bottom:15px;">
 
     <label>
-        Mô tả ngắn
-    </label>
+        {{ __('Mô tả ngắn') }}</label>
 
     <br>
 
@@ -78,8 +76,7 @@
 <div style="margin-bottom:15px;">
 
     <label>
-        Nội dung chi tiết
-    </label>
+        {{ __('Nội dung chi tiết') }}</label>
 
     <br>
 
@@ -96,7 +93,7 @@
 
 @include('admin.menu.partials.english-field', [
     'name' => 'description_en',
-    'label' => 'Nội dung chi tiết',
+    'label' => __('Nội dung chi tiết'),
     'value' => $promotion->description_en ?? '',
     'type' => 'textarea',
     'rows' => 10,
@@ -106,8 +103,7 @@
 <div data-image-field style="margin-bottom:15px;">
 
     <label>
-        Hình ảnh
-    </label>
+        {{ __('Hình ảnh') }}</label>
 
     <br>
 
@@ -123,7 +119,7 @@
         <input type="hidden" name="remove_image" value="0" data-image-remove-value>
         <div data-current-image-preview style="margin-top:10px;">
 
-            <p>Ảnh hiện tại:</p>
+            <p>{{ __('Ảnh hiện tại:') }}</p>
 
             <img
                 src="{{ asset('storage/' . $promotion->image) }}"
@@ -137,7 +133,7 @@
 
         </div>
 
-        <button class="admin-image-remove-button" type="button" data-image-remove-toggle aria-pressed="false">Xóa ảnh hiện tại</button>
+        <button class="admin-image-remove-button" type="button" data-image-remove-toggle aria-pressed="false">{{ __('Xóa ảnh hiện tại') }}</button>
 
     @endif
 
@@ -155,8 +151,7 @@
     <div style="flex:1;">
 
         <label>
-            Ngày bắt đầu
-        </label>
+            {{ __('Ngày bắt đầu') }}</label>
 
         <br>
 
@@ -181,8 +176,7 @@
     <div style="flex:1;">
 
         <label>
-            Ngày kết thúc
-        </label>
+            {{ __('Ngày kết thúc') }}</label>
 
         <br>
 
@@ -220,8 +214,6 @@
             ) ? 'checked' : '' }}
         >
 
-        Hiển thị khuyến mãi
-
-    </label>
+        {{ __('Hiển thị khuyến mãi') }}</label>
 
 </div>

@@ -8,6 +8,7 @@ use App\Contracts\Repositories\BookingRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
 
 class BookingService
 {
@@ -18,6 +19,29 @@ class BookingService
     public function tableCapacities(): array
     {
         return self::TABLE_CAPACITIES;
+    }
+
+    public function unavailableTables(?int $restaurantId, ?string $date, ?string $time, ?int $excludeBookingId = null): array
+    {
+        if (! $restaurantId || ! $date || ! $time) {
+            return [];
+        }
+
+        $start = Carbon::createFromFormat('Y-m-d H:i', $date.' '.$time)->subMinutes(90);
+        $end = $start->copy()->addMinutes(180);
+
+        return Booking::query()
+            ->where('restaurant_id', $restaurantId)
+            ->whereDate('booking_date', $date)
+            ->whereNotIn('status', [BookingStatus::Cancelled->value])
+            ->when($excludeBookingId, fn ($query) => $query->whereKeyNot($excludeBookingId))
+            ->whereRaw("CONCAT(booking_date, ' ', booking_time) < ?", [$end->format('Y-m-d H:i:s')])
+            ->whereRaw("CONCAT(booking_date, ' ', booking_time) > ?", [$start->format('Y-m-d H:i:s')])
+            ->get(['table_codes'])
+            ->flatMap(fn (Booking $booking) => $booking->table_codes ?? [])
+            ->unique()
+            ->values()
+            ->all();
     }
 
     public function findWithRestaurant(int $id): ?Booking

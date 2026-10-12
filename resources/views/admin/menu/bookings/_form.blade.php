@@ -1,12 +1,12 @@
 <div style="margin-bottom: 15px;">
-    <label>Nhà hàng</label>
+    <label>{{ __('Nhà hàng') }}</label>
 
     <select
         name="restaurant_id"
         style="width: 100%; padding: 8px;"
         required
     >
-        <option value="">-- Chọn nhà hàng --</option>
+        <option value="">-- {{ __('Chọn nhà hàng') }} --</option>
 
         @foreach($restaurants as $restaurant)
 
@@ -24,7 +24,7 @@
 
 
 <div style="margin-bottom: 15px;">
-    <label>Tên khách hàng</label>
+    <label>{{ __('Tên khách hàng') }}</label>
 
     <input
         type="text"
@@ -37,7 +37,7 @@
 
 
 <div style="margin-bottom: 15px;">
-    <label>Số điện thoại</label>
+    <label>{{ __('Số điện thoại') }}</label>
 
     <input
         type="text"
@@ -50,7 +50,7 @@
 
 
 <div style="margin-bottom: 15px;">
-    <label>Email</label>
+    <label>{{ __('Email') }}</label>
 
     <input
         type="email"
@@ -65,7 +65,7 @@
 
     <div style="flex: 1;">
 
-        <label>Ngày đặt</label>
+        <label>{{ __('Ngày đặt') }}</label>
 
         <input
             type="date"
@@ -85,7 +85,7 @@
 
     <div style="flex: 1;">
 
-        <label>Giờ đặt</label>
+        <label>{{ __('Giờ đặt') }}</label>
 
         <input
             type="time"
@@ -107,7 +107,7 @@
 
 <div style="margin-bottom: 15px;">
 
-    <label>Số người</label>
+    <label>{{ __('Số người') }}</label>
 
     <input
         type="number"
@@ -124,7 +124,7 @@
 
 <div style="margin-bottom: 15px;">
 
-    <label>Ghi chú</label>
+    <label>{{ __('Ghi chú') }}</label>
 
     <textarea
         name="note"
@@ -137,7 +137,7 @@
 
 <div style="margin-bottom: 15px;">
 
-    <label>Trạng thái</label>
+    <label>{{ __('Trạng thái') }}</label>
 
     <select
         name="status"
@@ -156,28 +156,28 @@
             value="pending"
             {{ $currentStatus === \App\Enums\BookingStatus::Pending->value ? 'selected' : '' }}
         >
-            Chờ xác nhận
+            {{ __('Chờ xác nhận') }}
         </option>
 
         <option
             value="confirmed"
             {{ $currentStatus === \App\Enums\BookingStatus::Confirmed->value ? 'selected' : '' }}
         >
-            Đã xác nhận
+            {{ __('Đã xác nhận') }}
         </option>
 
         <option
             value="cancelled"
             {{ $currentStatus === \App\Enums\BookingStatus::Cancelled->value ? 'selected' : '' }}
         >
-            Đã hủy
+            {{ __('Đã hủy') }}
         </option>
 
         <option
             value="completed"
             {{ $currentStatus === \App\Enums\BookingStatus::Completed->value ? 'selected' : '' }}
         >
-            Đã hoàn thành
+            {{ __('Đã hoàn thành') }}
         </option>
 
     </select>
@@ -187,5 +187,5 @@
 
 <div class="admin-form-actions">
     <button type="submit">{{ $buttonText }}</button>
-    <a href="{{ route('admin.menu.bookings.index') }}">Quay l&#7841;i danh s&#225;ch</a>
+    <a href="{{ route('admin.menu.bookings.index') }}">{{ __('Quay lại danh sách') }}</a>
 </div>

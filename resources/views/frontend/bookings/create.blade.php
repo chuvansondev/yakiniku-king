@@ -103,47 +103,100 @@
         }
 
         .booking-table-grid {
+            position: relative;
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: .65rem;
+            grid-template-columns: repeat(3, minmax(70px, 1fr));
+            gap: 1rem 1.25rem;
+            min-height: 190px;
+            padding: 2.4rem 1.5rem 1.25rem;
+            border: 1px solid #d8d0c4;
+            border-radius: 5px;
+            background: #fff;
         }
 
         .booking-table-option {
-            display: flex;
-            min-width: 0;
-            min-height: 52px;
-            align-items: center;
-            gap: .6rem;
-            padding: .65rem .75rem;
-            border: 1px solid #d6d0c7;
-            border-radius: 2px;
-            background: #fff;
+            position: relative;
+            display: grid;
+            min-width: 70px;
+            min-height: 62px;
+            place-items: center;
+            padding: .2rem;
+            border: 0;
+            border-radius: 4px;
+            background: transparent;
             cursor: pointer;
+            transition: transform .16s ease;
         }
 
         .booking-table-option:has(input:checked) {
-            border-color: #a83d32;
-            background: #fff9f7;
+            background: rgb(168 61 50 / 8%);
+        }
+
+        .booking-table-option:hover:not(.is-unavailable) {
+            transform: scale(1.06);
+        }
+
+        .booking-table-option.is-unavailable {
+            color: #817770;
+            cursor: not-allowed;
+        }
+
+        .booking-table-option.is-too-small {
+            color: #8b806e;
+            cursor: not-allowed;
         }
 
         .booking-table-option input {
-            width: 1rem;
-            height: 1rem;
-            flex: 0 0 auto;
-            accent-color: #a83d32;
+            position: absolute;
+            z-index: 2;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            opacity: 0;
+            cursor: inherit;
         }
 
+        .booking-table-icon { position: absolute; z-index: 1; width: 58px; height: 58px; overflow: visible; pointer-events: none; }
+        .booking-chair { fill: #322d29; transition: fill .16s ease; }
+        .booking-table-surface { fill: #754632; transition: fill .16s ease; }
+        .booking-table-option:has(input:checked) .booking-table-surface { fill: #a83d32; }
+        .booking-table-option.is-unavailable .booking-chair,
+        .booking-table-option.is-unavailable .booking-table-surface,
+        .booking-table-option.is-too-small .booking-chair,
+        .booking-table-option.is-too-small .booking-table-surface { fill: #b9b9b9; }
+
         .booking-table-code {
-            color: #29241f;
+            position: relative;
+            z-index: 1;
+            color: #fff;
+            font-size: .72rem;
             font-weight: 700;
+            line-height: 1.1;
+            pointer-events: none;
         }
 
         .booking-table-capacity {
-            margin-left: auto;
+            position: absolute;
+            top: calc(100% - .2rem);
             color: #67635d;
             font-size: .8rem;
             white-space: nowrap;
+            pointer-events: none;
         }
+
+        .booking-floor-plan { overflow: hidden; border: 1px solid #e2ddd4; border-radius: 5px; }
+        .booking-plan-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .75rem; }
+        .booking-plan-caption { margin: 0; color: #5c5750; font-size: .82rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; }
+        .booking-plan-legend { display: flex; flex-wrap: wrap; gap: .5rem 1rem; margin-top: .85rem; color: #5f5a53; font-size: .78rem; }
+        .booking-plan-legend span { display: inline-flex; align-items: center; gap: .4rem; }
+        .booking-legend-dot { width: .7rem; height: .7rem; border-radius: 2px; background: #754632; }
+        .booking-legend-dot.selected { background: #a83d32; }
+        .booking-legend-dot.unavailable,
+        .booking-legend-dot.too-small { background: #b9b9b9; }
+        .booking-plan-summary { display: flex; justify-content: space-between; gap: .75rem; margin-top: .85rem; padding: .8rem 1rem; border-radius: 4px; background: #f3f0e9; color: #4c4740; font-size: .88rem; }
+        .booking-plan-summary strong { color: #87332b; }
+        .booking-room-label { position: absolute; left: 50%; top: 0; padding: .3rem .8rem; border-radius: 0 0 5px 5px; background: #d8d1c6; color: #514b43; font-size: .72rem; font-weight: 700; letter-spacing: .08em; transform: translateX(-50%); }
 
         .booking-preorder {
             padding-top: .5rem;
@@ -300,8 +353,17 @@
                 grid-template-columns: minmax(0, 1fr);
             }
 
-            .booking-table-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
+            .booking-table-grid { grid-template-columns: repeat(3, minmax(65px, 1fr)); gap: .8rem .35rem; padding-inline: .5rem; }
+            .booking-table-option { min-width: 65px; }
+
+            .booking-plan-header {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: .25rem;
+            }
+
+            .booking-plan-summary {
+                flex-direction: column;
             }
         }
 
@@ -316,7 +378,7 @@
 @section('content')
     <section class="booking-page">
         <div class="container">
-            <div class="row align-items-center justify-content-between g-4 g-lg-5">
+            <div class="row align-items-start justify-content-between g-4 g-lg-5">
                 <div class="col-12 col-lg-4 order-2 order-lg-1">
                     <div class="booking-intro">
                         <p class="booking-eyebrow mb-0">Yakiniku King</p>
@@ -326,7 +388,7 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-lg-7 order-1 order-lg-2">
+                <div class="col-12 col-lg-8 order-1 order-lg-2">
                     <div class="booking-form-panel">
                         <div class="mb-4">
                             <p class="booking-eyebrow mb-1">{{ __('Đặt bàn') }}</p>
@@ -440,19 +502,49 @@
                                     <p class="booking-table-help" id="bookingTableHelp">
                                         {{ __('Chọn một hoặc nhiều bàn ở tầng đã chọn để đủ chỗ cho số khách. Mỗi tầng có tổng sức chứa :capacity người; với đoàn đông hơn, nhà hàng sẽ bố trí bàn khi xác nhận.', ['capacity' => $maximumFloorCapacity]) }}
                                     </p>
+                                    <div class="booking-plan-header">
+                                        <p class="booking-plan-caption">{{ __('Sơ đồ nhà hàng') }}</p>
+                                        <span class="small text-secondary" id="bookingAvailabilityMessage" aria-live="polite">{{ __('Chọn ngày và giờ để xem tình trạng bàn') }}</span>
+                                    </div>
                                     <div class="booking-table-grid">
+                                        <span class="booking-room-label">{{ __('KHU VỰC ĂN UỐNG') }}</span>
                                         @foreach ($tableCapacities as $tableCode => $capacity)
-                                            <label class="booking-table-option" for="table_{{ $tableCode }}">
+                                            @php($unavailable = in_array($tableCode, $unavailableTables ?? [], true))
+                                            <label class="booking-table-option {{ $unavailable ? 'is-unavailable' : '' }}" for="table_{{ $tableCode }}" data-floor="{{ in_array($tableCode, ['B1', 'B2', 'B3'], true) ? 1 : 2 }}" data-capacity="{{ $capacity }}">
                                                 <input
                                                     id="table_{{ $tableCode }}"
                                                     name="table_codes[]"
                                                     type="checkbox"
                                                     value="{{ $tableCode }}"
+                                                    aria-label="{{ __('Bàn') }} {{ $tableCode }} — {{ $capacity }} {{ __('người') }}{{ $unavailable ? ', '.__('Đã được đặt') : '' }}"
+                                                    @disabled($unavailable)
                                                     @checked(in_array($tableCode, (array) old('table_codes', [])))>
+                                                <svg class="booking-table-icon" viewBox="0 0 64 64" aria-hidden="true">
+                                                    @if ($capacity === 2)
+                                                        <circle class="booking-chair" cx="12" cy="32" r="4.5"/><circle class="booking-chair" cx="52" cy="32" r="4.5"/>
+                                                    @elseif ($capacity === 4)
+                                                        <circle class="booking-chair" cx="12" cy="20" r="4.5"/><circle class="booking-chair" cx="12" cy="44" r="4.5"/><circle class="booking-chair" cx="52" cy="20" r="4.5"/><circle class="booking-chair" cx="52" cy="44" r="4.5"/>
+                                                    @else
+                                                        <circle class="booking-chair" cx="12" cy="12" r="4.5"/><circle class="booking-chair" cx="12" cy="32" r="4.5"/><circle class="booking-chair" cx="12" cy="52" r="4.5"/>
+                                                        <circle class="booking-chair" cx="52" cy="12" r="4.5"/><circle class="booking-chair" cx="52" cy="32" r="4.5"/><circle class="booking-chair" cx="52" cy="52" r="4.5"/>
+                                                    @endif
+                                                    <rect class="booking-table-surface" x="19" y="16" width="26" height="32" rx="2"/>
+                                                </svg>
                                                 <span class="booking-table-code">{{ $tableCode }}</span>
                                                 <span class="booking-table-capacity">{{ $capacity }} {{ __('người') }}</span>
+                                                <span class="visually-hidden booking-table-status">{{ $unavailable ? __('Đã được đặt') : __('Còn trống') }}</span>
                                             </label>
                                         @endforeach
+                                    </div>
+                                    <div class="booking-plan-legend" aria-label="{{ __('Chú thích trạng thái bàn') }}">
+                                        <span><i class="booking-legend-dot"></i>{{ __('Còn trống') }}</span>
+                                        <span><i class="booking-legend-dot selected"></i>{{ __('Bạn đang chọn') }}</span>
+                                        <span><i class="booking-legend-dot unavailable"></i>{{ __('Đã được đặt') }}</span>
+                                        <span><i class="booking-legend-dot too-small"></i>{{ __('Không đủ chỗ') }}</span>
+                                    </div>
+                                    <div class="booking-plan-summary" aria-live="polite">
+                                        <span id="bookingSelectedSummary">{{ __('Chưa chọn bàn') }}</span>
+                                        <span><strong id="bookingCapacitySummary">0 / {{ old('number_of_guests', 2) }}</strong> {{ __('chỗ ngồi') }}</span>
                                     </div>
                                     @error('table_codes')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -624,6 +716,107 @@
 @endsection
 
 @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.querySelector('form[action="{{ route('booking.store') }}"]');
+            if (!form) return;
+
+            const restaurant = form.querySelector('[name="restaurant_id"]');
+            const floor = form.querySelector('[name="floor"]');
+            const date = form.querySelector('[name="booking_date"]');
+            const time = form.querySelector('[name="booking_time"]');
+            const guests = form.querySelector('[name="number_of_guests"]');
+            const tables = [...form.querySelectorAll('.booking-table-option')];
+            const summary = document.getElementById('bookingSelectedSummary');
+            const capacitySummary = document.getElementById('bookingCapacitySummary');
+            const availabilityMessage = document.getElementById('bookingAvailabilityMessage');
+            const selectedText = @json(__('Đã chọn :tables'));
+            const checkText = @json(__('Đang kiểm tra tình trạng bàn…'));
+            const readyText = @json(__('Còn bàn cho khung giờ đã chọn'));
+            const chooseText = @json(__('Chọn ngày và giờ để xem tình trạng bàn'));
+            const noneText = @json(__('Chưa chọn bàn'));
+            const tooSmallText = @json(__('Không đủ chỗ'));
+            let availabilityRequest;
+
+            const updateSummary = () => {
+                const chosen = tables.filter(table => table.querySelector('input').checked);
+                const total = chosen.reduce((sum, table) => sum + Number(table.dataset.capacity), 0);
+                summary.textContent = chosen.length
+                    ? selectedText.replace(':tables', chosen.map(table => table.querySelector('.booking-table-code').textContent).join(', '))
+                    : noneText;
+                capacitySummary.textContent = `${total} / ${guests.value || 0}`;
+            };
+
+            const updateFloor = () => {
+                tables.forEach(table => {
+                    const matchesFloor = !floor.value || Number(table.dataset.floor) === Number(floor.value);
+                    table.hidden = !matchesFloor;
+                    if (!matchesFloor) table.querySelector('input').checked = false;
+                });
+                updateSummary();
+            };
+
+            const updateCapacityAvailability = () => {
+                const partySize = Number(guests.value || 0);
+
+                tables.forEach(table => {
+                    const input = table.querySelector('input');
+                    const isUnavailable = table.classList.contains('is-unavailable');
+                    const isTooSmall = partySize > 0 && Number(table.dataset.capacity) < partySize;
+                    table.classList.toggle('is-too-small', isTooSmall && !isUnavailable);
+                    input.disabled = isUnavailable || isTooSmall;
+                    if (input.disabled) input.checked = false;
+
+                    const status = table.querySelector('.booking-table-status');
+                    status.textContent = isUnavailable ? @json(__('Đã được đặt')) : (isTooSmall ? tooSmallText : @json(__('Còn trống')));
+                    input.setAttribute('aria-label', `${@json(__('Bàn'))} ${input.value} — ${table.dataset.capacity} ${@json(__('người'))}${isUnavailable ? `, ${@json(__('Đã được đặt'))}` : (isTooSmall ? `, ${tooSmallText}` : '')}`);
+                });
+
+                updateSummary();
+            };
+
+            const refreshAvailability = async () => {
+                if (!restaurant.value || !date.value || !time.value) {
+                    availabilityMessage.textContent = chooseText;
+                    return;
+                }
+
+                availabilityRequest?.abort();
+                availabilityRequest = new AbortController();
+                availabilityMessage.textContent = checkText;
+                const params = new URLSearchParams({ restaurant_id: restaurant.value, booking_date: date.value, booking_time: time.value });
+
+                try {
+                    const response = await fetch(`{{ route('booking.availability') }}?${params}`, {
+                        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                        signal: availabilityRequest.signal,
+                    });
+                    if (!response.ok) throw new Error('availability');
+                    const { unavailable } = await response.json();
+
+                    tables.forEach(table => {
+                        const input = table.querySelector('input');
+                        const isUnavailable = unavailable.includes(input.value);
+                        table.classList.toggle('is-unavailable', isUnavailable);
+                        input.disabled = isUnavailable;
+                        if (isUnavailable) input.checked = false;
+                    });
+                    availabilityMessage.textContent = readyText;
+                    updateCapacityAvailability();
+                } catch (error) {
+                    if (error.name !== 'AbortError') availabilityMessage.textContent = @json(__('Không thể tải tình trạng bàn. Vui lòng thử lại.'));
+                }
+            };
+
+            tables.forEach(table => table.querySelector('input').addEventListener('change', updateSummary));
+            floor.addEventListener('change', updateFloor);
+            guests.addEventListener('input', updateCapacityAvailability);
+            [restaurant, date, time].forEach(input => input.addEventListener('change', refreshAvailability));
+            updateFloor();
+            updateCapacityAvailability();
+            if (restaurant.value && date.value && time.value) refreshAvailability();
+        });
+    </script>
     @if ($booking)
         <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
         <script>

@@ -1,16 +1,16 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Chỉnh sửa đặt bàn')
-@section('page-title', 'Đặt bàn / Chỉnh sửa')
+@section('title', __('Chỉnh sửa đặt bàn'))
+@section('page-title', __('Đặt bàn / Chỉnh sửa'))
 
 @section('content')
 
-<h1>Chỉnh sửa booking</h1>
+<h1>{{ __('Chỉnh sửa booking') }}</h1>
 
 @if ($errors->any())
 
     <div>
-        <strong>Có lỗi xảy ra:</strong>
+        <strong>{{ __('Có lỗi xảy ra:') }}</strong>
 
         <ul>
             @foreach ($errors->all() as $error)
@@ -30,7 +30,7 @@
     @method('PUT')
 
     @include('admin.menu.bookings._form', [
-        'buttonText' => 'Cập nhật booking'
+        'buttonText' => __('Cập nhật booking')
     ])
 
 </form>

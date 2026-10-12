@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Đặt bàn')
-@section('page-title', 'Đặt bàn')
+@section('title', __('Đặt bàn'))
+@section('page-title', __('Đặt bàn'))
 
 @section('content')
 
@@ -10,7 +10,7 @@
 @endif
 
 <div class="admin-page-heading">
-    <h1>Quản lý đặt bàn</h1>
+    <h1>{{ __('Quản lý đặt bàn') }}</h1>
     <a href="{{ route('admin.menu.bookings.create') }}"
     style="
             background:#111;
@@ -20,7 +20,7 @@
             border-radius:5px;
         "
     >
-        + Thêm booking
+        + {{ __('Thêm booking') }}
     </a>
 
 </div>
@@ -36,18 +36,18 @@
     <thead>
 
         <tr>
-            <th>Mã booking</th>
-            <th>Nhà hàng</th>
-            <th>Tầng</th>
-            <th>Bàn</th>
-            <th>Khách hàng</th>
-            <th>SĐT</th>
-            <th>Ngày</th>
-            <th>Giờ</th>
-            <th>Số người</th>
-            <th>Món gọi trước</th>
-            <th>Trạng thái</th>
-            <th>Thao tác</th>
+            <th>{{ __('Mã booking') }}</th>
+            <th>{{ __('Nhà hàng') }}</th>
+            <th>{{ __('Tầng') }}</th>
+            <th>{{ __('Bàn') }}</th>
+            <th>{{ __('Khách hàng') }}</th>
+            <th>{{ __('SĐT') }}</th>
+            <th>{{ __('Ngày') }}</th>
+            <th>{{ __('Giờ') }}</th>
+            <th>{{ __('Số người') }}</th>
+            <th>{{ __('Món gọi trước') }}</th>
+            <th>{{ __('Trạng thái') }}</th>
+            <th>{{ __('Thao tác') }}</th>
         </tr>
 
     </thead>
@@ -69,11 +69,11 @@
                 </td>
 
                 <td>
-                    {{ $booking->floor ? 'Tầng '.$booking->floor : '-' }}
+                    {{ $booking->floor ? __('Tầng').' '.$booking->floor : '-' }}
                 </td>
 
                 <td>
-                    {{ $booking->table_codes ? implode(', ', $booking->table_codes) : 'Nhà hàng bố trí' }}
+                    {{ $booking->table_codes ? implode(', ', $booking->table_codes) : __('Nhà hàng bố trí') }}
                 </td>
 
 
@@ -111,19 +111,19 @@
                     @switch($booking->status)
 
                         @case(\App\Enums\BookingStatus::Pending->value)
-                            Chờ xác nhận
+                            {{ __('Chờ xác nhận') }}
                             @break
 
                         @case(\App\Enums\BookingStatus::Confirmed->value)
-                            Đã xác nhận
+                            {{ __('Đã xác nhận') }}
                             @break
 
                         @case(\App\Enums\BookingStatus::Cancelled->value)
-                            Đã hủy
+                            {{ __('Đã hủy') }}
                             @break
 
                         @case(\App\Enums\BookingStatus::Completed->value)
-                            Đã hoàn thành
+                            {{ __('Đã hoàn thành') }}
                             @break
 
                     @endswitch
@@ -134,7 +134,7 @@
                 <td>
 
                     <a href="{{ route('admin.menu.bookings.edit', $booking) }}">
-                        Sửa
+                        {{ __('Sửa') }}
                     </a>
 
 
@@ -142,14 +142,14 @@
                         action="{{ route('admin.menu.bookings.destroy', $booking) }}"
                         method="POST"
                         style="display:inline;"
-                        onsubmit="return confirm('Bạn có chắc muốn xóa booking này?')"
+                        onsubmit="return confirm(@json(__('Bạn có chắc muốn xóa booking này?')))"
                     >
 
                         @csrf
                         @method('DELETE')
 
                         <button type="submit">
-                            Xóa
+                            {{ __('Xóa') }}
                         </button>
 
                     </form>
@@ -163,7 +163,7 @@
             <tr>
 
                 <td colspan="12">
-                    Chưa có booking nào.
+                    {{ __('Chưa có booking nào.') }}
                 </td>
 
             </tr>

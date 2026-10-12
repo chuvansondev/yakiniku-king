@@ -53,6 +53,9 @@ Route::get('/', HomeController::class)->name('home');
 Route::get('/book-now', [FrontendBookingController::class, 'create'])
     ->name('booking.create');
 
+Route::get('/book-now/availability', [FrontendBookingController::class, 'availability'])
+    ->name('booking.availability');
+
 Route::post('/book-now', [FrontendBookingController::class, 'store'])
     ->middleware('throttle:5,1')
     ->name('booking.store');

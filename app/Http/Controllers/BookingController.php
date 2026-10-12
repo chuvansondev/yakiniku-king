@@ -11,11 +11,27 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\JsonResponse;
 use App\Mail\BookingConfirmation;
 use App\Services\SettingService;
 
 class BookingController extends Controller
 {
+    public function availability(Request $request, BookingService $bookingService): JsonResponse
+    {
+        $validated = $request->validate([
+            'restaurant_id' => ['required', 'integer', 'exists:restaurants,id'],
+            'booking_date' => ['required', 'date', 'after_or_equal:today'],
+            'booking_time' => ['required', 'date_format:H:i'],
+        ]);
+
+        return response()->json([
+            'unavailable' => $bookingService->unavailableTables(
+                $validated['restaurant_id'], $validated['booking_date'], $validated['booking_time']
+            ),
+        ]);
+    }
+
     public function create(BookingService $bookingService): View
     {
         $restaurants = $bookingService->formRestaurants();
@@ -31,8 +47,11 @@ class BookingController extends Controller
 
         $tableCapacities = $bookingService->tableCapacities();
         $maximumFloorCapacity = array_sum($tableCapacities);
+        $unavailableTables = $bookingService->unavailableTables(
+            old('restaurant_id'), old('booking_date'), old('booking_time')
+        );
 
-        return view('frontend.bookings.create', compact('booking', 'maximumFloorCapacity', 'mustTryMenuItems', 'restaurants', 'tableCapacities'));
+        return view('frontend.bookings.create', compact('booking', 'maximumFloorCapacity', 'mustTryMenuItems', 'restaurants', 'tableCapacities', 'unavailableTables'));
     }
 
     public function store(BookingRequest $request, BookingService $bookingService, SettingService $settings): RedirectResponse
@@ -44,6 +63,13 @@ class BookingController extends Controller
 
         if ($error = $bookingService->tableSelectionError($validated['number_of_guests'], $validated['table_codes'] ?? [])) {
             throw ValidationException::withMessages(['table_codes' => $error]);
+        }
+
+        $unavailableTables = $bookingService->unavailableTables(
+            $validated['restaurant_id'], $validated['booking_date'], $validated['booking_time']
+        );
+        if (array_intersect($validated['table_codes'] ?? [], $unavailableTables)) {
+            throw ValidationException::withMessages(['table_codes' => __('Một hoặc nhiều bàn vừa được khách khác đặt. Vui lòng chọn lại bàn.')]);
         }
 
         $booking = $bookingService->create($validated);

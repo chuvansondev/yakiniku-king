@@ -37,7 +37,7 @@ class BookingController extends Controller
 
         return redirect()
             ->route('admin.menu.bookings.index')
-            ->with('success', 'Thêm booking thành công.');
+            ->with('success', __('Thêm booking thành công.'));
     }
 
     public function show(Booking $booking)
@@ -67,7 +67,7 @@ class BookingController extends Controller
 
         return redirect()
             ->route('admin.menu.bookings.index')
-            ->with('success', 'Cập nhật booking thành công.');
+            ->with('success', __('Cập nhật booking thành công.'));
     }
 
     public function destroy(Booking $booking, AdminResourceService $resources)
@@ -76,7 +76,7 @@ class BookingController extends Controller
 
         return redirect()
             ->route('admin.menu.bookings.index')
-            ->with('success', 'Xóa booking thành công.');
+            ->with('success', __('Xóa booking thành công.'));
     }
 
 }

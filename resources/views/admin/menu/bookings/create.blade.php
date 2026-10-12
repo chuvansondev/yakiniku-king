@@ -1,16 +1,16 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Thêm đặt bàn')
-@section('page-title', 'Đặt bàn / Thêm mới')
+@section('title', __('Thêm đặt bàn'))
+@section('page-title', __('Đặt bàn / Thêm mới'))
 
 @section('content')
 
-<h1>Thêm booking</h1>
+<h1>{{ __('Thêm booking') }}</h1>
 
 @if ($errors->any())
 
     <div>
-        <strong>Có lỗi xảy ra:</strong>
+        <strong>{{ __('Có lỗi xảy ra:') }}</strong>
 
         <ul>
             @foreach ($errors->all() as $error)
@@ -29,7 +29,7 @@
     @csrf
 
     @include('admin.menu.bookings._form', [
-        'buttonText' => 'Thêm booking'
+        'buttonText' => __('Thêm booking')
     ])
 
 </form>

@@ -94,6 +94,7 @@
                 </form>
                 <div class="header-account">
                     @auth
+                        <a class="header-account__button header-account__button--outline" href="{{ route('booking.mine') }}">{{ __('Đặt bàn của tôi') }}</a>
                         <a class="header-account__button header-account__button--outline" href="{{ route('password.change') }}">{{ __('Change password') }}</a>
                         @if (auth()->user()->is_admin)
                             <a class="header-account__button header-account__button--neutral" href="{{ route('admin.dashboard') }}">{{ __('Administration') }}</a>
@@ -103,6 +104,7 @@
                             <button class="header-account__button header-account__button--solid" type="submit">{{ __('Sign out') }}</button>
                         </form>
                     @else
+                        <a class="header-account__button header-account__button--outline" href="{{ route('booking.lookup') }}">{{ __('Tra cứu đặt bàn') }}</a>
                         <a class="header-account__button header-account__button--outline" href="{{ route('login') }}">{{ __('Sign in') }}</a>
                         <a class="header-account__button header-account__button--solid" href="{{ route('register') }}">{{ __('Create account') }}</a>
                     @endauth

@@ -413,6 +413,307 @@ textarea {
     padding: 28px;
 }
 
+.admin-content form.admin-booking-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 16px 20px;
+}
+
+.admin-booking-form > .admin-booking-field,
+.admin-booking-form > .admin-booking-table-fields {
+    min-width: 0;
+}
+
+.admin-booking-form > .admin-booking-field-wide,
+.admin-booking-form > .admin-booking-table-fields,
+.admin-booking-form > .admin-form-actions {
+    grid-column: 1 / -1;
+}
+
+.admin-booking-field > label {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--admin-ink);
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.admin-booking-field > input,
+.admin-booking-field > select,
+.admin-booking-field > textarea {
+    display: block;
+    width: 100%;
+    min-height: 42px;
+    padding: 10px 12px !important;
+}
+
+.admin-booking-table-fields {
+    display: grid;
+    grid-template-columns: minmax(130px, .28fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 14px;
+    padding: 16px;
+    border: 1px solid var(--admin-line);
+    border-radius: 9px;
+    background: #fbfcfb;
+}
+
+.admin-booking-floor-field select {
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 10px;
+}
+
+.admin-booking-table-picker {
+    min-width: 0;
+    margin: 0;
+    padding: 12px;
+    border: 1px solid var(--admin-line);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.admin-booking-table-picker legend {
+    float: none;
+    width: auto;
+    margin: 0;
+    padding: 0 6px;
+    color: var(--admin-ink);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.admin-booking-table-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+    gap: 7px;
+}
+
+.admin-booking-table-option {
+    display: flex;
+    min-height: 38px;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 9px;
+    border: 1px solid var(--admin-line);
+    border-radius: 6px;
+    color: var(--admin-ink);
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.admin-booking-table-option[hidden] { display: none !important; }
+.admin-booking-table-option span { min-width: 24px; font-weight: 700; }
+.admin-booking-table-option small { padding-left: 4px; }
+
+.admin-booking-table-option:has(input:checked) { border-color: #c98278; background: #fff7f5; }
+.admin-booking-table-option:has(input:disabled) { background: #f3f4f3; color: #929a94; cursor: not-allowed; }
+.admin-booking-table-option input { margin: 0; accent-color: #aa3d32; }
+.admin-booking-table-option small { margin-left: auto; color: var(--admin-muted); white-space: nowrap; }
+.admin-booking-availability { display: block; margin-top: 10px; color: var(--admin-muted); font-size: 11px; }
+
+.admin-content form.restaurant-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 16px 20px;
+}
+
+.restaurant-form .restaurant-field,
+.restaurant-form .restaurant-field-row,
+.restaurant-form .restaurant-tables-panel,
+.restaurant-form .admin-form-actions {
+    min-width: 0;
+}
+
+.restaurant-form > .restaurant-field {
+    grid-column: 1 / -1;
+}
+
+.restaurant-form > .restaurant-field:first-child {
+    grid-column: 1 / -1;
+}
+
+.restaurant-form > .restaurant-field:nth-child(2) {
+    grid-column: 1 / -1;
+}
+
+.restaurant-form > .restaurant-tables-panel {
+    grid-column: 1 / -1;
+}
+
+.restaurant-form > .restaurant-field-row,
+.restaurant-form > .restaurant-field[data-image-field] {
+    grid-column: 1 / -1;
+}
+
+.restaurant-form .restaurant-field > label,
+.restaurant-form .restaurant-field-row label {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--admin-ink);
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.restaurant-form .restaurant-field > input:not([type="checkbox"]),
+.restaurant-form .restaurant-field > input[type="file"],
+.restaurant-form .restaurant-field > textarea {
+    display: block;
+    width: 100%;
+    min-height: 42px;
+    padding: 10px 12px !important;
+}
+
+.restaurant-form .restaurant-field-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.restaurant-form .restaurant-field-wide,
+.restaurant-form .restaurant-tables-panel,
+.restaurant-form .admin-form-actions {
+    grid-column: 1 / -1;
+}
+
+.restaurant-form .restaurant-tables-panel {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 18px;
+    border: 1px solid var(--admin-line);
+    border-radius: 10px;
+    background: #fbfcfb;
+}
+
+.restaurant-form .restaurant-tables-panel legend {
+    float: none;
+    width: auto;
+    margin: 0;
+    padding: 0 7px;
+    color: var(--admin-ink);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.restaurant-tables-help {
+    margin: 0 0 14px;
+    color: var(--admin-muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.restaurant-table-columns,
+.restaurant-table-row {
+    display: grid;
+    grid-template-columns: minmax(120px, 1.5fr) minmax(72px, .7fr) minmax(90px, .9fr) minmax(82px, .8fr) minmax(140px, 1.25fr) 82px;
+    align-items: center;
+    gap: 10px;
+}
+
+.restaurant-table-columns {
+    padding: 0 12px 7px;
+    color: var(--admin-muted);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.restaurant-table-row {
+    margin-top: 7px;
+    padding: 8px 12px;
+    border: 1px solid var(--admin-line);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.restaurant-table-row > label.visually-hidden {
+    position: static !important;
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
+}
+
+.restaurant-table-row input:not([type="checkbox"]) {
+    width: 100%;
+    min-width: 0;
+    min-height: 36px;
+    padding: 7px 9px;
+    border: 1px solid var(--admin-line);
+    border-radius: 6px;
+    color: var(--admin-ink);
+}
+
+.restaurant-table-row .restaurant-table-status {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--admin-ink);
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.restaurant-table-remove,
+.restaurant-table-add {
+    min-height: 34px;
+    padding: 6px 9px;
+    border: 1px solid var(--admin-line);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--admin-ink);
+    font-size: 11px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.restaurant-table-remove:hover { border-color: #d5aaa5; color: #9f3329; }
+.restaurant-table-add { margin-top: 12px; border-color: #c7d8cc; background: #f2f8f3; color: #276443; }
+.restaurant-form .restaurant-status-field label { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 650; }
+.restaurant-form .restaurant-image-preview { margin: 10px 0; }
+.restaurant-form .restaurant-image-preview img { max-width: 180px; height: auto; border-radius: 8px; }
+.restaurant-form .restaurant-form-error { margin-top: 7px; color: #b42318; font-size: 12px; }
+
+.customer-admin-page { max-width: 1240px; }
+.customer-admin-page .admin-page-heading { margin-bottom: 20px; }
+.customer-admin-eyebrow { margin: 0 0 6px; color: var(--admin-muted); font-size: 10px; font-weight: 750; letter-spacing: .13em; text-transform: uppercase; }
+.customer-admin-page h1 { margin: 0 0 6px; }
+.customer-admin-page .admin-page-heading p:not(.customer-admin-eyebrow),
+.customer-detail-heading > div > p:last-child { margin: 0; color: var(--admin-muted); font-size: 13px; }
+.customer-total { padding: 9px 13px; border: 1px solid var(--admin-line); border-radius: 999px; background: #fff; color: var(--admin-ink); font-size: 12px; }
+.customer-search { display: grid; grid-template-columns: minmax(220px, 1fr) 190px auto; align-items: end; gap: 10px; margin: 18px 0; padding: 16px; border: 1px solid var(--admin-line); border-radius: 10px; background: #fff; }
+.customer-search label { grid-column: 1 / -1; margin: 0; color: var(--admin-muted); font-size: 11px; font-weight: 650; }
+.customer-search input, .customer-search select { min-height: 40px; padding: 8px 11px; border: 1px solid var(--admin-line); border-radius: 6px; background: #fff; color: var(--admin-ink); }
+.customer-search button, .customer-profile-form button { min-height: 40px; padding: 8px 15px; border: 0; border-radius: 6px; background: #a83d32; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; }
+.customer-table-wrap { margin-bottom: 8px; }
+.customer-table { width: 100%; border-collapse: collapse; }
+.customer-table th { padding: 11px 13px; background: #f6f8f6; color: var(--admin-muted); font-size: 10px; font-weight: 750; letter-spacing: .05em; text-align: left; text-transform: uppercase; }
+.customer-table td { padding: 12px 13px; border-top: 1px solid var(--admin-line); color: var(--admin-ink); font-size: 12px; vertical-align: middle; }
+.customer-table td small { display: block; margin-top: 3px; color: var(--admin-muted); font-size: 10px; }
+.customer-name-link { color: var(--admin-ink); font-weight: 700; text-decoration: none; }
+.customer-name-link:hover { color: #a83d32; }
+.customer-status { display: inline-flex; padding: 5px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.customer-status.is-active { background: #edf7ef; color: #276443; }
+.customer-status.is-inactive { background: #f1f2f1; color: #69716b; }
+.customer-empty { padding: 30px !important; color: var(--admin-muted) !important; text-align: center; }
+.customer-detail-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 20px; }
+.customer-back-link { display: inline-block; margin-bottom: 15px; color: #56645a; font-size: 11px; text-decoration: none; }
+.customer-summary-stats { display: flex; gap: 9px; }
+.customer-summary-stats span { display: grid; min-width: 92px; gap: 3px; padding: 12px; border: 1px solid var(--admin-line); border-radius: 9px; background: #fff; color: var(--admin-muted); font-size: 10px; text-align: center; }
+.customer-summary-stats strong { color: var(--admin-ink); font-size: 19px; }
+.customer-profile-card { margin-bottom: 22px; padding: 20px; border: 1px solid var(--admin-line); border-radius: 10px; background: #fff; }
+.customer-profile-card h2, .customer-history-section h2 { margin: 0; color: var(--admin-ink); font-size: 16px; }
+.customer-profile-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
+.customer-profile-form label { display: grid; gap: 6px; color: var(--admin-muted); font-size: 11px; font-weight: 650; }
+.customer-profile-form input, .customer-profile-form select, .customer-profile-form textarea { width: 100%; min-height: 40px; padding: 9px 11px; border: 1px solid var(--admin-line); border-radius: 6px; background: #fff; color: var(--admin-ink); }
+.customer-profile-form .customer-notes-field { grid-column: 1 / -1; }
+.customer-profile-form button { justify-self: start; }
+.customer-history-section { margin: 20px 0; }
+.customer-section-heading { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
+.customer-section-heading span { display: grid; min-width: 23px; height: 23px; place-items: center; border-radius: 50%; background: #e9eeea; color: #45564a; font-size: 10px; font-weight: 700; }
+
 .admin-entity-form > div {
     min-width: 0;
     margin: 0 !important;
@@ -1042,6 +1343,25 @@ textarea {
         grid-template-columns: 1fr;
         padding: 18px !important;
     }
+
+    .admin-content form.admin-booking-form { grid-template-columns: 1fr; }
+    .admin-booking-form > .admin-booking-table-fields,
+    .admin-booking-form > .admin-form-actions { grid-column: 1; }
+    .admin-booking-table-fields { grid-template-columns: 1fr; }
+    .admin-booking-table-list { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    .customer-search { grid-template-columns: 1fr; }
+    .customer-search label { grid-column: 1; }
+    .customer-detail-heading { align-items: flex-start; flex-direction: column; }
+    .customer-profile-form { grid-template-columns: 1fr; }
+    .customer-profile-form .customer-notes-field { grid-column: 1; }
+    .customer-table { min-width: 700px; }
+
+    .admin-content form.restaurant-form { grid-template-columns: 1fr; }
+    .restaurant-form .restaurant-field-row { grid-template-columns: 1fr; gap: 12px; }
+    .restaurant-form .restaurant-tables-panel { grid-column: 1; padding: 14px; }
+    .restaurant-tables-panel [data-restaurant-tables] { overflow-x: auto; padding-bottom: 5px; }
+    .restaurant-table-columns,
+    .restaurant-table-row { min-width: 690px; }
 
     .admin-content table:not(.dashboard-table) {
         min-width: max-content;

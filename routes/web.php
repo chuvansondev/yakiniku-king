@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\ComboController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\OperationsReportController;
 use App\Http\Controllers\Admin\KidsItemController;
 use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\MenuCategoryController;
@@ -47,6 +49,8 @@ Route::middleware(['auth', 'account.active'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/account/password', [AuthController::class, 'showChangePassword'])->name('password.change');
     Route::put('/account/password', [AuthController::class, 'changePassword'])->middleware('throttle:5,1')->name('password.change.update');
+    Route::get('/my-bookings', [FrontendBookingController::class, 'myBookings'])->name('booking.mine');
+    Route::delete('/my-bookings/{booking}', [FrontendBookingController::class, 'cancelManaged'])->middleware('throttle:5,1')->name('booking.mine.cancel');
 });
 
 Route::get('/', HomeController::class)->name('home');
@@ -64,6 +68,12 @@ Route::post('/book-now', [FrontendBookingController::class, 'store'])
 Route::post('/book-now/cancel', [FrontendBookingController::class, 'cancel'])
     ->middleware('throttle:5,1')
     ->name('booking.cancel');
+
+Route::match(['get', 'post'], '/booking-lookup', [FrontendBookingController::class, 'lookup'])
+    ->middleware('throttle:5,1')
+    ->name('booking.lookup');
+Route::get('/booking-lookup/result', [FrontendBookingController::class, 'lookupResult'])->name('booking.lookup.result');
+Route::delete('/booking-lookup/{booking}', [FrontendBookingController::class, 'cancelManaged'])->middleware('throttle:5,1')->name('booking.lookup.cancel');
 
 Route::post('/leads', [FrontendLeadController::class, 'store'])
     ->name('leads.store');
@@ -120,6 +130,11 @@ Route::prefix('admin')
                 ->middleware('permission:admin.dashboard.view')
                 ->name('dashboard');
 
+            Route::middleware('permission:menu.bookings.manage')->prefix('reports')->name('reports.')->group(function (): void {
+                Route::get('/operations', [OperationsReportController::class, 'index'])->name('operations');
+                Route::get('/operations/export', [OperationsReportController::class, 'export'])->name('operations.export');
+            });
+
             Route::middleware('permission:accounts.manage')->group(function (): void {
                 Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
                 Route::get('/accounts/create', [AccountController::class, 'create'])->name('accounts.create');
@@ -127,6 +142,12 @@ Route::prefix('admin')
                 Route::get('/accounts/{account}/edit', [AccountController::class, 'edit'])->name('accounts.edit');
                 Route::put('/accounts/{account}', [AccountController::class, 'update'])->name('accounts.update');
                 Route::patch('/accounts/{account}/lock', [AccountController::class, 'toggleLock'])->name('accounts.lock');
+            });
+
+            Route::middleware('permission:menu.customers.manage')->group(function (): void {
+                Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
+                Route::get('/customers/{customer}', [CustomerController::class, 'show'])->name('customers.show');
+                Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
             });
 
             Route::prefix('menu')->name('menu.')->group(function () {

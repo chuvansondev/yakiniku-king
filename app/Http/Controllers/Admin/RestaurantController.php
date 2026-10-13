@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Restaurant;
 use App\Services\AdminResourceService;
 use App\Http\Requests\Admin\RestaurantRequest;
+use Illuminate\Support\Facades\DB;
 
 class RestaurantController extends Controller
 {
@@ -24,12 +25,17 @@ class RestaurantController extends Controller
     public function store(RestaurantRequest $request, AdminResourceService $resources)
     {
         $validated = $request->validated();
+        $tables = $validated['tables'] ?? [];
+        unset($validated['tables']);
 
         $validated['image'] = $resources->storeImage($request->file('image'), 'restaurants');
 
         $validated['status'] = $request->boolean('status');
 
-        $resources->create(Restaurant::class, $validated);
+        DB::transaction(function () use ($resources, $validated, $tables): void {
+            $restaurant = $resources->create(Restaurant::class, $validated);
+            $this->syncTables($restaurant, $tables);
+        });
 
         return redirect()
             ->route('admin.menu.restaurants.index')
@@ -46,12 +52,16 @@ class RestaurantController extends Controller
 
     public function edit(Restaurant $restaurant)
     {
+        $restaurant->load('tables');
         return view('admin.menu.restaurants.edit', compact('restaurant'));
     }
 
     public function update(RestaurantRequest $request, Restaurant $restaurant, AdminResourceService $resources)
     {
         $validated = $request->validated();
+        $hasTables = array_key_exists('tables', $validated);
+        $tables = $validated['tables'] ?? [];
+        unset($validated['tables']);
         $oldImage = null;
 
         if ($request->hasFile('image') || $request->boolean('remove_image')) {
@@ -62,7 +72,10 @@ class RestaurantController extends Controller
         unset($validated['remove_image']);
         $validated['status'] = $request->boolean('status');
 
-        $resources->update($restaurant, $validated);
+        DB::transaction(function () use ($resources, $restaurant, $validated, $tables, $hasTables): void {
+            $resources->update($restaurant, $validated);
+            if ($hasTables) $this->syncTables($restaurant, $tables);
+        });
         $resources->deleteImage($oldImage);
 
         return redirect()
@@ -77,5 +90,24 @@ class RestaurantController extends Controller
         return redirect()
             ->route('admin.menu.restaurants.index')
             ->with('success', 'Xóa nhà hàng thành công.');
+    }
+
+    private function syncTables(Restaurant $restaurant, array $tables): void
+    {
+        $activeCodes = [];
+        foreach ($tables as $table) {
+            $activeCodes[] = $table['code'];
+            $restaurant->tables()->updateOrCreate(
+                ['code' => $table['code']],
+                [
+                    'floor' => $table['floor'],
+                    'capacity' => $table['capacity'],
+                    'position' => $table['position'] ?? 0,
+                    'status' => (bool) ($table['status'] ?? false),
+                ],
+            );
+        }
+
+        $restaurant->tables()->whereNotIn('code', $activeCodes)->update(['status' => false]);
     }
 }

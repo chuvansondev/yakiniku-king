@@ -8,7 +8,6 @@ use App\Services\AdminResourceService;
 use App\Services\BookingService;
 use App\Models\Restaurant;
 use App\Http\Requests\Admin\BookingRequest;
-use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
@@ -23,18 +22,19 @@ class BookingController extends Controller
     public function create(AdminResourceService $resources)
     {
         $restaurants = $resources->all(Restaurant::class, orderBy: [['name', 'asc']], filters: ['status' => true]);
+        $tables = app(BookingService::class)->tablesForRestaurant(old('restaurant_id') ?: $restaurants->first()?->id);
 
         return view(
             'admin.menu.bookings.create',
-            compact('restaurants')
+            compact('restaurants', 'tables')
         );
     }
 
-    public function store(BookingRequest $request, BookingService $bookingService)
+    public function store(BookingRequest $request, BookingService $bookingService, \App\Services\CustomerService $customers)
     {
         $validated = $request->validated();
 
-        $bookingService->createAdminBooking($validated);
+        $bookingService->createAdminBooking($validated, $customers);
 
         return redirect()
             ->route('admin.menu.bookings.index')
@@ -51,20 +51,20 @@ class BookingController extends Controller
 
     public function edit(Booking $booking, AdminResourceService $resources)
     {
+        $booking->load('statusHistory');
         $restaurants = $resources->all(Restaurant::class, orderBy: [['name', 'asc']]);
+        $tables = app(BookingService::class)->tablesForRestaurant(old('restaurant_id', $booking->restaurant_id));
 
         return view(
             'admin.menu.bookings.edit',
-            compact('booking', 'restaurants')
+            compact('booking', 'restaurants', 'tables')
         );
     }
 
-    public function update(BookingRequest $request, Booking $booking, AdminResourceService $resources)
+    public function update(BookingRequest $request, Booking $booking, BookingService $bookingService, \App\Services\CustomerService $customers)
     {
         $validated = $request->validated();
-        $validated['update_by'] = Auth::id();
-
-        $resources->update($booking, $validated);
+        $bookingService->updateAdminBooking($booking, $validated, $customers);
 
         return redirect()
             ->route('admin.menu.bookings.index')

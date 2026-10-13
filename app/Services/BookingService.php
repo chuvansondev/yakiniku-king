@@ -4,34 +4,36 @@ namespace App\Services;
 
 use App\Enums\BookingStatus;
 use App\Models\Booking;
+use App\Models\Restaurant;
+use App\Models\Customer;
 use App\Contracts\Repositories\BookingRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\ValidationException;
 
 class BookingService
 {
-    private const TABLE_CAPACITIES = [
-        'B1' => 4, 'B2' => 4, 'B3' => 6, 'B4' => 2, 'B5' => 2, 'B6' => 4,
-        'B7' => 2, 'B8' => 2, 'B9' => 4, 'B10' => 4, 'B11' => 4, 'B12' => 6,
-    ];
-
-    private const TABLE_FLOORS = [
-        'B1' => 1, 'B2' => 1, 'B3' => 1, 'B4' => 1, 'B5' => 1, 'B6' => 1,
-        'B7' => 2, 'B8' => 2, 'B9' => 2, 'B10' => 2, 'B11' => 2, 'B12' => 2,
-    ];
-
     public function __construct(private readonly BookingRepositoryInterface $bookings) {}
 
-    public function tableCapacities(): array
+    public function tablesForRestaurant(?int $restaurantId, bool $activeOnly = true): Collection
     {
-        return self::TABLE_CAPACITIES;
+        if (! $restaurantId) return new Collection;
+
+        return Restaurant::query()->find($restaurantId)?->tables()
+            ->when($activeOnly, fn ($query) => $query->where('status', true))
+            ->get() ?? new Collection;
     }
 
-    public function tableFloors(): array
+    public function tableCapacities(?int $restaurantId): array
     {
-        return self::TABLE_FLOORS;
+        return $this->tablesForRestaurant($restaurantId)->pluck('capacity', 'code')->all();
+    }
+
+    public function tableFloors(?int $restaurantId): array
+    {
+        return $this->tablesForRestaurant($restaurantId)->pluck('floor', 'code')->all();
     }
 
     public function unavailableTables(?int $restaurantId, ?string $date, ?string $time, ?int $excludeBookingId = null): array
@@ -81,11 +83,50 @@ class BookingService
         return $this->bookings->mustTryMenuItems();
     }
 
-    public function createAdminBooking(array $attributes): Booking
+    public function createAdminBooking(array $attributes, CustomerService $customers): Booking
     {
+        $this->validateTableAssignment($attributes);
         $attributes['booking_code'] = $this->generateAdminBookingCode();
         $attributes['create_by'] = Auth::id();
+        $attributes['qr_code'] = $attributes['booking_code'];
+        $customer = $customers->resolve($attributes['customer_name'], $attributes['email'] ?? null, $attributes['phone'] ?? null, null, 'booking');
+        $attributes['customer_id'] = $customer->id;
         return $this->bookings->create($attributes);
+    }
+
+    public function updateAdminBooking(Booking $booking, array $attributes, CustomerService $customers): bool
+    {
+        $this->validateTableAssignment($attributes, $booking->id);
+        $attributes['update_by'] = Auth::id();
+        $customer = $customers->resolve($attributes['customer_name'], $attributes['email'] ?? null, $attributes['phone'] ?? null, null, 'booking');
+        $attributes['customer_id'] = $customer->id;
+
+        return $booking->update($attributes);
+    }
+
+    public function validateTableAssignment(array $attributes, ?int $excludeBookingId = null): void
+    {
+        $restaurantId = (int) $attributes['restaurant_id'];
+        $tableCodes = array_values($attributes['table_codes'] ?? []);
+        $floor = (int) $attributes['floor'];
+        $isCancelled = ($attributes['status'] ?? null) === BookingStatus::Cancelled->value;
+
+        if ($isCancelled) return;
+
+        if ($error = $this->tableSelectionError((int) $attributes['number_of_guests'], $tableCodes, $floor, $restaurantId)) {
+            throw ValidationException::withMessages(['table_codes' => $error]);
+        }
+
+        if (array_intersect($tableCodes, $this->unavailableTables(
+            $restaurantId,
+            $attributes['booking_date'],
+            $attributes['booking_time'],
+            $excludeBookingId,
+        ))) {
+            throw ValidationException::withMessages([
+                'table_codes' => __('One or more selected tables are already booked for this time. Please choose another table.'),
+            ]);
+        }
     }
 
     private function generateAdminBookingCode(): string
@@ -97,24 +138,23 @@ class BookingService
         return $code;
     }
 
-    public function tableSelectionError(int $partySize, array $tableCodes, ?int $floor = null): ?string
+    public function tableSelectionError(int $partySize, array $tableCodes, ?int $floor = null, ?int $restaurantId = null): ?string
     {
-        $capacities = self::TABLE_CAPACITIES;
-        $floorCapacities = [];
-        foreach ($capacities as $code => $capacity) {
-            $floorCapacities[self::TABLE_FLOORS[$code]] = ($floorCapacities[self::TABLE_FLOORS[$code]] ?? 0) + $capacity;
-        }
-        $maximumFloorCapacity = max($floorCapacities);
+        $tables = $this->tablesForRestaurant($restaurantId);
+        $capacities = $tables->pluck('capacity', 'code')->all();
+        $floors = $tables->pluck('floor', 'code')->all();
+        $floorCapacities = $tables->groupBy('floor')->map(fn ($floorTables) => $floorTables->sum('capacity'));
+        $maximumFloorCapacity = (int) ($floorCapacities->max() ?? 0);
 
         if ($partySize <= $maximumFloorCapacity && $tableCodes === []) {
             return __('Please select enough tables for your party size.');
         }
 
-        if ($floor !== null && collect($tableCodes)->contains(fn (string $code): bool => self::TABLE_FLOORS[$code] !== $floor)) {
+        if ($floor !== null && collect($tableCodes)->contains(fn (string $code): bool => ! isset($floors[$code]) || (int) $floors[$code] !== (int) $floor)) {
             return __('Please select tables on the chosen floor.');
         }
 
-        $tableCapacity = array_sum(array_map(fn (string $code): int => $capacities[$code], $tableCodes));
+        $tableCapacity = array_sum(array_map(fn (string $code): int => (int) ($capacities[$code] ?? 0), $tableCodes));
 
         if ($tableCodes !== [] && $tableCapacity < $partySize) {
             return __('The selected tables do not have enough seats for your party.');
@@ -135,6 +175,9 @@ class BookingService
 
         unset($validated['pre_order_items'], $validated['table_codes']);
         $bookingCode = $this->generateBookingCode();
+        $customer = app(CustomerService::class)->resolve(
+            $validated['customer_name'], $validated['email'] ?? null, $validated['phone'] ?? null, Auth::id(), 'booking',
+        );
 
         return $this->bookings->create([
             ...$validated,
@@ -144,6 +187,8 @@ class BookingService
             'qr_code' => $bookingCode,
             'status' => BookingStatus::Pending->value,
             'create_by' => Auth::id(),
+            'user_id' => Auth::id(),
+            'customer_id' => $customer->id,
         ]);
     }
 

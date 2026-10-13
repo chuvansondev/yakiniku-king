@@ -14,20 +14,86 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\JsonResponse;
 use App\Mail\BookingConfirmation;
 use App\Services\SettingService;
+use App\Models\Booking;
 
 class BookingController extends Controller
 {
+    public function myBookings(Request $request): View
+    {
+        $bookings = $request->user()->bookings()
+            ->with('restaurant')
+            ->latest('booking_date')
+            ->latest('booking_time')
+            ->paginate(10);
+
+        return view('frontend.bookings.index', compact('bookings'));
+    }
+
+    public function lookup(Request $request): View|RedirectResponse
+    {
+        if ($request->isMethod('post')) {
+            $data = $request->validate([
+                'booking_code' => ['required', 'string', 'max:32'],
+                'contact' => ['required', 'string', 'max:255'],
+            ]);
+
+            $booking = Booking::query()->with('restaurant')
+                ->where('booking_code', strtoupper(trim($data['booking_code'])))
+                ->where(fn ($query) => $query->where('email', $data['contact'])->orWhere('phone', $data['contact']))
+                ->first();
+
+            if (! $booking) {
+                return back()->withInput()->withErrors(['booking_code' => __('Không tìm thấy đặt bàn. Vui lòng kiểm tra mã đặt bàn và email hoặc số điện thoại đã dùng khi đặt.')]);
+            }
+
+            $request->session()->put('looked_up_booking_id', $booking->id);
+
+            return to_route('booking.lookup.result');
+        }
+
+        return view('frontend.bookings.lookup', ['booking' => null]);
+    }
+
+    public function lookupResult(Request $request): View
+    {
+        $bookingId = $request->session()->get('looked_up_booking_id');
+        abort_if(! $bookingId, 404);
+        $booking = Booking::query()->with('restaurant')->findOrFail($bookingId);
+
+        return view('frontend.bookings.lookup', compact('booking'));
+    }
+
+    public function cancelManaged(Request $request, BookingService $bookingService, Booking $booking): RedirectResponse
+    {
+        $isOwner = $request->user() && $booking->user_id === $request->user()->id;
+        $isLookupOwner = (int) $request->session()->get('looked_up_booking_id') === $booking->id;
+        abort_unless($isOwner || $isLookupOwner, 404);
+
+        $bookingService->cancelIfAllowed($booking);
+
+        return $request->user()
+            ? to_route('booking.mine')->with('booking_cancelled', true)
+            : to_route('booking.lookup.result')->with('booking_cancelled', true);
+    }
+
     public function availability(Request $request, BookingService $bookingService): JsonResponse
     {
         $validated = $request->validate([
             'restaurant_id' => ['required', 'integer', 'exists:restaurants,id'],
-            'booking_date' => ['required', 'date', 'after_or_equal:today'],
-            'booking_time' => ['required', 'date_format:H:i'],
+            'booking_date' => ['nullable', 'date', 'after_or_equal:today'],
+            'booking_time' => ['nullable', 'date_format:H:i'],
+            'exclude_booking_id' => ['nullable', 'integer', 'exists:bookings,id'],
         ]);
+        $validated['booking_date'] ??= null;
+        $validated['booking_time'] ??= null;
 
         return response()->json([
+            'tables' => $bookingService->tablesForRestaurant((int) $validated['restaurant_id'])->map(fn ($table) => [
+                'code' => $table->code, 'floor' => $table->floor, 'capacity' => $table->capacity,
+                'position' => $table->position,
+            ])->values(),
             'unavailable' => $bookingService->unavailableTables(
-                $validated['restaurant_id'], $validated['booking_date'], $validated['booking_time']
+                $validated['restaurant_id'], $validated['booking_date'], $validated['booking_time'], $validated['exclude_booking_id'] ?? null
             ),
         ]);
     }
@@ -45,15 +111,17 @@ class BookingController extends Controller
             session()->forget('booking_id');
         }
 
-        $tableCapacities = $bookingService->tableCapacities();
-        $tableFloors = $bookingService->tableFloors();
+        $selectedRestaurantId = old('restaurant_id') ?: $restaurants->first()?->id;
+        $tables = $bookingService->tablesForRestaurant($selectedRestaurantId);
+        $tableCapacities = $tables->pluck('capacity', 'code')->all();
+        $tableFloors = $tables->pluck('floor', 'code')->all();
         $floorCapacities = [];
         foreach ($tableCapacities as $code => $capacity) {
             $floorCapacities[$tableFloors[$code]] = ($floorCapacities[$tableFloors[$code]] ?? 0) + $capacity;
         }
-        $maximumFloorCapacity = max($floorCapacities);
+        $maximumFloorCapacity = (int) ($floorCapacities ? max($floorCapacities) : 0);
         $unavailableTables = $bookingService->unavailableTables(
-            old('restaurant_id'), old('booking_date'), old('booking_time')
+            $selectedRestaurantId, old('booking_date'), old('booking_time')
         );
 
         return view('frontend.bookings.create', compact('booking', 'maximumFloorCapacity', 'mustTryMenuItems', 'restaurants', 'tableCapacities', 'tableFloors', 'unavailableTables'));
@@ -63,15 +131,7 @@ class BookingController extends Controller
     {
         $validated = $request->validated();
 
-        $tableCapacities = $bookingService->tableCapacities();
-        $tableFloors = $bookingService->tableFloors();
-        $floorCapacities = [];
-        foreach ($tableCapacities as $code => $capacity) {
-            $floorCapacities[$tableFloors[$code]] = ($floorCapacities[$tableFloors[$code]] ?? 0) + $capacity;
-        }
-        $maximumFloorCapacity = max($floorCapacities);
-
-        if ($error = $bookingService->tableSelectionError($validated['number_of_guests'], $validated['table_codes'] ?? [], $validated['floor'])) {
+        if ($error = $bookingService->tableSelectionError($validated['number_of_guests'], $validated['table_codes'] ?? [], $validated['floor'], $validated['restaurant_id'])) {
             throw ValidationException::withMessages(['table_codes' => $error]);
         }
 

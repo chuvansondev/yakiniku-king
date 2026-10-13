@@ -491,55 +491,20 @@
                                 <fieldset class="col-12 booking-table-fieldset" aria-describedby="bookingTableHelp">
                                     <legend class="booking-table-title">{{ __('Chọn bàn') }}</legend>
                                     <label class="visually-hidden" for="floor">{{ __('Chọn tầng') }}</label>
-                                    <select id="floor" name="floor" class="visually-hidden @error('floor') is-invalid @enderror" required>
-                                        @foreach ([1, 2] as $floor)
-                                            <option value="{{ $floor }}" @selected(old('floor', 1) == $floor)>{{ __('Tầng') }} {{ $floor }}</option>
-                                        @endforeach
-                                    </select>
+                                    <select id="floor" name="floor" class="visually-hidden @error('floor') is-invalid @enderror" required></select>
                                     @error('floor')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                     <p class="booking-table-help" id="bookingTableHelp">
-                                        {{ __('Chọn một hoặc nhiều bàn ở tầng đã chọn để đủ chỗ cho số khách. Mỗi tầng có tổng sức chứa :capacity người; với đoàn đông hơn, nhà hàng sẽ bố trí bàn khi xác nhận.', ['capacity' => $maximumFloorCapacity]) }}
+                                        {{ __('Chọn một hoặc nhiều bàn ở tầng đã chọn để đủ chỗ cho số khách. Với đoàn đông hơn sức chứa tầng, nhà hàng sẽ bố trí bàn khi xác nhận.') }}
                                     </p>
                                     <div class="booking-plan-header">
                                         <p class="booking-plan-caption">{{ __('Sơ đồ nhà hàng') }}</p>
                                         <span class="small text-secondary" id="bookingAvailabilityMessage" aria-live="polite">{{ __('Chọn ngày và giờ để xem tình trạng bàn') }}</span>
                                     </div>
-                                    <div class="booking-floor-tabs" role="tablist" aria-label="{{ __('Chọn tầng') }}">
-                                        @foreach ([1, 2] as $floorTab)
-                                            <button class="booking-floor-tab" id="floor-tab-{{ $floorTab }}" type="button" role="tab" aria-controls="bookingFloorPlan" aria-selected="{{ (int) old('floor') === $floorTab ? 'true' : 'false' }}" data-floor-tab="{{ $floorTab }}">{{ __('Tầng') }} {{ $floorTab }}</button>
-                                        @endforeach
-                                    </div>
+                                    <div class="booking-floor-tabs" role="tablist" aria-label="{{ __('Chọn tầng') }}" id="bookingFloorTabs"></div>
                                     <div class="booking-table-grid" id="bookingFloorPlan" role="tabpanel" aria-labelledby="floor-tab-{{ old('floor', 1) }}">
                                         <span class="booking-room-label">{{ __('KHU VỰC ĂN UỐNG') }}</span>
-                                        @foreach ($tableCapacities as $tableCode => $capacity)
-                                            @php($unavailable = in_array($tableCode, $unavailableTables ?? [], true))
-                                            <label class="booking-table-option {{ $unavailable ? 'is-unavailable' : '' }}" for="table_{{ $tableCode }}" data-floor="{{ $tableFloors[$tableCode] }}" data-capacity="{{ $capacity }}">
-                                                <input
-                                                    id="table_{{ $tableCode }}"
-                                                    name="table_codes[]"
-                                                    type="checkbox"
-                                                    value="{{ $tableCode }}"
-                                                    aria-label="{{ __('Bàn') }} {{ $tableCode }} — {{ $capacity }} {{ __('người') }}{{ $unavailable ? ', '.__('Đã được đặt') : '' }}"
-                                                    @disabled($unavailable)
-                                                    @checked(in_array($tableCode, (array) old('table_codes', [])))>
-                                                <svg class="booking-table-icon" viewBox="0 0 64 64" aria-hidden="true">
-                                                    @if ($capacity === 2)
-                                                        <circle class="booking-chair" cx="12" cy="32" r="4.5"/><circle class="booking-chair" cx="52" cy="32" r="4.5"/>
-                                                    @elseif ($capacity === 4)
-                                                        <circle class="booking-chair" cx="12" cy="20" r="4.5"/><circle class="booking-chair" cx="12" cy="44" r="4.5"/><circle class="booking-chair" cx="52" cy="20" r="4.5"/><circle class="booking-chair" cx="52" cy="44" r="4.5"/>
-                                                    @else
-                                                        <circle class="booking-chair" cx="12" cy="12" r="4.5"/><circle class="booking-chair" cx="12" cy="32" r="4.5"/><circle class="booking-chair" cx="12" cy="52" r="4.5"/>
-                                                        <circle class="booking-chair" cx="52" cy="12" r="4.5"/><circle class="booking-chair" cx="52" cy="32" r="4.5"/><circle class="booking-chair" cx="52" cy="52" r="4.5"/>
-                                                    @endif
-                                                    <rect class="booking-table-surface" x="19" y="16" width="26" height="32" rx="2"/>
-                                                </svg>
-                                                <span class="booking-table-code">{{ $tableCode }}</span>
-                                                <span class="booking-table-capacity">{{ $capacity }} {{ __('người') }}</span>
-                                                <span class="visually-hidden booking-table-status">{{ $unavailable ? __('Đã được đặt') : __('Còn trống') }}</span>
-                                            </label>
-                                        @endforeach
                                     </div>
                                     <div class="booking-plan-legend" aria-label="{{ __('Chú thích trạng thái bàn') }}">
                                         <span><i class="booking-legend-dot"></i>{{ __('Còn trống') }}</span>
@@ -731,9 +696,10 @@
             const date = form.querySelector('[name="booking_date"]');
             const time = form.querySelector('[name="booking_time"]');
             const guests = form.querySelector('[name="number_of_guests"]');
-            const tables = [...form.querySelectorAll('.booking-table-option')];
-            const floorTabs = [...form.querySelectorAll('[data-floor-tab]')];
+            let tables = [];
+            let floorTabs = [];
             const floorPlan = document.getElementById('bookingFloorPlan');
+            const floorTabsContainer = document.getElementById('bookingFloorTabs');
             const summary = document.getElementById('bookingSelectedSummary');
             const capacitySummary = document.getElementById('bookingCapacitySummary');
             const availabilityMessage = document.getElementById('bookingAvailabilityMessage');
@@ -743,7 +709,77 @@
             const chooseText = @json(__('Chọn ngày và giờ để xem tình trạng bàn'));
             const noneText = @json(__('Chưa chọn bàn'));
             const tooSmallText = @json(__('Không đủ chỗ'));
+            const tableLabel = @json(__('Bàn'));
+            const peopleLabel = @json(__('người'));
+            const availableLabel = @json(__('Còn trống'));
+            const unavailableLabel = @json(__('Đã được đặt'));
+            const selectedTables = @json((array) old('table_codes', []));
+            const preferredFloor = @json(old('floor'));
+            let tableDefinitions = [];
             let availabilityRequest;
+
+            const rebuildTables = (definitions, unavailable = []) => {
+                tableDefinitions = definitions;
+                floorPlan.querySelectorAll('.booking-table-option').forEach(element => element.remove());
+                floorTabsContainer.replaceChildren();
+                floor.replaceChildren();
+                const floors = [...new Set(definitions.map(table => Number(table.floor)))].sort((a, b) => a - b);
+                floors.forEach((floorNumber, index) => {
+                    const option = new Option(`${@json(__('Tầng'))} ${floorNumber}`, floorNumber);
+                    floor.add(option);
+                    const tab = document.createElement('button');
+                    tab.type = 'button'; tab.className = 'booking-floor-tab'; tab.id = `floor-tab-${floorNumber}`;
+                    tab.setAttribute('role', 'tab'); tab.setAttribute('aria-controls', 'bookingFloorPlan');
+                    tab.dataset.floorTab = floorNumber; tab.textContent = `${@json(__('Tầng'))} ${floorNumber}`;
+                    tab.addEventListener('click', () => { floor.value = floorNumber; floor.dispatchEvent(new Event('change', { bubbles: true })); });
+                    tab.addEventListener('keydown', event => {
+                        if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+                        event.preventDefault(); const next = (index + (event.key === 'ArrowRight' ? 1 : floors.length - 1)) % floors.length;
+                        floorTabs[next]?.focus(); floorTabs[next]?.click();
+                    });
+                    floorTabsContainer.append(tab);
+                });
+                floorTabs = [...floorTabsContainer.querySelectorAll('[data-floor-tab]')];
+                definitions.forEach(table => {
+                    const isUnavailable = unavailable.includes(table.code);
+                    const label = document.createElement('label');
+                    label.className = `booking-table-option${isUnavailable ? ' is-unavailable' : ''}`;
+                    label.htmlFor = `table_${table.code}`; label.dataset.floor = table.floor; label.dataset.capacity = table.capacity;
+                    const input = document.createElement('input'); input.id = `table_${table.code}`; input.name = 'table_codes[]';
+                    input.type = 'checkbox'; input.value = table.code; input.checked = selectedTables.includes(table.code);
+                    input.disabled = isUnavailable;
+                    input.setAttribute('aria-label', `${tableLabel} ${table.code} — ${table.capacity} ${peopleLabel}`);
+                    input.addEventListener('change', updateSummary);
+                    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                    svg.setAttribute('class', 'booking-table-icon'); svg.setAttribute('viewBox', '0 0 64 64'); svg.setAttribute('aria-hidden', 'true');
+                    const chairs = Math.min(8, Math.max(2, Number(table.capacity)));
+                    for (let chair = 0; chair < chairs; chair++) {
+                        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        circle.setAttribute('class', 'booking-chair');
+                        const angle = (Math.PI * 2 * chair / chairs) - Math.PI / 2;
+                        circle.setAttribute('cx', String(32 + Math.cos(angle) * 24)); circle.setAttribute('cy', String(32 + Math.sin(angle) * 24)); circle.setAttribute('r', '4.5'); svg.append(circle);
+                    }
+                    const surface = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    surface.setAttribute('class', 'booking-table-surface'); surface.setAttribute('x', '19'); surface.setAttribute('y', '16'); surface.setAttribute('width', '26'); surface.setAttribute('height', '32'); surface.setAttribute('rx', '2'); svg.append(surface);
+                    const code = document.createElement('span'); code.className = 'booking-table-code'; code.textContent = table.code;
+                    const capacity = document.createElement('span'); capacity.className = 'booking-table-capacity'; capacity.textContent = `${table.capacity} ${peopleLabel}`;
+                    const status = document.createElement('span'); status.className = 'visually-hidden booking-table-status'; status.textContent = isUnavailable ? unavailableLabel : availableLabel;
+                    label.append(input, svg, code, capacity, status); floorPlan.append(label);
+                });
+                tables = [...floorPlan.querySelectorAll('.booking-table-option')];
+                if (floors.length) floor.value = floors.includes(Number(preferredFloor)) ? Number(preferredFloor) : floors[0];
+                updateFloor(); updateCapacityAvailability();
+            };
+
+            const loadRestaurantTables = async () => {
+                if (!restaurant.value) { rebuildTables([]); return; }
+                const params = new URLSearchParams({ restaurant_id: restaurant.value, booking_date: date.value || '', booking_time: time.value || '' });
+                const response = await fetch(`{{ route('booking.availability') }}?${params}`, { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } });
+                if (!response.ok) throw new Error('tables');
+                const data = await response.json();
+                rebuildTables(data.tables, data.unavailable);
+                availabilityMessage.textContent = date.value && time.value ? readyText : chooseText;
+            };
 
             const updateSummary = () => {
                 const chosen = tables.filter(table => table.querySelector('input').checked);
@@ -789,11 +825,14 @@
             };
 
             const refreshAvailability = async () => {
-                if (!restaurant.value || !date.value || !time.value) {
+                if (!restaurant.value) {
                     availabilityMessage.textContent = chooseText;
                     return;
                 }
-
+                if (!date.value || !time.value) {
+                    tables.forEach(table => { table.classList.remove('is-unavailable'); table.querySelector('input').disabled = false; });
+                    updateCapacityAvailability(); availabilityMessage.textContent = chooseText; return;
+                }
                 availabilityRequest?.abort();
                 availabilityRequest = new AbortController();
                 availabilityMessage.textContent = checkText;
@@ -821,26 +860,11 @@
                 }
             };
 
-            tables.forEach(table => table.querySelector('input').addEventListener('change', updateSummary));
-            floorTabs.forEach((tab, index) => {
-                tab.addEventListener('click', () => {
-                    floor.value = tab.dataset.floorTab;
-                    floor.dispatchEvent(new Event('change', { bubbles: true }));
-                });
-                tab.addEventListener('keydown', event => {
-                    if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
-                    event.preventDefault();
-                    const nextIndex = (index + (event.key === 'ArrowRight' ? 1 : floorTabs.length - 1)) % floorTabs.length;
-                    floorTabs[nextIndex].focus();
-                    floorTabs[nextIndex].click();
-                });
-            });
             floor.addEventListener('change', updateFloor);
             guests.addEventListener('input', updateCapacityAvailability);
-            [restaurant, date, time].forEach(input => input.addEventListener('change', refreshAvailability));
-            updateFloor();
-            updateCapacityAvailability();
-            if (restaurant.value && date.value && time.value) refreshAvailability();
+            [date, time].forEach(input => input.addEventListener('change', refreshAvailability));
+            restaurant.addEventListener('change', () => loadRestaurantTables().catch(() => { availabilityMessage.textContent = @json(__('Không thể tải sơ đồ bàn. Vui lòng thử lại.')); }));
+            if (restaurant.value) loadRestaurantTables().catch(() => { availabilityMessage.textContent = @json(__('Không thể tải sơ đồ bàn. Vui lòng thử lại.')); });
         });
     </script>
     @if ($booking)

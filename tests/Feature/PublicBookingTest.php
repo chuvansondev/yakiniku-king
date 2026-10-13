@@ -4,7 +4,9 @@ use App\Models\Booking;
 use App\Models\MenuCategory;
 use App\Models\MenuItem;
 use App\Models\Restaurant;
+use App\Models\RestaurantTable;
 use App\Models\Setting;
+use App\Models\User;
 use App\Mail\BookingConfirmation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
@@ -28,6 +30,7 @@ test('the booking form lists active restaurants', function () {
         'address' => 'Hà Nội',
         'status' => true,
     ]);
+    seedDefaultRestaurantTables($restaurant);
     $menuCategory = MenuCategory::create([
         'name' => 'Thịt bò',
         'slug' => 'thit-bo',
@@ -48,11 +51,9 @@ test('the booking form lists active restaurants', function () {
         ->assertSee($restaurant->name)
         ->assertSee($menuItem->name)
         ->assertSee('Gọi món trước')
-        ->assertSee('name="pre_order_items[]"', false)
+        ->assertSee('bookingFloorTabs', false)
         ->assertSee('name="floor"', false)
-        ->assertSee('Tầng 1')
-        ->assertSee('name="table_codes[]"', false)
-        ->assertSee('6 người')
+        ->assertSee('bookingFloorPlan', false)
         ->assertSee('Thời gian giữ bàn tối đa 10 phút')
         ->assertSee('Điều khoản và lưu ý đặt bàn');
 });
@@ -66,6 +67,7 @@ test('a visitor can submit a booking request', function () {
         'address' => 'Hà Nội',
         'status' => true,
     ]);
+    seedDefaultRestaurantTables($restaurant);
 
     $menuCategory = MenuCategory::create([
         'name' => 'Thịt bò',
@@ -152,6 +154,7 @@ test('a booked table is unavailable for overlapping reservation times', function
         'address' => 'Ho Chi Minh City',
         'status' => true,
     ]);
+    seedDefaultRestaurantTables($restaurant);
     $bookingDate = now()->addDay()->toDateString();
 
     $this->post(route('booking.store'), [
@@ -188,6 +191,7 @@ test('a booking sends both customer and admin emails when their addresses match'
         'address' => 'Ho Chi Minh City',
         'status' => true,
     ]);
+    seedDefaultRestaurantTables($restaurant);
 
     $this->post(route('booking.store'), [
         'restaurant_id' => $restaurant->id,
@@ -212,6 +216,7 @@ test('a visitor can cancel the booking in their session', function () {
         'address' => 'Hà Nội',
         'status' => true,
     ]);
+    seedDefaultRestaurantTables($restaurant);
 
     $this->post(route('booking.store'), [
         'restaurant_id' => $restaurant->id,
@@ -242,6 +247,54 @@ test('a visitor can cancel the booking in their session', function () {
 test('a visitor cannot cancel a booking from another session', function () {
     $this->post(route('booking.cancel'))
         ->assertNotFound();
+});
+
+test('a signed in customer can see and cancel only their own bookings', function () {
+    $restaurant = Restaurant::create(['name' => 'Yakiniku King', 'address' => 'Hanoi', 'status' => true]);
+    $owner = User::factory()->create(['is_admin' => false]);
+    $other = User::factory()->create(['is_admin' => false]);
+    $booking = Booking::create([
+        'booking_code' => 'BK-OWNER-001', 'restaurant_id' => $restaurant->id, 'user_id' => $owner->id,
+        'customer_name' => $owner->name, 'phone' => '0901234567', 'email' => $owner->email,
+        'booking_date' => now()->addDay()->toDateString(), 'booking_time' => '19:00', 'number_of_guests' => 2,
+        'status' => 'pending',
+    ]);
+
+    $this->actingAs($owner)->get(route('booking.mine'))->assertOk()->assertSee('BK-OWNER-001');
+    $this->actingAs($other)->get(route('booking.mine'))->assertOk()->assertDontSee('BK-OWNER-001');
+    $this->actingAs($other)->delete(route('booking.mine.cancel', $booking))->assertNotFound();
+    $this->actingAs($owner)->delete(route('booking.mine.cancel', $booking))->assertRedirect(route('booking.mine'));
+    $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'cancelled']);
+});
+
+test('a guest can look up and cancel a booking with its code and contact', function () {
+    $restaurant = Restaurant::create(['name' => 'Yakiniku King', 'address' => 'Hanoi', 'status' => true]);
+    $booking = Booking::create([
+        'booking_code' => 'BK-LOOKUP-001', 'restaurant_id' => $restaurant->id,
+        'customer_name' => 'Guest Customer', 'phone' => '0901234567', 'email' => 'guest@example.com',
+        'booking_date' => now()->addDay()->toDateString(), 'booking_time' => '19:00', 'number_of_guests' => 2,
+        'status' => 'pending',
+    ]);
+
+    $this->post(route('booking.lookup'), ['booking_code' => 'bk-lookup-001', 'contact' => 'guest@example.com'])
+        ->assertRedirect(route('booking.lookup.result'));
+    $this->get(route('booking.lookup.result'))->assertOk()->assertSee('BK-LOOKUP-001');
+    $this->delete(route('booking.lookup.cancel', $booking))->assertRedirect(route('booking.lookup.result'));
+    $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'cancelled']);
+});
+
+test('a guest lookup requires both the booking code and a matching contact', function () {
+    $restaurant = Restaurant::create(['name' => 'Yakiniku King', 'address' => 'Hanoi', 'status' => true]);
+    Booking::create([
+        'booking_code' => 'BK-PRIVATE-001', 'restaurant_id' => $restaurant->id,
+        'customer_name' => 'Private Customer', 'phone' => '0901234567', 'email' => 'private@example.com',
+        'booking_date' => now()->addDay()->toDateString(), 'booking_time' => '19:00', 'number_of_guests' => 2,
+        'status' => 'pending',
+    ]);
+
+    $this->post(route('booking.lookup'), ['booking_code' => 'BK-PRIVATE-001', 'contact' => 'wrong@example.com'])
+        ->assertSessionHasErrors(['booking_code']);
+    $this->get(route('booking.lookup.result'))->assertNotFound();
 });
 
 test('invalid booking details are rejected without creating a booking', function () {
@@ -291,6 +344,7 @@ test('visitors cannot pre-order menu items outside the active must-try menu', fu
         'address' => 'Hà Nội',
         'status' => true,
     ]);
+    seedDefaultRestaurantTables($restaurant);
     $menuCategory = MenuCategory::create([
         'name' => 'Thịt bò',
         'slug' => 'thit-bo',
@@ -329,6 +383,7 @@ test('a visitor can select multiple tables to fit a larger party', function () {
         'address' => 'Hà Nội',
         'status' => true,
     ]);
+    seedDefaultRestaurantTables($restaurant);
 
     $this->post(route('booking.store'), [
         'restaurant_id' => $restaurant->id,
@@ -349,12 +404,34 @@ test('a visitor can select multiple tables to fit a larger party', function () {
     expect($booking->table_codes)->toBe(['B8', 'B10', 'B11']);
 });
 
+test('booking tables and capacity come from the selected restaurant configuration', function () {
+    $restaurant = Restaurant::create(['name' => 'Branch with custom layout', 'address' => 'Hanoi', 'status' => true]);
+    RestaurantTable::create(['restaurant_id' => $restaurant->id, 'code' => 'VIP-A', 'floor' => 3, 'capacity' => 8, 'position' => 1, 'status' => true]);
+    RestaurantTable::create(['restaurant_id' => $restaurant->id, 'code' => 'CLOSED', 'floor' => 3, 'capacity' => 4, 'position' => 2, 'status' => false]);
+
+    $this->get(route('booking.create'))->assertOk()->assertSee('bookingFloorTabs', false);
+    $this->getJson(route('booking.availability', ['restaurant_id' => $restaurant->id]))
+        ->assertOk()->assertJsonPath('tables.0.code', 'VIP-A')->assertJsonCount(1, 'tables');
+
+    $base = [
+        'restaurant_id' => $restaurant->id, 'customer_name' => 'Custom Guest', 'phone' => '0901234567',
+        'booking_date' => now()->addDay()->toDateString(), 'booking_time' => '19:00', 'number_of_guests' => 7,
+    ];
+
+    $this->post(route('booking.store'), [...$base, 'floor' => 3, 'table_codes' => ['VIP-A']])
+        ->assertSessionHas('booking_success');
+
+    $this->from(route('booking.create'))->post(route('booking.store'), [...$base, 'floor' => 3, 'table_codes' => ['CLOSED']])
+        ->assertRedirect(route('booking.create'))->assertSessionHasErrors(['table_codes.0']);
+});
+
 test('a visitor cannot select tables with insufficient capacity', function () {
     $restaurant = Restaurant::create([
         'name' => 'Yakiniku King - Hà Nội',
         'address' => 'Hà Nội',
         'status' => true,
     ]);
+    seedDefaultRestaurantTables($restaurant);
 
     $this->from(route('booking.create'))
         ->post(route('booking.store'), [
@@ -372,3 +449,12 @@ test('a visitor cannot select tables with insufficient capacity', function () {
 
     $this->assertDatabaseCount('bookings', 0);
 });
+
+function seedDefaultRestaurantTables(Restaurant $restaurant): void
+{
+    foreach ([1 => ['B1' => 4, 'B2' => 4, 'B3' => 6, 'B4' => 2, 'B5' => 2, 'B6' => 4], 2 => ['B7' => 2, 'B8' => 2, 'B9' => 4, 'B10' => 4, 'B11' => 4, 'B12' => 6]] as $floor => $tables) {
+        foreach ($tables as $code => $capacity) {
+            RestaurantTable::create(['restaurant_id' => $restaurant->id, 'code' => $code, 'floor' => $floor, 'capacity' => $capacity, 'status' => true]);
+        }
+    }
+}

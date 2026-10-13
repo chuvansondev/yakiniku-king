@@ -38,4 +38,9 @@ class Restaurant extends Model
     {
         return $this->hasMany(Booking::class);
     }
+
+    public function tables(): HasMany
+    {
+        return $this->hasMany(RestaurantTable::class)->orderBy('floor')->orderBy('position')->orderBy('code');
+    }
 }

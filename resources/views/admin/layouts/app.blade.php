@@ -68,15 +68,20 @@
                     <ul class="admin-nav-list">
                         <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.restaurants.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.restaurants.index') }}"><span class="admin-nav-mark" aria-hidden="true">10</span>{{ __('Nhà hàng') }}</a></li>
                         <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.bookings.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.bookings.index') }}"><span class="admin-nav-mark" aria-hidden="true">11</span>{{ __('Đặt bàn') }}</a></li>
-                        <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.leads.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.leads.index') }}"><span class="admin-nav-mark" aria-hidden="true">12</span>{{ __('Khách hàng tiềm năng') }}</a></li>
+                        @if (auth()->user()->hasPermission('menu.bookings.manage'))
+                        <li><a class="admin-nav-link {{ request()->routeIs('admin.reports.*') ? 'is-active' : '' }}" href="{{ route('admin.reports.operations') }}"><span class="admin-nav-mark" aria-hidden="true">12</span>{{ __('Báo cáo vận hành') }}</a></li>
+                        @endif                        <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.leads.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.leads.index') }}"><span class="admin-nav-mark" aria-hidden="true">13</span>{{ __('Khách hàng tiềm năng') }}</a></li>
+                        @if (auth()->user()->hasPermission('menu.customers.manage'))
+                        <li><a class="admin-nav-link {{ request()->routeIs('admin.customers.*') ? 'is-active' : '' }}" href="{{ route('admin.customers.index') }}"><span class="admin-nav-mark" aria-hidden="true">14</span>{{ __('Quản lý khách hàng') }}</a></li>
+                        @endif
                         @if (auth()->user()->hasPermission('accounts.manage'))
                         <div class="admin-nav-group">
                             <ul class="admin-nav-list">
-                                <li><a class="admin-nav-link {{ request()->routeIs('admin.accounts.*') ? 'is-active' : '' }}" href="{{ route('admin.accounts.index') }}"><span class="admin-nav-mark" aria-hidden="true">13</span>{{ __('Tài khoản') }}</a></li>
+                                <li><a class="admin-nav-link {{ request()->routeIs('admin.accounts.*') ? 'is-active' : '' }}" href="{{ route('admin.accounts.index') }}"><span class="admin-nav-mark" aria-hidden="true">15</span>{{ __('Tài khoản') }}</a></li>
                             </ul>
                         </div>
                         @endif
-                        <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.settings.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.settings.index') }}"><span class="admin-nav-mark" aria-hidden="true">14</span>{{ __('Cài đặt') }}</a></li>
+                        <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.settings.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.settings.index') }}"><span class="admin-nav-mark" aria-hidden="true">16</span>{{ __('Cài đặt') }}</a></li>
                     </ul>
                 </div>
             </nav>

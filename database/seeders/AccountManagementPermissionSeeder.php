@@ -23,6 +23,7 @@ class AccountManagementPermissionSeeder extends Seeder
         'menu.restaurants.manage' => 'Manage restaurants.',
         'menu.bookings.manage' => 'Manage bookings.',
         'menu.leads.manage' => 'Manage leads.',
+        'menu.customers.manage' => 'Manage customer profiles and interaction history.',
         'menu.settings.manage' => 'Manage menu settings.',
         'kids-items.manage' => 'Manage kids menu items.',
     ];

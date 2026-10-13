@@ -16,6 +16,12 @@ class RestaurantRequest extends FormRequest
             'latitude' => ['nullable', 'numeric', 'between:-90,90'], 'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'google_map_url' => ['nullable', 'url', 'max:255'], 'opening_time' => ['nullable', 'date_format:H:i'], 'closing_time' => ['nullable', 'date_format:H:i'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'], 'remove_image' => ['nullable', 'boolean'], 'status' => ['nullable', 'boolean'],
+            'tables' => ['sometimes', 'required', 'array', 'min:1'],
+            'tables.*.code' => ['required', 'string', 'max:32', 'distinct'],
+            'tables.*.floor' => ['required', 'integer', 'min:1', 'max:20'],
+            'tables.*.capacity' => ['required', 'integer', 'min:1', 'max:100'],
+            'tables.*.position' => ['nullable', 'integer', 'min:0', 'max:1000'],
+            'tables.*.status' => ['nullable', 'boolean'],
         ];
     }
 }

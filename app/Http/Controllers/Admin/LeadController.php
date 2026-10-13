@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Lead;
 use App\Services\AdminResourceService;
 use App\Http\Requests\Admin\LeadRequest;
+use App\Services\CustomerService;
 
 class LeadController extends Controller
 {
@@ -21,9 +22,11 @@ class LeadController extends Controller
         return view('admin.menu.leads.create');
     }
 
-    public function store(LeadRequest $request, AdminResourceService $resources)
+    public function store(LeadRequest $request, AdminResourceService $resources, CustomerService $customers)
     {
         $validated = $request->validated();
+        $customer = $customers->resolve($validated['name'], $validated['email'] ?? null, $validated['phone'] ?? null, null, 'lead');
+        $validated['customer_id'] = $customer->id;
 
         $resources->create(Lead::class, $validated);
 
@@ -45,9 +48,11 @@ class LeadController extends Controller
         return view('admin.menu.leads.edit', compact('lead'));
     }
 
-    public function update(LeadRequest $request, Lead $lead, AdminResourceService $resources)
+    public function update(LeadRequest $request, Lead $lead, AdminResourceService $resources, CustomerService $customers)
     {
         $validated = $request->validated();
+        $customer = $customers->resolve($validated['name'], $validated['email'] ?? null, $validated['phone'] ?? null, null, 'lead');
+        $validated['customer_id'] = $customer->id;
 
         $resources->update($lead, $validated);
 

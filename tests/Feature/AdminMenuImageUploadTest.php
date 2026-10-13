@@ -409,6 +409,7 @@ test('restaurant update removes its current image when requested', function () {
         'address' => 'Main Street',
         'image' => $imagePath,
     ]);
+    \App\Models\RestaurantTable::create(['restaurant_id' => $restaurant->id, 'code' => 'B1', 'floor' => 1, 'capacity' => 4, 'status' => true]);
 
     $this->actingAs(User::factory()->create())
         ->get(route('admin.menu.restaurants.edit', $restaurant))

@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Str;
 
 class Permission extends Model
 {
+    protected $table = 'permissions';
+
     protected $fillable = [
         'name',
         'slug',
@@ -15,6 +18,15 @@ class Permission extends Model
         'create_by',
         'update_by',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Permission $permission): void {
+            if (blank($permission->slug) && filled($permission->name)) {
+                $permission->slug = Str::slug($permission->name, '.');
+            }
+        });
+    }
 
     public function roles(): BelongsToMany
     {
@@ -30,6 +42,6 @@ class Permission extends Model
 
     public function editor(): BelongsTo
     {
-        return $this->belongsTo(User::class,'update_by');
+        return $this->belongsTo(User::class, 'update_by');
     }
 }

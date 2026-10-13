@@ -9,5 +9,5 @@
 <div class="admin-form-field">
     <label>Slug</label>
     <br>
-    <input class="admin-form-input" type="text" name="slug" value="{{ old('slug', $article->slug ?? '') }}" placeholder="{{ __('Để trống để Laravel tự tạo') }}">
+    <input class="admin-form-input" type="text" name="slug" value="{{ old('slug', $article->slug ?? '') }}" placeholder="{{ __('admin_lists.slug_auto') }}">
 </div>

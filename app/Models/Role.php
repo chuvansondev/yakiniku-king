@@ -32,10 +32,7 @@ class Role extends Model
     public function hasPermission(string $permission): bool
     {
         return $this->permissions()
-            ->where(function ($query) use ($permission) {
-                $query->where('permissions.slug', $permission)
-                    ->orWhere('permissions.name', $permission);
-            })
+            ->where('permissions.slug', $permission)
             ->exists();
     }
 

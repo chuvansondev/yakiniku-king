@@ -146,6 +146,39 @@ test('a visitor can submit a booking request', function () {
         ->assertSee('value="2"', false);
 });
 
+test('a booked table is unavailable for overlapping reservation times', function () {
+    $restaurant = Restaurant::create([
+        'name' => 'Yakiniku King',
+        'address' => 'Ho Chi Minh City',
+        'status' => true,
+    ]);
+    $bookingDate = now()->addDay()->toDateString();
+
+    $this->post(route('booking.store'), [
+        'restaurant_id' => $restaurant->id,
+        'customer_name' => 'First Customer',
+        'phone' => '0901234567',
+        'floor' => 1,
+        'booking_date' => $bookingDate,
+        'booking_time' => '19:00',
+        'number_of_guests' => 2,
+        'table_codes' => ['B4'],
+    ])->assertSessionHas('booking_success');
+
+    $booking = Booking::query()->firstOrFail();
+    expect($booking->booking_date->toDateString())->toBe($bookingDate);
+    expect($booking->booking_time)->toBe('19:00');
+    expect($booking->table_codes)->toBe(['B4']);
+
+    $this->getJson(route('booking.availability', [
+        'restaurant_id' => $restaurant->id,
+        'booking_date' => $bookingDate,
+        'booking_time' => '20:00',
+    ]))
+        ->assertOk()
+        ->assertJsonPath('unavailable', ['B4']);
+});
+
 test('a booking sends both customer and admin emails when their addresses match', function () {
     Mail::fake();
     Setting::create(['key' => 'email', 'value' => 'same@example.com']);
@@ -305,7 +338,7 @@ test('a visitor can select multiple tables to fit a larger party', function () {
         'booking_date' => now()->addDay()->toDateString(),
         'booking_time' => '19:00',
         'number_of_guests' => 7,
-        'table_codes' => ['B1', 'B3'],
+        'table_codes' => ['B8', 'B10', 'B11'],
     ])
         ->assertRedirect(route('booking.create'))
         ->assertSessionHas('booking_success');
@@ -313,7 +346,7 @@ test('a visitor can select multiple tables to fit a larger party', function () {
     $booking = Booking::query()->where('customer_name', 'Nguyen Van A')->firstOrFail();
 
     expect($booking->floor)->toBe(2);
-    expect($booking->table_codes)->toBe(['B1', 'B3']);
+    expect($booking->table_codes)->toBe(['B8', 'B10', 'B11']);
 });
 
 test('a visitor cannot select tables with insufficient capacity', function () {

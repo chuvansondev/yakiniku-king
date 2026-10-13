@@ -41,21 +41,17 @@
                     </ul>
                 </div>
 
+
+
                 <div class="admin-nav-group">
                     <p class="admin-nav-label">{{ __('Thực đơn') }}</p>
                     <ul class="admin-nav-list">
                         <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.banners.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.banners.index') }}"><span class="admin-nav-mark" aria-hidden="true">02</span>{{ __('Biển quảng cáo') }}</a></li>
-                        <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.categories.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.categories.index') }}"><span class="admin-nav-mark" aria-hidden="true">03</span>{{ __('Danh mục thực đơn') }}</a></li>
-                        <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.items.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.items.index') }}"><span class="admin-nav-mark" aria-hidden="true">04</span>{{ __('Món ăn') }}</a></li>
-                        <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.combos.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.combos.index') }}"><span class="admin-nav-mark" aria-hidden="true">05</span>{{ __('Combos') }}</a></li>
-                        <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.promotions.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.promotions.index') }}"><span class="admin-nav-mark" aria-hidden="true">06</span>{{ __('Khuyến mãi') }}</a></li>
-                    </ul>
-                </div>
-
-                <div class="admin-nav-group">
-                    <p class="admin-nav-label">{{ __('Dành cho trẻ em') }}</p>
-                    <ul class="admin-nav-list">
-                        <li><a class="admin-nav-link {{ request()->routeIs('admin.kids-items.*') ? 'is-active' : '' }}" href="{{ route('admin.kids-items.index') }}"><span class="admin-nav-mark" aria-hidden="true">07</span>{{ __('Nội dung trẻ em') }}</a></li>
+                        <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.items.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.items.index') }}"><span class="admin-nav-mark" aria-hidden="true">03</span>{{ __('Món ăn') }}</a></li>
+                        <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.categories.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.categories.index') }}"><span class="admin-nav-mark" aria-hidden="true">04</span>{{ __('Danh mục thực đơn') }}</a></li>
+                        <li><a class="admin-nav-link {{ request()->routeIs('admin.kids-items.*') ? 'is-active' : '' }}" href="{{ route('admin.kids-items.index') }}"><span class="admin-nav-mark" aria-hidden="true">05</span>{{ __('Nội dung trẻ em') }}</a></li>
+                        <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.combos.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.combos.index') }}"><span class="admin-nav-mark" aria-hidden="true">06</span>{{ __('Combos') }}</a></li>
+                        <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.promotions.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.promotions.index') }}"><span class="admin-nav-mark" aria-hidden="true">07</span>{{ __('Khuyến mãi') }}</a></li>
                     </ul>
                 </div>
 
@@ -73,7 +69,14 @@
                         <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.restaurants.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.restaurants.index') }}"><span class="admin-nav-mark" aria-hidden="true">10</span>{{ __('Nhà hàng') }}</a></li>
                         <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.bookings.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.bookings.index') }}"><span class="admin-nav-mark" aria-hidden="true">11</span>{{ __('Đặt bàn') }}</a></li>
                         <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.leads.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.leads.index') }}"><span class="admin-nav-mark" aria-hidden="true">12</span>{{ __('Khách hàng tiềm năng') }}</a></li>
-                        <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.settings.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.settings.index') }}"><span class="admin-nav-mark" aria-hidden="true">13</span>{{ __('Cài đặt') }}</a></li>
+                        @if (auth()->user()->hasPermission('accounts.manage'))
+                        <div class="admin-nav-group">
+                            <ul class="admin-nav-list">
+                                <li><a class="admin-nav-link {{ request()->routeIs('admin.accounts.*') ? 'is-active' : '' }}" href="{{ route('admin.accounts.index') }}"><span class="admin-nav-mark" aria-hidden="true">13</span>{{ __('Tài khoản') }}</a></li>
+                            </ul>
+                        </div>
+                        @endif
+                        <li><a class="admin-nav-link {{ request()->routeIs('admin.menu.settings.*') ? 'is-active' : '' }}" href="{{ route('admin.menu.settings.index') }}"><span class="admin-nav-mark" aria-hidden="true">14</span>{{ __('Cài đặt') }}</a></li>
                     </ul>
                 </div>
             </nav>

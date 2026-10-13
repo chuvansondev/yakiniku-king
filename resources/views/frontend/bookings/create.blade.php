@@ -137,12 +137,12 @@
         }
 
         .booking-table-option.is-unavailable {
-            color: #817770;
+            color: #9f2525;
             cursor: not-allowed;
         }
 
         .booking-table-option.is-too-small {
-            color: #8b806e;
+            color: #8a5a00;
             cursor: not-allowed;
         }
 
@@ -162,9 +162,9 @@
         .booking-table-surface { fill: #754632; transition: fill .16s ease; }
         .booking-table-option:has(input:checked) .booking-table-surface { fill: #a83d32; }
         .booking-table-option.is-unavailable .booking-chair,
-        .booking-table-option.is-unavailable .booking-table-surface,
+        .booking-table-option.is-unavailable .booking-table-surface { fill: #c83f3f; }
         .booking-table-option.is-too-small .booking-chair,
-        .booking-table-option.is-too-small .booking-table-surface { fill: #b9b9b9; }
+        .booking-table-option.is-too-small .booking-table-surface { fill: #d49a32; }
 
         .booking-table-code {
             position: relative;
@@ -196,8 +196,8 @@
         .booking-plan-legend span { display: inline-flex; align-items: center; gap: .4rem; }
         .booking-legend-dot { width: .7rem; height: .7rem; border-radius: 2px; background: #754632; }
         .booking-legend-dot.selected { background: #a83d32; }
-        .booking-legend-dot.unavailable,
-        .booking-legend-dot.too-small { background: #b9b9b9; }
+        .booking-legend-dot.unavailable { background: #c83f3f; }
+        .booking-legend-dot.too-small { background: #d49a32; }
         .booking-plan-summary { display: flex; justify-content: space-between; gap: .75rem; margin-top: .85rem; padding: .8rem 1rem; border-radius: 4px; background: #f3f0e9; color: #4c4740; font-size: .88rem; }
         .booking-plan-summary strong { color: #87332b; }
         .booking-room-label { position: absolute; left: 50%; top: 0; padding: .3rem .8rem; border-radius: 0 0 5px 5px; background: #d8d1c6; color: #514b43; font-size: .72rem; font-weight: 700; letter-spacing: .08em; transform: translateX(-50%); }
@@ -433,7 +433,7 @@
 
                                 <div class="col-12 col-md-6 booking-field">
                                     <label for="customer_name">{{ __('Họ và tên') }} <span class="booking-required-mark" aria-hidden="true">*</span><span class="visually-hidden">({{ __('Bắt buộc') }})</span></label>
-                                    <input id="customer_name" name="customer_name" type="text" class="form-control @error('customer_name') is-invalid @enderror" value="{{ old('customer_name') }}" autocomplete="name" required>
+                                    <input id="customer_name" name="customer_name" type="text" class="form-control @error('customer_name') is-invalid @enderror" value="{{ old('customer_name', auth()->user()?->name) }}" autocomplete="name" required>
                                     @error('customer_name')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
@@ -449,7 +449,7 @@
 
                                 <div class="col-12 col-md-6 booking-field">
                                     <label for="email">{{ __('Email') }} <span class="text-muted">({{ __('không bắt buộc') }})</span></label>
-                                    <input id="email" name="email" type="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" autocomplete="email">
+                                    <input id="email" name="email" type="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', auth()->user()?->email) }}" autocomplete="email">
                                     @error('email')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror

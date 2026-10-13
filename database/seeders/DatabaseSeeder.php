@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         );
 
         $this->call([
+            AccountManagementPermissionSeeder::class,
             MenuCategorySeeder::class,
             MenuItemSeeder::class,
             RestaurantSeeder::class,

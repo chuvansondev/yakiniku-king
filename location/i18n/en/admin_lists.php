@@ -2,6 +2,8 @@
 
 return [
     'search' => 'Search', 'all' => 'All', 'sort_by' => 'Sort by',
+    'slug_auto' => 'Leave blank to generate automatically',
+    'map_url_placeholder' => 'https://maps.google.com/...',
     'direction' => 'Direction', 'ascending' => 'Ascending', 'descending' => 'Descending',
     'per_page' => 'Per page', 'apply' => 'Apply', 'reset' => 'Reset',
     'pagination' => 'Pagination', 'showing' => 'Showing', 'of' => 'of',

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\ComboController;
@@ -42,7 +43,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:5,1')->name('password.update');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'account.active'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/account/password', [AuthController::class, 'showChangePassword'])->name('password.change');
     Route::put('/account/password', [AuthController::class, 'changePassword'])->middleware('throttle:5,1')->name('password.change.update');
@@ -114,10 +115,19 @@ Route::prefix('admin')
             ->name('login.submit');
 
         // Khu vực cần đăng nhập
-        Route::middleware(['auth', 'admin'])->group(function () {
+        Route::middleware(['auth', 'account.active', 'admin'])->group(function () {
             Route::get('/', [DashboardController::class, 'index'])
                 ->middleware('permission:admin.dashboard.view')
                 ->name('dashboard');
+
+            Route::middleware('permission:accounts.manage')->group(function (): void {
+                Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
+                Route::get('/accounts/create', [AccountController::class, 'create'])->name('accounts.create');
+                Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.store');
+                Route::get('/accounts/{account}/edit', [AccountController::class, 'edit'])->name('accounts.edit');
+                Route::put('/accounts/{account}', [AccountController::class, 'update'])->name('accounts.update');
+                Route::patch('/accounts/{account}/lock', [AccountController::class, 'toggleLock'])->name('accounts.lock');
+            });
 
             Route::prefix('menu')->name('menu.')->group(function () {
                 Route::resource('categories', MenuCategoryController::class)
@@ -175,4 +185,12 @@ Route::prefix('admin')
             Route::post('/logout', [AdminAuthController::class, 'logout'])
                 ->name('logout');
         });
+    });
+
+Route::prefix('api/v1')
+    ->name('api.v1.')
+    ->middleware(['auth', 'account.active', 'admin', 'permission:accounts.manage', 'throttle:60,1'])
+    ->group(function (): void {
+        Route::apiResource('accounts', AccountController::class)->only(['index', 'show', 'store', 'update']);
+        Route::patch('accounts/{account}/lock', [AccountController::class, 'toggleLock'])->name('accounts.lock');
     });

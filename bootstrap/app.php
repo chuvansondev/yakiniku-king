@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureUserHasPermission;
 use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\SetLocale;
 use App\Http\Responses\ErrorResponse;
 use Illuminate\Foundation\Application;
@@ -23,6 +24,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,
             'permission' => EnsureUserHasPermission::class,
+            'account.active' => EnsureUserIsActive::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

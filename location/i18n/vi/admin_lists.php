@@ -2,6 +2,8 @@
 
 return [
     'search' => 'Tìm kiếm',
+    'slug_auto' => 'Để trống để tự tạo',
+    'map_url_placeholder' => 'https://maps.google.com/...',
     'all' => 'Tất cả',
     'sort_by' => 'Sắp xếp theo',
     'direction' => 'Thứ tự',

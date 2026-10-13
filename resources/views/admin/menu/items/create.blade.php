@@ -98,7 +98,7 @@
                 type="text"
                 name="slug"
                 value="{{ old('slug') }}"
-                placeholder="{{ __('Để trống để tự tạo') }}"
+                placeholder="{{ __('admin_lists.slug_auto') }}"
                 style="width:100%; padding:10px;"
             >
 

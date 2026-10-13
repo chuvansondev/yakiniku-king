@@ -24,11 +24,13 @@ class AuthController extends Controller
         $user = User::query()
             ->where('email', $credentials['email'])
             ->where('is_admin', true)
+            ->where('is_locked', false)
             ->first();
 
-        if ($user && $user->verifyAndUpgradePassword($credentials['password'])) {
+        if ($user && $user->verifyAndUpgradePassword($credentials['password']) && $user->hasPermission('admin.dashboard.view')) {
             Auth::login($user, $remember);
             $request->session()->regenerate();
+            $request->session()->put('auth_session_version', $user->session_version);
 
             return redirect()->intended('/admin');
         }

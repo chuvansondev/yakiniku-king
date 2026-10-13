@@ -41,16 +41,20 @@ class BookingService
         }
 
         $start = Carbon::createFromFormat('Y-m-d H:i', $date.' '.$time)->subMinutes(90);
-        $end = $start->copy()->addMinutes(180);
 
         return Booking::query()
             ->where('restaurant_id', $restaurantId)
-            ->whereDate('booking_date', $date)
             ->whereNotIn('status', [BookingStatus::Cancelled->value])
             ->when($excludeBookingId, fn ($query) => $query->whereKeyNot($excludeBookingId))
-            ->whereRaw("CONCAT(booking_date, ' ', booking_time) < ?", [$end->format('Y-m-d H:i:s')])
-            ->whereRaw("CONCAT(booking_date, ' ', booking_time) > ?", [$start->format('Y-m-d H:i:s')])
-            ->get(['table_codes'])
+            ->get(['booking_date', 'booking_time', 'table_codes'])
+            ->filter(function (Booking $booking) use ($start): bool {
+                $bookingDate = Carbon::parse($booking->getRawOriginal('booking_date'))->toDateString();
+                $bookingTime = substr((string) $booking->getRawOriginal('booking_time'), 0, 8);
+                $existingStart = Carbon::parse($bookingDate.' '.$bookingTime);
+                $existingEnd = $existingStart->copy()->addMinutes(180);
+
+                return $existingStart->lt($start->copy()->addMinutes(180)) && $existingEnd->gt($start);
+            })
             ->flatMap(fn (Booking $booking) => $booking->table_codes ?? [])
             ->unique()
             ->values()

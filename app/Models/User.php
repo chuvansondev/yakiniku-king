@@ -23,6 +23,8 @@ class User extends Authenticatable
         'email',
         'password',
         'is_admin',
+        'is_locked',
+        'session_version',
         'role_id',
         'create_by',
         'update_by',
@@ -49,6 +51,8 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'is_locked' => 'boolean',
+            'session_version' => 'integer',
         ];
     }
 
@@ -91,10 +95,6 @@ class User extends Authenticatable
 
     public function hasPermission(string $permission): bool
     {
-        if ($this->is_admin) {
-            return true;
-        }
-
         return $this->role?->hasPermission($permission) ?? false;
     }
 

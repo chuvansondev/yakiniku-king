@@ -29,7 +29,7 @@
 
         <div style="margin-bottom:20px;">
             <label for="slug">Slug</label>
-            <input id="slug" type="text" name="slug" value="{{ old('slug') }}" placeholder="{{ __('Để trống để tự tạo') }}" style="display:block; width:100%; padding:10px;">
+            <input id="slug" type="text" name="slug" value="{{ old('slug') }}" placeholder="{{ __('admin_lists.slug_auto') }}" style="display:block; width:100%; padding:10px;">
         </div>
 
         <div style="margin-bottom:20px;">

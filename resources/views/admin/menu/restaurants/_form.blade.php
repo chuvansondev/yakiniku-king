@@ -76,7 +76,7 @@
         name="google_map_url"
         value="{{ old('google_map_url', $restaurant->google_map_url ?? '') }}"
         style="width: 100%; padding: 8px;"
-        placeholder="https://maps.google.com/..."
+        placeholder="{{ __('admin_lists.map_url_placeholder') }}"
     >
 </div>
 

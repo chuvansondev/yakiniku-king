@@ -30,6 +30,7 @@ class AuthController extends Controller
         $user = User::query()
             ->where('email', $credentials['email'])
             ->where('is_admin', false)
+            ->where('is_locked', false)
             ->first();
 
         if (! $user || ! $user->verifyAndUpgradePassword($credentials['password'])) {
@@ -40,6 +41,7 @@ class AuthController extends Controller
 
         Auth::login($user, $remember);
         $request->session()->regenerate();
+        $request->session()->put('auth_session_version', $user->session_version);
 
         return redirect()->intended(route('home'));
     }
@@ -66,6 +68,7 @@ class AuthController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
+        $request->session()->put('auth_session_version', $user->session_version);
 
         return redirect()->intended(route('home'));
     }
